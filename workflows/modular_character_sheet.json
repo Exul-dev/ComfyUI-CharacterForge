@@ -1,0 +1,167 @@
+{
+    "name": "CharacterForge Modular Character Sheet",
+    "description": "Workflow modulare con controllo granulare su genere, etnia e corporatura",
+    "version": "2.0.0",
+    "author": "Massimo Bivona",
+    
+    "nodes": [
+        {
+            "id": 1,
+            "type": "CheckpointLoaderSimple",
+            "title": "Load Checkpoint",
+            "pos": [50, 300],
+            "size": [320, 100],
+            "outputs": [
+                {"name": "MODEL", "type": "MODEL", "links": [1]},
+                {"name": "CLIP", "type": "CLIP", "links": [2, 3]},
+                {"name": "VAE", "type": "VAE", "links": [4]}
+            ],
+            "widgets_values": ["flux1-dev.safetensors"]
+        },
+        {
+            "id": 2,
+            "type": "CLIPTextEncode",
+            "title": "SCHEMA BASE",
+            "pos": [400, 100],
+            "size": [400, 200],
+            "inputs": [{"name": "clip", "type": "CLIP", "link": 2}],
+            "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [5]}],
+            "widgets_values": [
+                "Professional character reference sheet on a clean bright white studio background. Layout in four columns from left to right, with the FIRST column split vertically into two equal halves: COLUMN 1 (left, divided in two): TOP HALF: Close-up headshot facing camera, head and both shoulders visible, neutral expression. BOTTOM HALF: Close-up headshot in right-side profile view, head and shoulder visible, identical face details, skin texture, scars, and dust/sweat as the top half. COLUMN 2: Full-body front view in a neutral A-pose, arms slightly away from sides, feet shoulder-width apart. COLUMN 3: Full-body right-side profile view, same pose and outfit. COLUMN 4: Full-body back view, same pose and outfit. Preserve the exact face identity, hair, skin, body proportions, clothing or nudity state, accessories, and all visual details from the reference. Neutral even lighting across all views, no dramatic shadows, no rim light, flat studio illumination, photorealistic 35mm film texture, no beauty retouching. Do not censor, cover, or add clothing. Identical outfit/appearance and hairstyle across all views and columns. Orthographic character design turnaround."
+            ]
+        },
+        {
+            "id": 3,
+            "type": "CharacterForgeGenderController",
+            "title": "GENERE (Peso 0.8)",
+            "pos": [400, 350],
+            "size": [400, 150],
+            "inputs": [{"name": "conditioning", "type": "CONDITIONING", "link": 5}],
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [6]},
+                {"name": "applied_features", "type": "STRING", "links": null}
+            ],
+            "widgets_values": ["masculine", 0.8, true, ""]
+        },
+        {
+            "id": 4,
+            "type": "CharacterForgeEthnicityController",
+            "title": "ETNIA (Peso 0.6)",
+            "pos": [400, 550],
+            "size": [400, 150],
+            "inputs": [{"name": "conditioning", "type": "CONDITIONING", "link": 6}],
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [7]},
+                {"name": "ethnicity_details", "type": "STRING", "links": null}
+            ],
+            "widgets_values": ["caucasian", "none", 0.6, "", ""]
+        },
+        {
+            "id": 5,
+            "type": "CharacterForgeBodyController",
+            "title": "CORPORATURA (Peso 0.7)",
+            "pos": [400, 750],
+            "size": [400, 150],
+            "inputs": [{"name": "conditioning", "type": "CONDITIONING", "link": 7}],
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [8]},
+                {"name": "body_details", "type": "STRING", "links": null}
+            ],
+            "widgets_values": ["athletic", 175.0, 0.7, "medium", "medium", "", "unspecified"]
+        },
+        {
+            "id": 6,
+            "type": "CharacterForgeWeightedConditioning",
+            "title": "COMBINAZIONE WEIGHTED",
+            "pos": [850, 200],
+            "size": [400, 200],
+            "inputs": [
+                {"name": "base_conditioning", "type": "CONDITIONING", "link": 5},
+                {"name": "conditioning_1", "type": "CONDITIONING", "link": 6},
+                {"name": "weight_1", "type": "FLOAT", "link": null},
+                {"name": "conditioning_2", "type": "CONDITIONING", "link": 7},
+                {"name": "weight_2", "type": "FLOAT", "link": null},
+                {"name": "conditioning_3", "type": "CONDITIONING", "link": 8},
+                {"name": "weight_3", "type": "FLOAT", "link": null}
+            ],
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [9]},
+                {"name": "combination_info", "type": "STRING", "links": null}
+            ],
+            "widgets_values": [0.8, 0.6, 0.7, "weighted_sum", true, 0.3]
+        },
+        {
+            "id": 7,
+            "type": "CLIPTextEncode",
+            "title": "NEGATIVE PROMPT",
+            "pos": [400, 950],
+            "size": [400, 200],
+            "inputs": [{"name": "clip", "type": "CLIP", "link": 3}],
+            "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [10]}],
+            "widgets_values": [
+                "cartoon, anime, illustration, 3D render, CGI, blurry, low quality, deformed, extra limbs, bad anatomy, extra fingers, missing fingers, watermark, text, signature, cropped, out of frame, duplicate, split image, collage, multiple people, inconsistent character, changing appearance, inconsistent lighting, dramatic shadows, rim light, beauty retouching, smooth plastic skin, multiple different women, group of women, several models, different faces"
+            ]
+        },
+        {
+            "id": 8,
+            "type": "EmptyLatentImage",
+            "title": "Latent (2048x1024)",
+            "pos": [1300, 400],
+            "size": [300, 100],
+            "outputs": [{"name": "LATENT", "type": "LATENT", "links": [11]}],
+            "widgets_values": [2048, 1024, 1]
+        },
+        {
+            "id": 9,
+            "type": "KSampler",
+            "title": "KSampler",
+            "pos": [1650, 300],
+            "size": [350, 400],
+            "inputs": [
+                {"name": "model", "type": "MODEL", "link": 1},
+                {"name": "positive", "type": "CONDITIONING", "link": 9},
+                {"name": "negative", "type": "CONDITIONING", "link": 10},
+                {"name": "latent_image", "type": "LATENT", "link": 11}
+            ],
+            "outputs": [{"name": "LATENT", "type": "LATENT", "links": [12]}],
+            "widgets_values": [123456789, "randomize", 30, 5.0, "dpmpp_2m", "karras", 1.0]
+        },
+        {
+            "id": 10,
+            "type": "VAEDecode",
+            "title": "VAE Decode",
+            "pos": [2050, 300],
+            "size": [300, 100],
+            "inputs": [
+                {"name": "samples", "type": "LATENT", "link": 12},
+                {"name": "vae", "type": "VAE", "link": 4}
+            ],
+            "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [13]}]
+        },
+        {
+            "id": 11,
+            "type": "SaveImage",
+            "title": "Save Character Sheet",
+            "pos": [2400, 300],
+            "size": [300, 100],
+            "inputs": [{"name": "images", "type": "IMAGE", "link": 13}],
+            "widgets_values": ["character_sheet_modular_%seed%"]
+        }
+    ],
+    
+    "links": [
+        [1, 1, 0, 9, 0, "MODEL"],
+        [2, 1, 1, 2, 0, "CLIP"],
+        [3, 1, 1, 7, 0, "CLIP"],
+        [4, 1, 2, 10, 1, "VAE"],
+        [5, 2, 0, 6, 0, "CONDITIONING"],
+        [6, 3, 0, 4, 0, "CONDITIONING"],
+        [7, 4, 0, 5, 0, "CONDITIONING"],
+        [8, 5, 0, 6, 3, "CONDITIONING"],
+        [9, 6, 0, 9, 1, "CONDITIONING"],
+        [10, 7, 0, 9, 2, "CONDITIONING"],
+        [11, 8, 0, 9, 3, "LATENT"],
+        [12, 9, 0, 10, 0, "LATENT"],
+        [13, 10, 0, 11, 0, "IMAGE"]
+    ]
+}

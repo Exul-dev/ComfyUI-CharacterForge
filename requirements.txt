@@ -1,0 +1,12 @@
+torch>=2.14.0
+torchvision>=0.29.0
+torchaudio>=2.11.0
+numpy>=2.4.6
+Pillow>=12.3.0
+safetensors>=0.4.5
+transformers>=5.16.1
+accelerate>=1.14.0
+tokenizers>=0.22.0
+tqdm>=4.70.0
+pathlib2>=2.3.7
+orjson>=3.10.0

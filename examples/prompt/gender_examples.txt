@@ -1,0 +1,61 @@
+=== ESEMPI GENDER CONTROLLER ===
+
+--- MASCHILE STANDARD ---
+Gender: masculine
+Weight: 0.8
+Prompt interno: male subject, masculine features, broad shoulders, angular jawline, male body proportions, masculine skeletal structure, male characteristics, short hair, no makeup
+
+--- FEMMINILE STANDARD ---
+Gender: feminine
+Weight: 0.8
+Prompt interno: female subject, feminine features, delicate facial features, female body proportions, feminine characteristics, graceful curves, elegant appearance
+
+--- ANDROGINO ---
+Gender: androgynous
+Weight: 0.7
+Prompt interno: androgynous subject, gender-neutral features, balanced masculine and feminine characteristics, ambiguous appearance, neutral features, gender non-specific
+
+--- CUSTOM: MASCHIO ITALIANO 30ENNE ---
+Gender: custom
+Weight: 0.9
+Custom prompt: Adult male, age 30-35, Italian features, dark wavy hair, olive skin, athletic but not muscular build, distinguished appearance, strong jawline
+
+--- CUSTOM: FEMMINA NORDEUROPEA ---
+Gender: custom
+Weight: 0.8
+Custom prompt: Adult female, age 25-30, Scandinavian features, blonde straight hair, fair skin, tall slender build, delicate facial features, blue eyes
+
+--- CUSTOM: MASCHIO ASIATICO ---
+Gender: custom
+Weight: 0.85
+Custom prompt: Adult male, age 28-32, East Asian features, straight black hair, light skin, lean athletic build, sharp angular features, dark brown eyes
+
+--- CUSTOM: FEMMINA MEDIO ORIENTALE ---
+Gender: custom
+Weight: 0.9
+Custom prompt: Adult female, age 26-30, Middle Eastern features, dark wavy hair, olive skin, curvaceous build, exotic features, dark expressive eyes
+
+--- CUSTOM: MASCHIO AFROAMERICANO ---
+Gender: custom
+Weight: 0.8
+Custom prompt: Adult male, age 30-35, African American features, short curly hair, dark skin, muscular athletic build, strong features, confident appearance
+
+--- CUSTOM: FEMMINA LATINA ---
+Gender: custom
+Weight: 0.85
+Custom prompt: Adult female, age 25-30, Latin features, long dark wavy hair, tan skin, curvy athletic build, warm expressive features, brown eyes
+
+--- CUSTOM: ANDROGINO MODERNO ---
+Gender: custom
+Weight: 0.75
+Custom prompt: Adult person, age 25-35, androgynous features, medium-length styled hair, neutral fashion, balanced masculine and feminine characteristics, modern alternative appearance
+
+--- CUSTOM: MASCHIO MATURO ---
+Gender: custom
+Weight: 0.9
+Custom prompt: Adult male, age 45-55, mature features, gray-streaked hair, weathered skin, distinguished appearance, confident posture, life experience visible in face
+
+--- CUSTOM: FEMMINA ATLETICA ---
+Gender: custom
+Weight: 0.8
+Custom prompt: Adult female, age 28-32, athletic feminine features, toned physique, sporty appearance, minimal makeup, healthy glow, strong but graceful build

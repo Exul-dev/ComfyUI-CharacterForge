@@ -1,0 +1,123 @@
+=== ESEMPI ETHNICITY CONTROLLER ===
+
+--- CAUCASICO STANDARD ---
+Primary: caucasian
+Secondary: none
+Weight: 0.6
+Caratteristiche: fair to light skin, European facial features, straight to wavy hair, light colored eyes
+
+--- AFROAMERICANO ---
+Primary: african
+Secondary: none
+Weight: 0.7
+Caratteristiche: dark brown skin, African facial features, curly to coily hair, dark brown eyes
+
+--- ASIATICO ORIENTALE ---
+Primary: asian
+Secondary: none
+Weight: 0.6
+Caratteristiche: light olive skin, East Asian facial features, straight black hair, dark almond eyes
+
+--- LATINO ---
+Primary: latin
+Secondary: none
+Weight: 0.6
+Caratteristiche: olive tan skin, Latin facial features, dark wavy hair, brown expressive eyes
+
+--- MIX EURO-ASIATICO ---
+Primary: caucasian
+Secondary: asian
+Weight: 0.7
+Note: Mix con influenza asiatica max 40% (basata sul weight)
+Caratteristiche: pelle chiara con tratti asiatici sottili, capelli scuri lisci
+
+--- MIX AFRO-LATINO ---
+Primary: african
+Secondary: latin
+Weight: 0.8
+Note: Pelle scura con tratti caldi latini
+Caratteristiche: pelle ambrata scura, tratti afro con calore latino
+
+--- MIX EURO-AFRO ---
+Primary: caucasian
+Secondary: african
+Weight: 0.6
+Note: Pelle ambrata con tratti misti
+Caratteristiche: pelle chiara ambrata, tratti europei con influenze africane
+
+--- MIX ASIATICO-LATINO ---
+Primary: asian
+Secondary: latin
+Weight: 0.7
+Note: Tratti asiatici con calore latino
+Caratteristiche: pelle olivastra, tratti asiatici con espressività latina
+
+--- MIX EURO-LATINO ---
+Primary: caucasian
+Secondary: latin
+Weight: 0.65
+Note: Tratti europei con calore mediterraneo
+Caratteristiche: pelle chiara olivastra, tratti europei con calore latino
+
+--- AFRO CON OVERRIDE PELLE ---
+Primary: african
+Secondary: none
+Weight: 0.8
+Skin override: deep bronze
+Note: Pelle molto scura con sottotoni bronzei
+
+--- CAUCASICO CON OVERRIDE PELLE ---
+Primary: caucasian
+Secondary: none
+Weight: 0.6
+Skin override: pale ivory
+Note: Pelle molto chiara con sottotoni avorio
+
+--- LATINO CON OVERRIDE PELLE ---
+Primary: latin
+Secondary: none
+Weight: 0.7
+Skin override: golden olive
+Note: Pelle olivastra dorata
+
+--- ASIATICO CON OVERRIDE PELLE ---
+Primary: asian
+Secondary: none
+Weight: 0.6
+Skin override: warm beige
+Note: Pelle beige calda asiatica
+
+--- MIX CON DETTAGLI CUSTOM ---
+Primary: caucasian
+Secondary: asian
+Weight: 0.8
+Skin override: light olive
+Custom details: Mediterranean features with subtle Asian influence, amber eyes, thick dark eyebrows, high cheekbones
+
+--- MIX COMPLESSO CON CUSTOM ---
+Primary: latin
+Secondary: asian
+Weight: 0.75
+Skin override: warm caramel
+Custom details: Brazilian-Japanese heritage, expressive dark eyes, defined cheekbones, thick straight dark hair
+
+--- NORDICO CON OVERRIDE ---
+Primary: caucasian
+Secondary: none
+Weight: 0.7
+Skin override: translucent fair
+Custom details: Scandinavian features, porcelain skin with visible veins, ice blue eyes, platinum blonde hair
+
+--- MEDITERRANEO CON DETTAGLI ---
+Primary: caucasian
+Secondary: none
+Weight: 0.8
+Skin override: warm olive
+Custom details: Southern Italian features, dark expressive eyes, strong Roman nose, thick dark wavy hair, warm skin undertones
+
+--- AFRO-CARAIBICO ---
+Primary: african
+Secondary: latin
+Weight: 0.85
+Skin override: rich mahogany
+Custom details: Caribbean heritage, warm smile features, expressive dark eyes, defined cheekbones, curly dark hair

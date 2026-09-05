@@ -1,0 +1,188 @@
+{
+    "package_info": {
+        "name": "ComfyUI-CharacterForge",
+        "version": "2.0.0",
+        "description": "Professional character sheet control nodes with hybrid Text/Image support",
+        "author": "Massimo Bivona",
+        "license": "MIT",
+        "repository": "https://github.com/tuousername/ComfyUI-CharacterForge"
+    },
+    
+    "general": {
+        "debug_mode": false,
+        "verbose_logging": false,
+        "silent_mode": false,
+        "hybrid_mode": true,
+        "default_mode": "text_to_sheet",
+        "preserve_structure": true,
+        "auto_validate_inputs": true,
+        "cache_enabled": true
+    },
+    
+    "weight_settings": {
+        "global_min": 0.0,
+        "global_max": 1.5,
+        "global_step": 0.01,
+        "default_weight": 0.8,
+        "presets": {
+            "subtle": 0.3,
+            "moderate": 0.5,
+            "standard": 0.7,
+            "strong": 0.9,
+            "extreme": 1.2
+        }
+    },
+    
+    "gender_controller": {
+        "available_genders": [
+            "masculine",
+            "feminine",
+            "androgynous",
+            "custom"
+        ],
+        "default_gender": "androgynous",
+        "default_weight": 0.8,
+        "custom_prompt_required": true,
+        "presets": {
+            "masculine": {
+                "description": "Male subject with masculine features",
+                "suggested_weight": 0.8
+            },
+            "feminine": {
+                "description": "Female subject with feminine features",
+                "suggested_weight": 0.8
+            },
+            "androgynous": {
+                "description": "Gender-neutral balanced features",
+                "suggested_weight": 0.7
+            }
+        }
+    },
+    
+    "ethnicity_controller": {
+        "available_ethnicities": [
+            "caucasian",
+            "african",
+            "asian",
+            "latin",
+            "mixed"
+        ],
+        "secondary_ethnicities": [
+            "none",
+            "caucasian",
+            "african",
+            "asian",
+            "latin"
+        ],
+        "default_primary": "mixed",
+        "default_secondary": "none",
+        "default_weight": 0.6,
+        "max_secondary_influence": 0.4,
+        "skin_tone_override_enabled": true,
+        "custom_details_enabled": true
+    },
+    
+    "body_controller": {
+        "available_body_types": [
+            "athletic",
+            "slim",
+            "curvy",
+            "muscular",
+            "average"
+        ],
+        "default_body_type": "average",
+        "default_weight": 0.7,
+        "height_settings": {
+            "min_height_cm": 150.0,
+            "max_height_cm": 200.0,
+            "default_height_cm": 175.0,
+            "step_cm": 1.0,
+            "categories": {
+                "short": {"min": 0, "max": 160},
+                "medium-short": {"min": 160, "max": 170},
+                "medium": {"min": 170, "max": 180},
+                "tall": {"min": 180, "max": 190},
+                "very_tall": {"min": 190, "max": 300}
+            }
+        },
+        "muscle_definition_levels": [
+            "low",
+            "medium",
+            "high"
+        ],
+        "body_fat_levels": [
+            "low",
+            "medium",
+            "high"
+        ],
+        "target_genders": [
+            "unspecified",
+            "male",
+            "female"
+        ]
+    },
+    
+    "weighted_conditioning": {
+        "available_methods": [
+            "weighted_sum",
+            "average",
+            "concat",
+            "max",
+            "blend"
+        ],
+        "default_method": "weighted_sum",
+        "default_structure_strength": 0.3,
+        "base_influence_weighted_sum": 0.5,
+        "max_conditioning_inputs": 4,
+        "shape_validation": true,
+        "fallback_on_error": true
+    },
+    
+    "hybrid_switch": {
+        "available_modes": [
+            "text_to_sheet",
+            "image_to_sheet"
+        ],
+        "default_mode": "text_to_sheet",
+        "auto_validate_latent": true,
+        "denoise_suggestions": {
+            "text_to_sheet": 1.0,
+            "image_to_sheet": 0.6
+        },
+        "k_sampler_notes": {
+            "text_to_sheet": "Generazione completa da prompt, nessuna identità di partenza",
+            "image_to_sheet": "Mantiene 30-40% identità originale, usa IPAdapter per coerenza"
+        }
+    },
+    
+    "compatibility": {
+        "comfyui_min_version": "0.34.0",
+        "python_min_version": "3.11.0",
+        "pytorch_min_version": "2.14.0",
+        "cuda_min_version": "11.8"
+    },
+    
+    "performance": {
+        "min_vram_gb": 16,
+        "recommended_vram_gb": 24,
+        "min_ram_gb": 32,
+        "recommended_ram_gb": 64,
+        "gpu_min_compute_capability": 7.5,
+        "recommended_gpu": "RTX 3060 12GB or better"
+    },
+    
+    "logging": {
+        "log_level": "INFO",
+        "log_to_console": true,
+        "log_to_file": false,
+        "log_file_path": "",
+        "log_format": "[{time}] {level} {message}",
+        "log_modules": [
+            "GenderController",
+            "EthnicityController",
+            "BodyController",
+            "WeightedConditioning",
+            "HybridLatentSwitch"
+        ]
+    }
+}

@@ -1,0 +1,218 @@
+{
+    "name": "CharacterForge Hybrid Character Sheet",
+    "description": "Workflow ibrido Text-to-Sheet e Image-to-Sheet con switch automatico",
+    "version": "2.0.0",
+    "author": "Massimo Bivona",
+    
+    "nodes": [
+        {
+            "id": 1,
+            "type": "CheckpointLoaderSimple",
+            "title": "Load Checkpoint",
+            "pos": [50, 300],
+            "size": [320, 100],
+            "outputs": [
+                {"name": "MODEL", "type": "MODEL", "links": [1]},
+                {"name": "CLIP", "type": "CLIP", "links": [2, 3]},
+                {"name": "VAE", "type": "VAE", "links": [4, 5]}
+            ],
+            "widgets_values": ["flux1-dev.safetensors"]
+        },
+        {
+            "id": 2,
+            "type": "LoadImage",
+            "title": "RIFERIMENTO (Image Mode)",
+            "pos": [50, 100],
+            "size": [300, 400],
+            "outputs": [
+                {"name": "IMAGE", "type": "IMAGE", "links": [6, 7]},
+                {"name": "MASK", "type": "MASK", "links": null}
+            ],
+            "widgets_values": ["reference_image.jpg", "image"]
+        },
+        {
+            "id": 3,
+            "type": "VAEEncode",
+            "title": "VAE Encode (Image-to-Latent)",
+            "pos": [400, 100],
+            "size": [300, 100],
+            "inputs": [
+                {"name": "pixels", "type": "IMAGE", "link": 6},
+                {"name": "vae", "type": "VAE", "link": 4}
+            ],
+            "outputs": [{"name": "LATENT", "type": "LATENT", "links": [8]}]
+        },
+        {
+            "id": 4,
+            "type": "EmptyLatentImage",
+            "title": "Latent Text (2048x1024)",
+            "pos": [400, 250],
+            "size": [300, 100],
+            "outputs": [{"name": "LATENT", "type": "LATENT", "links": [9]}],
+            "widgets_values": [2048, 1024, 1]
+        },
+        {
+            "id": 5,
+            "type": "CharacterForgeHybridLatentSwitch",
+            "title": "SWITCH MODALITÀ",
+            "pos": [750, 150],
+            "size": [400, 150],
+            "inputs": [
+                {"name": "mode", "type": "COMBO", "link": null},
+                {"name": "text_latent", "type": "LATENT", "link": 9},
+                {"name": "image_latent", "type": "LATENT", "link": 8},
+                {"name": "image_reference", "type": "IMAGE", "link": 7}
+            ],
+            "outputs": [
+                {"name": "selected_latent", "type": "LATENT", "links": [10]},
+                {"name": "active_mode_info", "type": "STRING", "links": null},
+                {"name": "reference_preview", "type": "IMAGE", "links": null}
+            ],
+            "widgets_values": ["text_to_sheet", true, false]
+        },
+        {
+            "id": 6,
+            "type": "IPAdapterUnifiedLoader",
+            "title": "IPAdapter Loader",
+            "pos": [750, 350],
+            "size": [350, 100],
+            "inputs": [{"name": "model", "type": "MODEL", "link": 1}],
+            "outputs": [
+                {"name": "model", "type": "MODEL", "links": [11]},
+                {"name": "ipadapter", "type": "IPADAPTER", "links": [12]}
+            ],
+            "widgets_values": ["PLUS HIGH (recommended)", "CPU"]
+        },
+        {
+            "id": 7,
+            "type": "IPAdapter",
+            "title": "Applica Identità (Image Mode)",
+            "pos": [1150, 350],
+            "size": [350, 300],
+            "inputs": [
+                {"name": "ipadapter", "type": "IPADAPTER", "link": 12},
+                {"name": "image", "type": "IMAGE", "link": 7},
+                {"name": "model", "type": "MODEL", "link": 11}
+            ],
+            "outputs": [{"name": "model", "type": "MODEL", "links": [13]}],
+            "widgets_values": [0.7, 0.8, 1.0, 0, 0.7]
+        },
+        {
+            "id": 8,
+            "type": "CLIPTextEncode",
+            "title": "SCHEMA BASE",
+            "pos": [1200, 100],
+            "size": [400, 200],
+            "inputs": [{"name": "clip", "type": "CLIP", "link": 2}],
+            "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [14]}],
+            "widgets_values": [
+                "Professional character reference sheet on a clean bright white studio background. Layout in four columns from left to right, with the FIRST column split vertically into two equal halves: COLUMN 1 (left, divided in two): TOP HALF: Close-up headshot facing camera, head and both shoulders visible, neutral expression. BOTTOM HALF: Close-up headshot in right-side profile view, head and shoulder visible, identical face details, skin texture, scars, and dust/sweat as the top half. COLUMN 2: Full-body front view in a neutral A-pose, arms slightly away from sides, feet shoulder-width apart. COLUMN 3: Full-body right-side profile view, same pose and outfit. COLUMN 4: Full-body back view, same pose and outfit. Preserve the exact face identity, hair, skin, body proportions, clothing or nudity state, accessories, and all visual details from the reference. Neutral even lighting across all views, no dramatic shadows, no rim light, flat studio illumination, photorealistic 35mm film texture, no beauty retouching. Do not censor, cover, or add clothing. Identical outfit/appearance and hairstyle across all views and columns. Orthographic character design turnaround."
+            ]
+        },
+        {
+            "id": 9,
+            "type": "CharacterForgeGenderController",
+            "title": "GENERE (Peso 0.8)",
+            "pos": [1200, 350],
+            "size": [400, 150],
+            "inputs": [{"name": "conditioning", "type": "CONDITIONING", "link": 14}],
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [15]},
+                {"name": "applied_features", "type": "STRING", "links": null}
+            ],
+            "widgets_values": ["masculine", 0.8, true, ""]
+        },
+        {
+            "id": 10,
+            "type": "CharacterForgeEthnicityController",
+            "title": "ETNIA (Peso 0.6)",
+            "pos": [1200, 550],
+            "size": [400, 150],
+            "inputs": [{"name": "conditioning", "type": "CONDITIONING", "link": 15}],
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [16]},
+                {"name": "ethnicity_details", "type": "STRING", "links": null}
+            ],
+            "widgets_values": ["caucasian", "none", 0.6, "", ""]
+        },
+        {
+            "id": 11,
+            "type": "CharacterForgeBodyController",
+            "title": "CORPORATURA (Peso 0.7)",
+            "pos": [1200, 750],
+            "size": [400, 150],
+            "inputs": [{"name": "conditioning", "type": "CONDITIONING", "link": 16}],
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [17]},
+                {"name": "body_details", "type": "STRING", "links": null}
+            ],
+            "widgets_values": ["athletic", 175.0, 0.7, "medium", "medium", "", "unspecified"]
+        },
+        {
+            "id": 12,
+            "type": "CharacterForgeWeightedConditioning",
+            "title": "COMBINAZIONE",
+            "pos": [1650, 200],
+            "size": [400, 200],
+            "inputs": [
+                {"name": "base_conditioning", "type": "CONDITIONING", "link": 14},
+                {"name": "conditioning_1", "type": "CONDITIONING", "link": 15},
+                {"name": "conditioning_2", "type": "CONDITIONING", "link": 16},
+                {"name": "conditioning_3", "type": "CONDITIONING", "link": 17}
+            ],
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [18]},
+                {"name": "combination_info", "type": "STRING", "links": null}
+            ],
+            "widgets_values": [0.8, 0.6, 0.7, "weighted_sum", true, 0.3]
+        },
+        {
+            "id": 13,
+            "type": "CLIPTextEncode",
+            "title": "NEGATIVE PROMPT",
+            "pos": [1200, 950],
+            "size": [400, 200],
+            "inputs": [{"name": "clip", "type": "CLIP", "link": 3}],
+            "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [19]}],
+            "widgets_values": [
+                "cartoon, anime, illustration, 3D render, CGI, blurry, low quality, deformed, extra limbs, bad anatomy, extra fingers, missing fingers, watermark, text, signature, cropped, out of frame, duplicate, split image, collage, multiple people, inconsistent character, changing appearance, inconsistent lighting, dramatic shadows, rim light, beauty retouching, smooth plastic skin, identity not preserved, face changed, different person"
+            ]
+        },
+        {
+            "id": 14,
+            "type": "KSampler",
+            "title": "KSampler (Adattivo)",
+            "pos": [2100, 300],
+            "size": [350, 400],
+            "inputs": [
+                {"name": "model", "type": "MODEL", "link": 13},
+                {"name": "positive", "type": "CONDITIONING", "link": 18},
+                {"name": "negative", "type": "CONDITIONING", "link": 19},
+                {"name": "latent_image", "type": "LATENT", "link": 10}
+            ],
+            "outputs": [{"name": "LATENT", "type": "LATENT", "links": [20]}],
+            "widgets_values": [123456789, "randomize", 30, 5.0, "dpmpp_2m", "karras", 1.0]
+        },
+        {
+            "id": 15,
+            "type": "VAEDecode",
+            "title": "VAE Decode",
+            "pos": [2500, 300],
+            "size": [300, 100],
+            "inputs": [
+                {"name": "samples", "type": "LATENT", "link": 20},
+                {"name": "vae", "type": "VAE", "link": 5}
+            ],
+            "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [21]}]
+        },
+        {
+            "id": 16,
+            "type": "SaveImage",
+            "title": "Save Character Sheet",
+            "pos": [2850, 300],
+            "size": [300, 100],
+            "inputs": [{"name": "images", "type": "IMAGE", "link": 21}],
+            "widgets_values": ["character_sheet_hybrid_%seed%"]
+        }
+    ]
+}

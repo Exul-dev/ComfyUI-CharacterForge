@@ -1,0 +1,206 @@
+{
+    "compatibility_matrix": {
+        "primary_models": {
+            "flux1-dev": {
+                "compatible": true,
+                "optimization_level": "excellent",
+                "notes": "Miglior qualità complessiva per character sheet",
+                "tested_versions": [
+                    "flux1-dev.safetensors",
+                    "flux1-dev-fp8.safetensors"
+                ],
+                "recommended_settings": {
+                    "resolution": "2048x1024",
+                    "steps": "25-30",
+                    "cfg": "3.5-5.0",
+                    "sampler": "dpmpp_2m",
+                    "scheduler": "karras"
+                },
+                "character_sheet_quality": 5,
+                "identity_preservation": 5,
+                "layout_stability": 5
+            },
+            "flux1-schnell": {
+                "compatible": true,
+                "optimization_level": "excellent",
+                "notes": "Più veloce di Flux Dev, qualità leggermente inferiore",
+                "tested_versions": [
+                    "flux1-schnell.safetensors"
+                ],
+                "recommended_settings": {
+                    "resolution": "2048x1024",
+                    "steps": "20-25",
+                    "cfg": "3.0-4.5",
+                    "sampler": "euler",
+                    "scheduler": "normal"
+                },
+                "character_sheet_quality": 4,
+                "identity_preservation": 4,
+                "layout_stability": 4
+            },
+            "krea2": {
+                "compatible": true,
+                "optimization_level": "excellent",
+                "notes": "Ottimizzato specificamente per character sheet",
+                "tested_versions": [
+                    "krea2-latest.safetensors"
+                ],
+                "recommended_settings": {
+                    "resolution": "2048x1024",
+                    "steps": "25-35",
+                    "cfg": "4.0-5.5",
+                    "sampler": "dpmpp_2m",
+                    "scheduler": "karras"
+                },
+                "character_sheet_quality": 5,
+                "identity_preservation": 4,
+                "layout_stability": 5
+            }
+        },
+        
+        "secondary_models": {
+            "sdxl-base": {
+                "compatible": true,
+                "optimization_level": "good",
+                "notes": "Buona compatibilità, richiede attenzione ai pesi",
+                "tested_versions": [
+                    "sdxl-base-1.0.safetensors"
+                ],
+                "recommended_settings": {
+                    "resolution": "1536x768",
+                    "steps": "30-40",
+                    "cfg": "7.0-8.5",
+                    "sampler": "dpmpp_2m",
+                    "scheduler": "karras"
+                },
+                "character_sheet_quality": 3,
+                "identity_preservation": 3,
+                "layout_stability": 4
+            },
+            "sd3-large": {
+                "compatible": true,
+                "optimization_level": "fair",
+                "notes": "Supporto base, risultati variabili",
+                "tested_versions": [
+                    "sd3-large-1.0.safetensors"
+                ],
+                "recommended_settings": {
+                    "resolution": "1024x512",
+                    "steps": "28-35",
+                    "cfg": "5.0-7.0",
+                    "sampler": "dpmpp_2m",
+                    "scheduler": "karras"
+                },
+                "character_sheet_quality": 2,
+                "identity_preservation": 2,
+                "layout_stability": 3
+            }
+        },
+        
+        "lora_compatibility": {
+            "character_sheet_loras": {
+                "character_sheet_v2": {
+                    "compatible": true,
+                    "suggested_weight": 0.7,
+                    "weight_range": [0.5, 0.9],
+                    "notes": "Layout base 4-colonne, ottimo con Flux"
+                },
+                "character_sheet_anime": {
+                    "compatible": true,
+                    "suggested_weight": 0.6,
+                    "weight_range": [0.4, 0.8],
+                    "notes": "Layout stile anime, funziona con SDXL"
+                },
+                "character_sheet_fantasy": {
+                    "compatible": true,
+                    "suggested_weight": 0.8,
+                    "weight_range": [0.6, 0.9],
+                    "notes": "Layout fantasy con dettagli elaborati"
+                }
+            },
+            "style_loras": {
+                "cinematic_realistic": {
+                    "compatible": true,
+                    "suggested_weight": 0.5,
+                    "weight_range": [0.3, 0.7],
+                    "notes": "Stile realistico cinematografico"
+                },
+                "anime_style_v3": {
+                    "compatible": true,
+                    "suggested_weight": 0.6,
+                    "weight_range": [0.4, 0.8],
+                    "notes": "Stile anime moderno"
+                },
+                "high_detail_fantasy": {
+                    "compatible": true,
+                    "suggested_weight": 0.4,
+                    "weight_range": [0.3, 0.6],
+                    "notes": "Dettagli fantasy estremi"
+                }
+            }
+        },
+        
+        "hardware_requirements": {
+            "minimum": {
+                "vram_gb": 12,
+                "ram_gb": 32,
+                "gpu_compute_capability": 7.5,
+                "example_gpu": "RTX 3060 12GB"
+            },
+            "recommended": {
+                "vram_gb": 16,
+                "ram_gb": 64,
+                "gpu_compute_capability": 8.6,
+                "example_gpu": "RTX 4090 16GB"
+            },
+            "optimal": {
+                "vram_gb": 24,
+                "ram_gb": 128,
+                "gpu_compute_capability": 8.9,
+                "example_gpu": "RTX 4090 24GB"
+            }
+        },
+        
+        "tested_configurations": {
+            "rtx_4090_16gb_128ram": {
+                "gpu": "RTX 4090 Laptop 16GB",
+                "ram": "128GB",
+                "cpu": "i9 14th gen",
+                "tested_models": [
+                    "flux1-dev",
+                    "flux1-schnell",
+                    "krea2"
+                ],
+                "performance_metrics": {
+                    "character_sheet_generation_time": "45-90 seconds",
+                    "vram_usage_peak": "13-14GB",
+                    "ram_usage_peak": "45-60GB"
+                },
+                "optimal_comfyui_flags": [
+                    "--lowvram",
+                    "--disable-smart-memory",
+                    "--async-offload 4",
+                    "--cache-classic",
+                    "--use-sage-attention",
+                    "--disable-xformers",
+                    "--fast-disk",
+                    "--reserve-vram 2048"
+                ]
+            },
+            "rtx_4090_24gb_64ram": {
+                "gpu": "RTX 4090 24GB",
+                "ram": "64GB",
+                "cpu": "i9 13th gen",
+                "tested_models": [
+                    "flux1-dev",
+                    "krea2"
+                ],
+                "performance_metrics": {
+                    "character_sheet_generation_time": "30-60 seconds",
+                    "vram_usage_peak": "18-20GB",
+                    "ram_usage_peak": "35-45GB"
+                }
+            }
+        }
+    }
+}

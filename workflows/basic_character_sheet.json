@@ -1,0 +1,167 @@
+{
+    "name": "CharacterForge Basic Character Sheet",
+    "description": "Workflow base per character sheet con solo Gender Controller",
+    "version": "2.0.0",
+    "author": "Massimo Bivona",
+    
+    "nodes": [
+        {
+            "id": 1,
+            "type": "CheckpointLoaderSimple",
+            "title": "Load Checkpoint",
+            "pos": [50, 300],
+            "size": [320, 100],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "outputs": [
+                {"name": "MODEL", "type": "MODEL", "links": [1]},
+                {"name": "CLIP", "type": "CLIP", "links": [2, 3]},
+                {"name": "VAE", "type": "VAE", "links": [4]}
+            ],
+            "properties": {"Node name for S&R": "CheckpointLoaderSimple"},
+            "widgets_values": ["flux1-dev.safetensors"]
+        },
+        {
+            "id": 2,
+            "type": "CLIPTextEncode",
+            "title": "SCHEMA BASE",
+            "pos": [400, 100],
+            "size": [400, 200],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [
+                {"name": "clip", "type": "CLIP", "link": 2}
+            ],
+            "outputs": [
+                {"name": "CONDITIONING", "type": "CONDITIONING", "links": [5]}
+            ],
+            "properties": {"Node name for S&R": "CLIPTextEncode"},
+            "widgets_values": [
+                "Professional character reference sheet on a clean bright white studio background. Layout in four columns from left to right, with the FIRST column split vertically into two equal halves: COLUMN 1 (left, divided in two): TOP HALF: Close-up headshot facing camera, head and both shoulders visible, neutral expression. BOTTOM HALF: Close-up headshot in right-side profile view, head and shoulder visible, identical face details, skin texture, scars, and dust/sweat as the top half. COLUMN 2: Full-body front view in a neutral A-pose, arms slightly away from sides, feet shoulder-width apart. COLUMN 3: Full-body right-side profile view, same pose and outfit. COLUMN 4: Full-body back view, same pose and outfit. Preserve the exact face identity, hair, skin, body proportions, clothing or nudity state, accessories, and all visual details from the reference. Neutral even lighting across all views, no dramatic shadows, no rim light, flat studio illumination, photorealistic 35mm film texture, no beauty retouching. Do not censor, cover, or add clothing. Identical outfit/appearance and hairstyle across all views and columns. Orthographic character design turnaround."
+            ]
+        },
+        {
+            "id": 3,
+            "type": "CharacterForgeGenderController",
+            "title": "GENERE (Peso 0.8)",
+            "pos": [400, 350],
+            "size": [400, 150],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "link": 5}
+            ],
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [6]},
+                {"name": "applied_features", "type": "STRING", "links": null}
+            ],
+            "properties": {"Node name for S&R": "CharacterForgeGenderController"},
+            "widgets_values": ["masculine", 0.8, true, ""]
+        },
+        {
+            "id": 4,
+            "type": "CLIPTextEncode",
+            "title": "NEGATIVE PROMPT",
+            "pos": [400, 550],
+            "size": [400, 200],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+                {"name": "clip", "type": "CLIP", "link": 3}
+            ],
+            "outputs": [
+                {"name": "CONDITIONING", "type": "CONDITIONING", "links": [7]}
+            ],
+            "properties": {"Node name for S&R": "CLIPTextEncode"},
+            "widgets_values": [
+                "cartoon, anime, illustration, 3D render, CGI, blurry, low quality, deformed, extra limbs, bad anatomy, extra fingers, missing fingers, watermark, text, signature, cropped, out of frame, duplicate, split image, collage, multiple people, inconsistent character, changing appearance, inconsistent lighting, dramatic shadows, rim light, beauty retouching, smooth plastic skin"
+            ]
+        },
+        {
+            "id": 5,
+            "type": "EmptyLatentImage",
+            "title": "Latent (2048x1024)",
+            "pos": [850, 400],
+            "size": [300, 100],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
+            "outputs": [
+                {"name": "LATENT", "type": "LATENT", "links": [8]}
+            ],
+            "properties": {"Node name for S&R": "EmptyLatentImage"},
+            "widgets_values": [2048, 1024, 1]
+        },
+        {
+            "id": 6,
+            "type": "KSampler",
+            "title": "KSampler",
+            "pos": [1200, 300],
+            "size": [350, 400],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [
+                {"name": "model", "type": "MODEL", "link": 1},
+                {"name": "positive", "type": "CONDITIONING", "link": 6},
+                {"name": "negative", "type": "CONDITIONING", "link": 7},
+                {"name": "latent_image", "type": "LATENT", "link": 8}
+            ],
+            "outputs": [
+                {"name": "LATENT", "type": "LATENT", "links": [9]}
+            ],
+            "properties": {"Node name for S&R": "KSampler"},
+            "widgets_values": [123456789, "randomize", 25, 5.0, "dpmpp_2m", "karras", 1.0]
+        },
+        {
+            "id": 7,
+            "type": "VAEDecode",
+            "title": "VAE Decode",
+            "pos": [1600, 300],
+            "size": [300, 100],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
+            "inputs": [
+                {"name": "samples", "type": "LATENT", "link": 9},
+                {"name": "vae", "type": "VAE", "link": 4}
+            ],
+            "outputs": [
+                {"name": "IMAGE", "type": "IMAGE", "links": [10]}
+            ],
+            "properties": {"Node name for S&R": "VAEDecode"}
+        },
+        {
+            "id": 8,
+            "type": "SaveImage",
+            "title": "Save Character Sheet",
+            "pos": [1950, 300],
+            "size": [300, 100],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [
+                {"name": "images", "type": "IMAGE", "link": 10}
+            ],
+            "properties": {"Node name for S&R": "SaveImage"},
+            "widgets_values": ["character_sheet_basic_%seed%"]
+        }
+    ],
+    
+    "links": [
+        [1, 1, 0, 6, 0, "MODEL"],
+        [2, 1, 1, 2, 0, "CLIP"],
+        [3, 1, 1, 4, 0, "CLIP"],
+        [4, 1, 2, 7, 1, "VAE"],
+        [5, 2, 0, 3, 0, "CONDITIONING"],
+        [6, 3, 0, 6, 1, "CONDITIONING"],
+        [7, 4, 0, 6, 2, "CONDITIONING"],
+        [8, 5, 0, 6, 3, "LATENT"],
+        [9, 6, 0, 7, 0, "LATENT"],
+        [10, 7, 0, 8, 0, "IMAGE"]
+    ]
+}

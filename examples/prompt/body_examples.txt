@@ -1,0 +1,176 @@
+=== ESEMPI BODY CONTROLLER ===
+
+--- ATLETA MASCHILE ---
+Body type: athletic
+Height: 180 cm
+Weight: 0.8
+Muscle definition: high
+Body fat: low
+Target gender: male
+Descrizione: athletic build, toned physique, visible muscle definition, broad shoulders, defined abs
+
+--- FEMMINA SNELLA ---
+Body type: slim
+Height: 165 cm
+Weight: 0.6
+Muscle definition: low
+Body fat: medium
+Target gender: female
+Descrizione: slim build, slender physique, lean body, thin waist, delicate appearance
+
+--- FEMMINA CURVY ---
+Body type: curvy
+Height: 170 cm
+Weight: 0.7
+Muscle definition: low
+Body fat: high
+Target gender: female
+Descrizione: curvy build, hourglass figure, full bust, wide hips, defined waist, voluptuous curves
+
+--- BODYBUILDER ESTREMO ---
+Body type: muscular
+Height: 185 cm
+Weight: 1.0
+Muscle definition: high
+Body fat: low
+Target gender: male
+Custom: extremely vascular, protruding veins, competition-ready physique
+Descrizione: muscular build, bodybuilder physique, massive pecs, huge arms, thick neck
+
+--- FISICO MEDIO ---
+Body type: average
+Height: 175 cm
+Weight: 0.6
+Muscle definition: medium
+Body fat: medium
+Target gender: unspecified
+Descrizione: average build, normal proportions, healthy body type, balanced physique
+
+--- ATLETA FEMMINILE ---
+Body type: athletic
+Height: 172 cm
+Weight: 0.7
+Muscle definition: medium
+Body fat: low
+Target gender: female
+Descrizione: athletic female build, toned legs, defined waist, athletic curves, fit appearance
+
+--- GAMBE LUNGHE CUSTOM ---
+Body type: slim
+Height: 178 cm
+Weight: 0.6
+Muscle definition: low
+Body fat: medium
+Custom: extra long legs, elegant posture, graceful proportions
+Target gender: female
+Descrizione: tall slender build con gambe particolarmente lunghe
+
+--- MASSICIO ---
+Body type: muscular
+Height: 190 cm
+Weight: 1.2
+Muscle definition: high
+Body fat: medium
+Target gender: male
+Custom: massive frame, thick neck, broad back, powerlifter build
+Descrizione: extremely muscular, powerlifter physique, massive frame
+
+--- MODELLO ALTO ---
+Body type: slim
+Height: 188 cm
+Weight: 0.7
+Muscle definition: low
+Body fat: low
+Target gender: male
+Custom: fashion model proportions, long limbs, elegant thin frame
+Descrizione: tall slim build, model proportions, long legs, thin frame
+
+--- MODELLA VOLTUOSA ---
+Body type: curvy
+Height: 175 cm
+Weight: 0.8
+Muscle definition: low
+Body fat: medium
+Target gender: female
+Custom: glamour model proportions, pronounced curves, full figure
+Descrizione: curvy build, hourglass figure, pronounced curves, full bust
+
+--- CROSSFIT ---
+Body type: athletic
+Height: 178 cm
+Weight: 0.85
+Muscle definition: high
+Body fat: low
+Target gender: unspecified
+Custom: functional fitness build, visible abs, strong core, athletic performance physique
+Descrizione: crossfit athlete build, functional strength, visible muscle definition
+
+--- BALLERINA ---
+Body type: slim
+Height: 168 cm
+Weight: 0.65
+Muscle definition: medium
+Body fat: low
+Target gender: female
+Custom: dancer build, long toned muscles, graceful posture, elegant lines
+Descrizione: ballet dancer physique, lean toned muscles, graceful proportions
+
+--- RUGBY PLAYER ---
+Body type: muscular
+Height: 185 cm
+Weight: 1.1
+Muscle definition: high
+Body fat: medium
+Target gender: male
+Custom: rugby player build, powerful legs, strong shoulders, athletic bulk
+Descrizione: rugby physique, powerful build, strong frame, athletic muscle mass
+
+--- NATURAL BODYBUILDER ---
+Body type: muscular
+Height: 180 cm
+Weight: 0.9
+Muscle definition: high
+Body fat: low
+Target gender: male
+Custom: natural bodybuilder, aesthetic proportions, classic physique
+Descrizione: muscular but aesthetic, classic bodybuilder proportions
+
+--- FITNESS MODEL ---
+Body type: athletic
+Height: 170 cm
+Weight: 0.8
+Muscle definition: high
+Body fat: low
+Target gender: female
+Custom: fitness model build, toned abs, defined shoulders, competition lean
+Descrizione: athletic female, fitness competition shape, visible muscle definition
+
+--- POWERLIFTER ---
+Body type: muscular
+Height: 182 cm
+Weight: 1.3
+Muscle definition: medium
+Body fat: high
+Target gender: male
+Custom: powerlifter build, thick core, massive legs, functional strength
+Descrizione: powerlifting physique, massive strength build, thick powerful frame
+
+--- RUNNER ---
+Body type: slim
+Height: 175 cm
+Weight: 0.5
+Muscle definition: medium
+Body fat: low
+Target gender: unspecified
+Custom: endurance runner build, lean efficient muscles, minimal body fat
+Descrizione: marathon runner physique, lean and efficient, minimal bulk
+
+--- SWIMMER ---
+Body type: athletic
+Height: 183 cm
+Weight: 0.75
+Muscle definition: medium
+Body fat: low
+Target gender: unspecified
+Custom: swimmer build, broad shoulders, V-shape torso, long limbs
+Descrizione: competitive swimmer physique, V-shape, broad shoulders, tall build
