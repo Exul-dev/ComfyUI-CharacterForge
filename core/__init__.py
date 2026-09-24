@@ -34,6 +34,18 @@ from .serialization import (
     entity_from_json,
 )
 
+from .contracts import (
+    EntityContract,
+    ENTITY_CONTRACT,
+)
+
+from .registry import (
+    RegistryError,
+    EntityRegistry,
+    create_default_registry,
+    DEFAULT_REGISTRY,
+)
+
 __all__ = [
     "Entity",
     "Identity",
@@ -55,4 +67,10 @@ __all__ = [
     "entity_to_json",
     "entity_from_dict",
     "entity_from_json",
+    "EntityContract",
+    "ENTITY_CONTRACT",
+    "RegistryError",
+    "EntityRegistry",
+    "create_default_registry",
+    "DEFAULT_REGISTRY",
 ]
