@@ -1,0 +1,171 @@
+﻿"""
+CharacterForge Cinematic
+========================
+
+Bootstrap della libreria cinematografica.
+
+Importa e aggrega tutti i preset dei registi cinematografici
+e i profili tecnici condivisi.
+"""
+
+from .hitchcock import HITCHCOCK_STYLES
+from .kubrick import KUBRICK_STYLES
+from .leone import LEONE_STYLES
+from .coppola import COPPOLA_STYLES
+from .scorsese import SCORSESE_STYLES
+from .spielberg import SPIELBERG_STYLES
+from .fincher import FINCHER_STYLES
+from .nolan import NOLAN_STYLES
+from .villeneuve import VILLENEUVE_STYLES
+from .kurosawa import KUROSAWA_STYLES
+from .bergman import BERGMAN_STYLES
+from .fellini import FELLINI_STYLES
+from .tarkovsky import TARKOVSKY_STYLES
+from .antonioni import ANTONIONI_STYLES
+from .godard import GODARD_STYLES
+from .welles import WELLES_STYLES
+from .ford import FORD_STYLES
+from .wilder import WILDER_STYLES
+from .lean import LEAN_STYLES
+from .bunuel import BUNUEL_STYLES
+from .bresson import BRESSON_STYLES
+from .renoir import RENOIR_STYLES
+from .lynch import LYNCH_STYLES
+from .cameron import CAMERON_STYLES
+from .lucas import LUCAS_STYLES
+from .stone import STONE_STYLES
+from .tarantino import TARANTINO_STYLES
+from .coen import COEN_STYLES
+from .burton import BURTON_STYLES
+from .eastwood import EASTWOOD_STYLES
+from .zemeckis import ZEMECKIS_STYLES
+from .ridley_scott import RIDLEY_SCOTT_STYLES
+from .depalma import DEPALMA_STYLES
+from .wong_kar_wai import WONG_KAR_WAI_STYLES
+from .paul_thomas_anderson import PAUL_THOMAS_ANDERSON_STYLES
+from .aronofsky import ARONOFSKY_STYLES
+from .bong_joon_ho import BONG_JOON_HO_STYLES
+from .guillermo_del_toro import DEL_TORO_STYLES
+from .cuaron import CUARON_STYLES
+from .inarritu import INARRITU_STYLES
+from .gareth_edwards import GARETH_EDWARDS_STYLES
+
+from .normalizer import normalize_cinematic
+
+from .profiles import (
+    SKIN_PROFILES,
+    LIGHTING_PROFILES,
+    LENS_PROFILES,
+    FILM_STOCKS,
+    GRAIN_PROFILES,
+    COLOR_PROFILES,
+    ATMOSPHERE_PROFILES,
+    CAMERA_PROFILES,
+)
+
+CINEMATIC_STYLES = {}
+
+CINEMATIC_STYLES.update(HITCHCOCK_STYLES)
+CINEMATIC_STYLES.update(KUBRICK_STYLES)
+CINEMATIC_STYLES.update(LEONE_STYLES)
+CINEMATIC_STYLES.update(COPPOLA_STYLES)
+CINEMATIC_STYLES.update(SCORSESE_STYLES)
+CINEMATIC_STYLES.update(SPIELBERG_STYLES)
+CINEMATIC_STYLES.update(FINCHER_STYLES)
+CINEMATIC_STYLES.update(NOLAN_STYLES)
+CINEMATIC_STYLES.update(VILLENEUVE_STYLES)
+CINEMATIC_STYLES.update(KUROSAWA_STYLES)
+CINEMATIC_STYLES.update(BERGMAN_STYLES)
+CINEMATIC_STYLES.update(FELLINI_STYLES)
+CINEMATIC_STYLES.update(TARKOVSKY_STYLES)
+CINEMATIC_STYLES.update(ANTONIONI_STYLES)
+CINEMATIC_STYLES.update(GODARD_STYLES)
+CINEMATIC_STYLES.update(WELLES_STYLES)
+CINEMATIC_STYLES.update(FORD_STYLES)
+CINEMATIC_STYLES.update(WILDER_STYLES)
+CINEMATIC_STYLES.update(LEAN_STYLES)
+CINEMATIC_STYLES.update(BUNUEL_STYLES)
+CINEMATIC_STYLES.update(BRESSON_STYLES)
+CINEMATIC_STYLES.update(RENOIR_STYLES)
+CINEMATIC_STYLES.update(LYNCH_STYLES)
+CINEMATIC_STYLES.update(CAMERON_STYLES)
+CINEMATIC_STYLES.update(LUCAS_STYLES)
+CINEMATIC_STYLES.update(STONE_STYLES)
+CINEMATIC_STYLES.update(TARANTINO_STYLES)
+CINEMATIC_STYLES.update(COEN_STYLES)
+CINEMATIC_STYLES.update(BURTON_STYLES)
+CINEMATIC_STYLES.update(EASTWOOD_STYLES)
+CINEMATIC_STYLES.update(ZEMECKIS_STYLES)
+CINEMATIC_STYLES.update(RIDLEY_SCOTT_STYLES)
+CINEMATIC_STYLES.update(DEPALMA_STYLES)
+CINEMATIC_STYLES.update(WONG_KAR_WAI_STYLES)
+CINEMATIC_STYLES.update(PAUL_THOMAS_ANDERSON_STYLES)
+CINEMATIC_STYLES.update(ARONOFSKY_STYLES)
+CINEMATIC_STYLES.update(BONG_JOON_HO_STYLES)
+CINEMATIC_STYLES.update(DEL_TORO_STYLES)
+CINEMATIC_STYLES.update(CUARON_STYLES)
+CINEMATIC_STYLES.update(INARRITU_STYLES)
+CINEMATIC_STYLES.update(GARETH_EDWARDS_STYLES)
+
+# Normalizzazione canonica V3 di tutti i preset cinematici
+CINEMATIC_STYLES = {
+    preset_id: normalize_cinematic(preset_id, preset)
+    for preset_id, preset in CINEMATIC_STYLES.items()
+}
+
+__all__ = [
+    "CINEMATIC_STYLES",
+
+    "HITCHCOCK_STYLES",
+    "KUBRICK_STYLES",
+    "LEONE_STYLES",
+    "COPPOLA_STYLES",
+    "SCORSESE_STYLES",
+    "SPIELBERG_STYLES",
+    "FINCHER_STYLES",
+    "NOLAN_STYLES",
+    "VILLENEUVE_STYLES",
+    "KUROSAWA_STYLES",
+    "BERGMAN_STYLES",
+    "FELLINI_STYLES",
+    "TARKOVSKY_STYLES",
+    "ANTONIONI_STYLES",
+    "GODARD_STYLES",
+    "WELLES_STYLES",
+    "FORD_STYLES",
+    "WILDER_STYLES",
+    "LEAN_STYLES",
+    "BUNUEL_STYLES",
+    "BRESSON_STYLES",
+    "RENOIR_STYLES",
+    "LYNCH_STYLES",
+    "CAMERON_STYLES",
+    "LUCAS_STYLES",
+    "STONE_STYLES",
+    "TARANTINO_STYLES",
+    "COEN_STYLES",
+    "BURTON_STYLES",
+    "EASTWOOD_STYLES",
+    "ZEMECKIS_STYLES",
+    "RIDLEY_SCOTT_STYLES",
+    "DEPALMA_STYLES",
+    "WONG_KAR_WAI_STYLES",
+    "PAUL_THOMAS_ANDERSON_STYLES",
+    "ARONOFSKY_STYLES",
+    "BONG_JOON_HO_STYLES",
+    "DEL_TORO_STYLES",
+    "CUARON_STYLES",
+    "INARRITU_STYLES",
+    "GARETH_EDWARDS_STYLES",
+
+    "SKIN_PROFILES",
+    "LIGHTING_PROFILES",
+    "LENS_PROFILES",
+    "FILM_STOCKS",
+    "GRAIN_PROFILES",
+    "COLOR_PROFILES",
+    "ATMOSPHERE_PROFILES",
+    "CAMERA_PROFILES",
+]
+
+

@@ -1,14 +1,10 @@
-"""
+﻿"""
 CharacterForge Body Controller
 ===============================
 
 Controllo corporatura per character sheet.
 Gestisce tipo fisico, altezza, definizione muscolare,
 percentuale di grasso corporeo e proporzioni.
-
-Il nodo modifica il conditioning applicando descrizioni
-fisiche dettagliate per ottenere character sheet coerenti
-con le specifiche corporatura richieste.
 """
 
 import torch
@@ -184,19 +180,6 @@ class CharacterForgeBodyController:
                           custom_proportions="", target_gender="unspecified"):
         """
         Applica controllo corporatura al conditioning.
-        
-        Args:
-            conditioning: Conditioning base del workflow
-            body_type: Tipo di corporatura
-            height: Altezza in cm
-            weight: Peso applicazione (0.0-1.5)
-            muscle_definition: Livello definizione muscolare
-            body_fat: Percentuale grasso corporeo
-            custom_proportions: Proporzioni custom aggiuntive
-            target_gender: Genere per descrizioni specifiche
-            
-        Returns:
-            tuple: (conditioning modificato, dettagli corporatura)
         """
         # Validazione input
         if not conditioning:
@@ -211,10 +194,10 @@ class CharacterForgeBodyController:
         if body_fat not in self.BODY_FAT_LEVELS:
             raise ValueError(f"Livello grasso corporeo '{body_fat}' non riconosciuto")
         
-        # Verifica compatibilità altezza con tipo corporatura
+        # Verifica compatibilitÃ  altezza con tipo corporatura
         height_range = self.BODY_DATABASE[body_type]["height_range"]
         if height < height_range["min"] or height > height_range["max"]:
-            # Non è un errore, ma avvisa nel log
+            # Non Ã¨ un errore, ma avvisa nel log
             print(f"[BodyController] Warning: Altezza {height}cm fuori range tipico "
                   f"per {body_type} ({height_range['min']}-{height_range['max']}cm)")
         
@@ -251,35 +234,12 @@ class CharacterForgeBodyController:
                     "proportions": self.BODY_DATABASE[body_type]["proportions"]
                 }
                 
-                # Applica il peso al conditioning tensor
-                if isinstance(cond_tensor, torch.Tensor):
-                    # Peso base corporatura
-                    safe_weight = max(0.0, min(weight, 1.5))
-                    modified_tensor = cond_tensor * safe_weight
-                    
-                    # Modifiche specifiche per definizione muscolare
-                    if muscle_definition == "high":
-                        # Aumenta "contrasto" nel conditioning per definizione
-                        muscle_boost = 1.15
-                        modified_tensor = modified_tensor * muscle_boost
-                    elif muscle_definition == "low":
-                        # Riduce "contrasto" per muscolatura morbida
-                        muscle_reduce = 0.85
-                        modified_tensor = modified_tensor * muscle_reduce
-                    
-                    # Modifiche per grasso corporeo
-                    if body_fat == "high":
-                        # Condizionamento più "morbido" per più grasso
-                        soft_factor = 0.95
-                        modified_tensor = modified_tensor * soft_factor
-                    elif body_fat == "low":
-                        # Condizionamento più "definito" per meno grasso
-                        definition_boost = 1.05
-                        modified_tensor = modified_tensor * definition_boost
-                        
-                else:
-                    modified_tensor = cond_tensor
-                
+                # IMPORTANTE:
+                # Questo controller non riceve un CLIP encoder, quindi non puo' aggiungere
+                # il proprio prompt testuale al conditioning in modo corretto.
+                # Manteniamo intatto il conditioning ricevuto per non alterare lo stile.
+                modified_tensor = cond_tensor
+
                 modified_conditioning.append([modified_tensor, modified_dict])
             else:
                 # Format non riconosciuto, mantieni invariato
@@ -302,17 +262,6 @@ class CharacterForgeBodyController:
                           body_fat, custom_props="", target_gender="unspecified"):
         """
         Costruisce prompt completo per corporatura.
-        
-        Args:
-            body_type: Tipo corporatura
-            height: Altezza in cm
-            muscle_def: Definizione muscolare
-            body_fat: Grasso corporeo
-            custom_props: Proporzioni custom
-            target_gender: Genere target
-            
-        Returns:
-            str: Prompt corporatura completo
         """
         body_data = self.BODY_DATABASE[body_type]
         
@@ -357,12 +306,6 @@ class CharacterForgeBodyController:
     def _categorize_height(self, height):
         """
         Categorizza l'altezza in descrizioni standard.
-        
-        Args:
-            height: Altezza in cm
-            
-        Returns:
-            str: Categoria altezza
         """
         if height < 160:
             return "short"
@@ -382,6 +325,7 @@ class CharacterForgeBodyController:
         Genera dettagli formattati delle caratteristiche corporatura applicate.
         """
         body_data = self.BODY_DATABASE[body_type]
+        height_range = body_data["height_range"]  # âœ… DEFINITA QUI!
         
         details = {
             "controller": "BodyController",

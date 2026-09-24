@@ -1,241 +1,393 @@
 {
-    "name": "CharacterForge Advanced Features",
-    "description": "Workflow completo con tutte le funzionalità: LoRA stili, IPAdapter, controlli granulari",
-    "version": "2.0.0",
-    "author": "Massimo Bivona",
-    
+    "last_node_id": 20,
+    "last_link_id": 24,
     "nodes": [
         {
             "id": 1,
-            "type": "CheckpointLoaderSimple",
-            "title": "Load Checkpoint",
+            "type": "UNETLoader",
+            "title": "Load Krea2 UNET",
             "pos": [50, 400],
-            "size": [320, 100],
+            "size": [350, 100],
+            "flags": {},
+            "order": 0,
+            "mode": 0,
+            "inputs": [],
             "outputs": [
-                {"name": "MODEL", "type": "MODEL", "links": [1]},
-                {"name": "CLIP", "type": "CLIP", "links": [2, 3]},
-                {"name": "VAE", "type": "VAE", "links": [4, 5]}
+                {"name": "MODEL", "type": "MODEL", "links": [1], "slot_index": 0}
             ],
-            "widgets_values": ["flux1-dev.safetensors"]
+            "properties": {"Node name for S&R": "UNETLoader"},
+            "widgets_values": ["krea2.safetensors", "default"]
         },
         {
             "id": 2,
-            "type": "LoraLoader",
-            "title": "LoRA Character Sheet Base",
+            "type": "CLIPLoader",
+            "title": "Load CLIP (Krea2)",
             "pos": [50, 550],
-            "size": [320, 130],
-            "inputs": [{"name": "model", "type": "MODEL", "link": 1}],
+            "size": [350, 100],
+            "flags": {},
+            "order": 1,
+            "mode": 0,
+            "inputs": [],
             "outputs": [
-                {"name": "MODEL", "type": "MODEL", "links": [6]},
-                {"name": "CLIP", "type": "CLIP", "links": [7]}
+                {"name": "CLIP", "type": "CLIP", "links": [2, 25], "slot_index": 0}
             ],
-            "widgets_values": ["character_sheet_v2.safetensors", 0.8, 0.8]
+            "properties": {"Node name for S&R": "CLIPLoader"},
+            "widgets_values": ["clip_l.safetensors", "flux"]
         },
         {
             "id": 3,
-            "type": "LoraLoader",
-            "title": "LoRA Stile Aggiuntivo",
-            "pos": [50, 720],
-            "size": [320, 130],
-            "inputs": [{"name": "model", "type": "MODEL", "link": 6}],
+            "type": "VAELoader",
+            "title": "Load VAE (Krea2)",
+            "pos": [50, 700],
+            "size": [350, 100],
+            "flags": {},
+            "order": 2,
+            "mode": 0,
+            "inputs": [],
             "outputs": [
-                {"name": "MODEL", "type": "MODEL", "links": [8]},
-                {"name": "CLIP", "type": "CLIP", "links": [9]}
+                {"name": "VAE", "type": "VAE", "links": [4, 5], "slot_index": 0}
             ],
-            "widgets_values": ["cinematic_realistic.safetensors", 0.5, 0.5]
+            "properties": {"Node name for S&R": "VAELoader"},
+            "widgets_values": ["vae-ft-mse-840000-ema-pruned.safetensors"]
         },
         {
             "id": 4,
-            "type": "LoadImage",
-            "title": "RIFERIMENTO (Opzionale)",
-            "pos": [50, 100],
-            "size": [300, 400],
+            "type": "LoraLoader",
+            "title": "LoRA Character Sheet Base",
+            "pos": [50, 850],
+            "size": [320, 130],
+            "flags": {},
+            "order": 3,
+            "mode": 0,
+            "inputs": [
+                {"name": "model", "type": "MODEL", "link": 1},
+                {"name": "clip", "type": "CLIP", "link": 25}
+            ],
             "outputs": [
-                {"name": "IMAGE", "type": "IMAGE", "links": [10, 11]},
-                {"name": "MASK", "type": "MASK", "links": null}
-            ]
+                {"name": "MODEL", "type": "MODEL", "links": [6], "slot_index": 0},
+                {"name": "CLIP", "type": "CLIP", "links": [26], "slot_index": 1}
+            ],
+            "properties": {"Node name for S&R": "LoraLoader"},
+            "widgets_values": ["character_sheet_v2.safetensors", 0.8, 0.8]
         },
         {
             "id": 5,
-            "type": "VAEEncode",
-            "title": "VAE Encode",
-            "pos": [400, 100],
-            "size": [300, 100],
+            "type": "LoraLoader",
+            "title": "LoRA Stile Aggiuntivo",
+            "pos": [50, 1020],
+            "size": [320, 130],
+            "flags": {},
+            "order": 4,
+            "mode": 0,
             "inputs": [
-                {"name": "pixels", "type": "IMAGE", "link": 10},
-                {"name": "vae", "type": "VAE", "link": 4}
+                {"name": "model", "type": "MODEL", "link": 6},
+                {"name": "clip", "type": "CLIP", "link": 26}
             ],
-            "outputs": [{"name": "LATENT", "type": "LATENT", "links": [12]}]
+            "outputs": [
+                {"name": "MODEL", "type": "MODEL", "links": [7], "slot_index": 0},
+                {"name": "CLIP", "type": "CLIP", "links": [27], "slot_index": 1}
+            ],
+            "properties": {"Node name for S&R": "LoraLoader"},
+            "widgets_values": ["cinematic_realistic.safetensors", 0.5, 0.5]
         },
         {
             "id": 6,
-            "type": "EmptyLatentImage",
-            "title": "Latent Text",
-            "pos": [400, 250],
-            "size": [300, 100],
-            "outputs": [{"name": "LATENT", "type": "LATENT", "links": [13]}],
-            "widgets_values": [2048, 1024, 1]
+            "type": "LoadImage",
+            "title": "RIFERIMENTO (Image Mode)",
+            "pos": [50, 100],
+            "size": [300, 400],
+            "flags": {},
+            "order": 5,
+            "mode": 0,
+            "inputs": [],
+            "outputs": [
+                {"name": "IMAGE", "type": "IMAGE", "links": [8, 10], "slot_index": 0},
+                {"name": "MASK", "type": "MASK", "links": null, "slot_index": 1}
+            ],
+            "properties": {"Node name for S&R": "LoadImage"},
+            "widgets_values": ["reference_image.jpg", "image"]
         },
         {
             "id": 7,
-            "type": "CharacterForgeHybridLatentSwitch",
-            "title": "SWITCH MODALITÀ",
-            "pos": [750, 150],
-            "size": [400, 150],
+            "type": "VAEEncode",
+            "title": "VAE Encode (Image-to-Latent)",
+            "pos": [400, 100],
+            "size": [300, 100],
+            "flags": {},
+            "order": 6,
+            "mode": 0,
             "inputs": [
-                {"name": "mode", "type": "COMBO", "link": null},
-                {"name": "text_latent", "type": "LATENT", "link": 13},
-                {"name": "image_latent", "type": "LATENT", "link": 12},
-                {"name": "image_reference", "type": "IMAGE", "link": 11}
+                {"name": "pixels", "type": "IMAGE", "link": 8},
+                {"name": "vae", "type": "VAE", "link": 4}
             ],
             "outputs": [
-                {"name": "selected_latent", "type": "LATENT", "links": [14]},
-                {"name": "active_mode_info", "type": "STRING", "links": null}
+                {"name": "LATENT", "type": "LATENT", "links": [11], "slot_index": 0}
             ],
-            "widgets_values": ["text_to_sheet", true, false]
+            "properties": {"Node name for S&R": "VAEEncode"},
+            "widgets_values": []
         },
         {
             "id": 8,
-            "type": "IPAdapterUnifiedLoader",
-            "title": "IPAdapter Loader",
-            "pos": [750, 350],
-            "size": [350, 100],
-            "inputs": [{"name": "model", "type": "MODEL", "link": 8}],
+            "type": "EmptySD3LatentImage",
+            "title": "Latent Krea2 (2048x1024)",
+            "pos": [400, 250],
+            "size": [300, 100],
+            "flags": {},
+            "order": 7,
+            "mode": 0,
+            "inputs": [],
             "outputs": [
-                {"name": "model", "type": "MODEL", "links": [15]},
-                {"name": "ipadapter", "type": "IPADAPTER", "links": [16]}
-            ]
+                {"name": "LATENT", "type": "LATENT", "links": [12], "slot_index": 0}
+            ],
+            "properties": {"Node name for S&R": "EmptySD3LatentImage"},
+            "widgets_values": [2048, 1024, 1]
         },
         {
             "id": 9,
-            "type": "IPAdapter",
-            "title": "Applica Identità",
-            "pos": [1150, 350],
-            "size": [350, 300],
+            "type": "CharacterForgeHybridLatentSwitch",
+            "title": "SWITCH MODALITÀ (Text/Image)",
+            "pos": [750, 150],
+            "size": [400, 150],
+            "flags": {},
+            "order": 8,
+            "mode": 0,
             "inputs": [
-                {"name": "ipadapter", "type": "IPADAPTER", "link": 16},
-                {"name": "image", "type": "IMAGE", "link": 11},
-                {"name": "model", "type": "MODEL", "link": 15}
+                {"name": "text_latent", "type": "LATENT", "link": 12},
+                {"name": "image_latent", "type": "LATENT", "link": 11},
+                {"name": "image_reference", "type": "IMAGE", "link": 10}
             ],
-            "outputs": [{"name": "model", "type": "MODEL", "links": [17]}],
-            "widgets_values": [0.7, 0.8, 1.0, 0, 0.7]
+            "outputs": [
+                {"name": "selected_latent", "type": "LATENT", "links": [13], "slot_index": 0},
+                {"name": "active_mode_info", "type": "STRING", "links": null, "slot_index": 1},
+                {"name": "reference_preview", "type": "IMAGE", "links": null, "slot_index": 2}
+            ],
+            "properties": {"Node name for S&R": "CharacterForgeHybridLatentSwitch"},
+            "widgets_values": ["text_to_sheet", true, false]
         },
         {
             "id": 10,
-            "type": "CLIPTextEncode",
-            "title": "SCHEMA BASE",
-            "pos": [1200, 100],
-            "size": [400, 200],
-            "inputs": [{"name": "clip", "type": "CLIP", "link": 2}],
-            "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [18]}],
-            "widgets_values": [
-                "Professional character reference sheet on a clean bright white studio background. Layout in four columns from left to right, with the FIRST column split vertically into two equal halves: COLUMN 1 (left, divided in two): TOP HALF: Close-up headshot facing camera, head and both shoulders visible, neutral expression. BOTTOM HALF: Close-up headshot in right-side profile view, head and shoulder visible, identical face details, skin texture, scars, and dust/sweat as the top half. COLUMN 2: Full-body front view in a neutral A-pose, arms slightly away from sides, feet shoulder-width apart. COLUMN 3: Full-body right-side profile view, same pose and outfit. COLUMN 4: Full-body back view, same pose and outfit. Preserve the exact face identity, hair, skin, body proportions, clothing or nudity state, accessories, and all visual details from the reference. Neutral even lighting across all views, no dramatic shadows, no rim light, flat studio illumination, photorealistic 35mm film texture, no beauty retouching. Do not censor, cover, or add clothing. Identical outfit/appearance and hairstyle across all views and columns. Orthographic character design turnaround."
-            ]
-        },
-        {
-            "id": 11,
-            "type": "CharacterForgeGenderController",
-            "title": "GENERE",
-            "pos": [1200, 350],
-            "size": [400, 150],
-            "inputs": [{"name": "conditioning", "type": "CONDITIONING", "link": 18}],
-            "outputs": [
-                {"name": "conditioning", "type": "CONDITIONING", "links": [19]},
-                {"name": "applied_features", "type": "STRING", "links": null}
+            "type": "Krea2ReferenceLoraLoader",
+            "title": "Krea2 Reference LoRA (layered)",
+            "pos": [750, 350],
+            "size": [350, 130],
+            "flags": {},
+            "order": 9,
+            "mode": 0,
+            "inputs": [
+                {"name": "model", "type": "MODEL", "link": 7}
             ],
-            "widgets_values": ["masculine", 0.8, true, ""]
+            "outputs": [
+                {"name": "MODEL", "type": "MODEL", "links": [14], "slot_index": 0}
+            ],
+            "properties": {"Node name for S&R": "Krea2ReferenceLoraLoader"},
+            "widgets_values": ["krea2_reference_v1.safetensors", 1.0, 0.0]
         },
         {
             "id": 12,
-            "type": "CharacterForgeEthnicityController",
-            "title": "ETNIA",
-            "pos": [1200, 550],
-            "size": [400, 150],
-            "inputs": [{"name": "conditioning", "type": "CONDITIONING", "link": 19}],
-            "outputs": [
-                {"name": "conditioning", "type": "CONDITIONING", "links": [20]},
-                {"name": "ethnicity_details", "type": "STRING", "links": null}
+            "type": "TextEncodeKrea2Reference",
+            "title": "Krea2 Reference Encode (Schema + Identità)",
+            "pos": [1200, 100],
+            "size": [400, 300],
+            "flags": {},
+            "order": 11,
+            "mode": 0,
+            "inputs": [
+                {"name": "clip", "type": "CLIP", "link": 27},
+                {"name": "image1", "type": "IMAGE", "link": 10}
             ],
-            "widgets_values": ["caucasian", "none", 0.6, "", ""]
+            "outputs": [
+                {"name": "CONDITIONING", "type": "CONDITIONING", "links": [17], "slot_index": 0}
+            ],
+            "properties": {"Node name for S&R": "TextEncodeKrea2Reference"},
+            "widgets_values": [
+                "The character from Picture 1, professional character reference sheet on a clean bright white studio background. Layout in four columns from left to right, with the FIRST column split vertically into two equal halves: COLUMN 1 (left, divided in two): TOP HALF: Close-up headshot facing camera, head and both shoulders visible, neutral expression. BOTTOM HALF: Close-up headshot in right-side profile view, head and shoulder visible, identical face details. COLUMN 2: Full-body front view in a neutral A-pose, arms slightly away from sides, feet shoulder-width apart. COLUMN 3: Full-body right-side profile view, same pose and outfit. COLUMN 4: Full-body back view, same pose and outfit. Preserve the exact face identity, hair, skin, body proportions from Picture 1. Identical appearance across all views. Neutral even lighting, flat studio illumination, photorealistic 35mm film texture.",
+                "high"
+            ]
         },
         {
             "id": 13,
-            "type": "CharacterForgeBodyController",
-            "title": "CORPORATURA",
-            "pos": [1200, 750],
+            "type": "CharacterForgeGenderController",
+            "title": "GENERE (masculine, w:0.8)",
+            "pos": [1200, 450],
             "size": [400, 150],
-            "inputs": [{"name": "conditioning", "type": "CONDITIONING", "link": 20}],
-            "outputs": [
-                {"name": "conditioning", "type": "CONDITIONING", "links": [21]},
-                {"name": "body_details", "type": "STRING", "links": null}
+            "flags": {},
+            "order": 12,
+            "mode": 0,
+            "inputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "link": 17}
             ],
-            "widgets_values": ["athletic", 175.0, 0.7, "medium", "medium", "", "unspecified"]
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [18], "slot_index": 0},
+                {"name": "applied_features", "type": "STRING", "links": null, "slot_index": 1}
+            ],
+            "properties": {"Node name for S&R": "CharacterForgeGenderController"},
+            "widgets_values": ["masculine", 0.8, true, ""]
         },
         {
             "id": 14,
-            "type": "CharacterForgeWeightedConditioning",
-            "title": "COMBINAZIONE",
-            "pos": [1650, 200],
-            "size": [400, 200],
+            "type": "CharacterForgeEthnicityController",
+            "title": "ETNIA (caucasian, w:0.6)",
+            "pos": [1200, 650],
+            "size": [400, 150],
+            "flags": {},
+            "order": 13,
+            "mode": 0,
             "inputs": [
-                {"name": "base_conditioning", "type": "CONDITIONING", "link": 18},
-                {"name": "conditioning_1", "type": "CONDITIONING", "link": 19},
-                {"name": "conditioning_2", "type": "CONDITIONING", "link": 20},
-                {"name": "conditioning_3", "type": "CONDITIONING", "link": 21}
+                {"name": "conditioning", "type": "CONDITIONING", "link": 18}
             ],
             "outputs": [
-                {"name": "conditioning", "type": "CONDITIONING", "links": [22]},
-                {"name": "combination_info", "type": "STRING", "links": null}
+                {"name": "conditioning", "type": "CONDITIONING", "links": [19], "slot_index": 0},
+                {"name": "ethnicity_details", "type": "STRING", "links": null, "slot_index": 1}
             ],
-            "widgets_values": [0.8, 0.6, 0.7, "blend", true, 0.5]
+            "properties": {"Node name for S&R": "CharacterForgeEthnicityController"},
+            "widgets_values": ["caucasian", "none", 0.6, "", ""]
         },
         {
             "id": 15,
+            "type": "CharacterForgeBodyController",
+            "title": "CORPORATURA (athletic, 175cm)",
+            "pos": [1200, 850],
+            "size": [400, 150],
+            "flags": {},
+            "order": 14,
+            "mode": 0,
+            "inputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "link": 19}
+            ],
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [20], "slot_index": 0},
+                {"name": "body_details", "type": "STRING", "links": null, "slot_index": 1}
+            ],
+            "properties": {"Node name for S&R": "CharacterForgeBodyController"},
+            "widgets_values": ["athletic", 175.0, 0.7, "medium", "medium", "", "unspecified"]
+        },
+        {
+            "id": 16,
+            "type": "CharacterForgeWeightedConditioning",
+            "title": "COMBINAZIONE WEIGHTED (blend)",
+            "pos": [1650, 200],
+            "size": [400, 200],
+            "flags": {},
+            "order": 15,
+            "mode": 0,
+            "inputs": [
+                {"name": "base_conditioning", "type": "CONDITIONING", "link": 17},
+                {"name": "conditioning_1", "type": "CONDITIONING", "link": 18},
+                {"name": "conditioning_2", "type": "CONDITIONING", "link": 19},
+                {"name": "conditioning_3", "type": "CONDITIONING", "link": 20}
+            ],
+            "outputs": [
+                {"name": "conditioning", "type": "CONDITIONING", "links": [21], "slot_index": 0},
+                {"name": "combination_info", "type": "STRING", "links": null, "slot_index": 1}
+            ],
+            "properties": {"Node name for S&R": "CharacterForgeWeightedConditioning"},
+            "widgets_values": [0.8, 0.6, 0.7, "blend", true, 0.5]
+        },
+        {
+            "id": 17,
             "type": "CLIPTextEncode",
             "title": "NEGATIVE PROMPT",
-            "pos": [1200, 950],
+            "pos": [1200, 1050],
             "size": [400, 200],
-            "inputs": [{"name": "clip", "type": "CLIP", "link": 3}],
-            "outputs": [{"name": "CONDITIONING", "type": "CONDITIONING", "links": [23]}],
+            "flags": {},
+            "order": 16,
+            "mode": 0,
+            "inputs": [
+                {"name": "clip", "type": "CLIP", "link": 3}
+            ],
+            "outputs": [
+                {"name": "CONDITIONING", "type": "CONDITIONING", "links": [22], "slot_index": 0}
+            ],
+            "properties": {"Node name for S&R": "CLIPTextEncode"},
             "widgets_values": [
                 "cartoon, anime, illustration, 3D render, CGI, blurry, low quality, deformed, extra limbs, bad anatomy, extra fingers, missing fingers, watermark, text, signature, cropped, out of frame, duplicate, split image, collage, multiple people, inconsistent character, changing appearance, inconsistent lighting, dramatic shadows, rim light, beauty retouching, smooth plastic skin, identity not preserved, face changed, different person, multiple different women, group of women, several models, different faces"
             ]
         },
         {
-            "id": 16,
+            "id": 18,
             "type": "KSampler",
-            "title": "KSampler Ottimizzato",
+            "title": "KSampler (Krea2 Ottimizzato)",
             "pos": [2100, 300],
             "size": [350, 400],
+            "flags": {},
+            "order": 17,
+            "mode": 0,
             "inputs": [
-                {"name": "model", "type": "MODEL", "link": 17},
-                {"name": "positive", "type": "CONDITIONING", "link": 22},
-                {"name": "negative", "type": "CONDITIONING", "link": 23},
-                {"name": "latent_image", "type": "LATENT", "link": 14}
+                {"name": "model", "type": "MODEL", "link": 14},
+                {"name": "positive", "type": "CONDITIONING", "link": 21},
+                {"name": "negative", "type": "CONDITIONING", "link": 22},
+                {"name": "latent_image", "type": "LATENT", "link": 13}
             ],
-            "outputs": [{"name": "LATENT", "type": "LATENT", "links": [24]}],
+            "outputs": [
+                {"name": "LATENT", "type": "LATENT", "links": [23], "slot_index": 0}
+            ],
+            "properties": {"Node name for S&R": "KSampler"},
             "widgets_values": [123456789, "randomize", 30, 5.0, "dpmpp_2m", "karras", 0.7]
         },
         {
-            "id": 17,
+            "id": 19,
             "type": "VAEDecode",
             "title": "VAE Decode",
             "pos": [2500, 300],
             "size": [300, 100],
+            "flags": {},
+            "order": 18,
+            "mode": 0,
             "inputs": [
-                {"name": "samples", "type": "LATENT", "link": 24},
+                {"name": "samples", "type": "LATENT", "link": 23},
                 {"name": "vae", "type": "VAE", "link": 5}
             ],
-            "outputs": [{"name": "IMAGE", "type": "IMAGE", "links": [25]}]
+            "outputs": [
+                {"name": "IMAGE", "type": "IMAGE", "links": [24], "slot_index": 0}
+            ],
+            "properties": {"Node name for S&R": "VAEDecode"},
+            "widgets_values": []
         },
         {
-            "id": 18,
+            "id": 20,
             "type": "SaveImage",
             "title": "Save Character Sheet",
             "pos": [2850, 300],
             "size": [300, 100],
-            "inputs": [{"name": "images", "type": "IMAGE", "link": 25}],
-            "widgets_values": ["character_sheet_advanced_%seed%"]
+            "flags": {},
+            "order": 19,
+            "mode": 0,
+            "inputs": [
+                {"name": "images", "type": "IMAGE", "link": 24}
+            ],
+            "outputs": [],
+            "properties": {"Node name for S&R": "SaveImage"},
+            "widgets_values": ["character_sheet_krea2_%seed%"]
         }
-    ]
+    ],
+    "links": [
+        [1, 1, 0, 4, 0, "MODEL"],
+        [2, 2, 0, 12, 0, "CLIP"],
+        [3, 2, 0, 17, 0, "CLIP"],
+        [4, 3, 0, 7, 1, "VAE"],
+        [5, 3, 0, 19, 1, "VAE"],
+        [6, 4, 0, 5, 0, "MODEL"],
+        [7, 5, 0, 10, 0, "MODEL"],
+        [8, 6, 0, 7, 0, "IMAGE"],
+        [10, 6, 0, 12, 1, "IMAGE"],
+        [11, 7, 0, 9, 1, "LATENT"],
+        [12, 8, 0, 9, 0, "LATENT"],
+        [13, 9, 0, 18, 3, "LATENT"],
+        [14, 10, 0, 18, 0, "MODEL"],
+        [17, 12, 0, 13, 0, "CONDITIONING"],
+        [18, 13, 0, 14, 0, "CONDITIONING"],
+        [19, 14, 0, 15, 0, "CONDITIONING"],
+        [20, 15, 0, 16, 3, "CONDITIONING"],
+        [21, 16, 0, 18, 1, "CONDITIONING"],
+        [22, 17, 0, 18, 2, "CONDITIONING"],
+        [23, 18, 0, 19, 0, "LATENT"],
+        [24, 19, 0, 20, 0, "IMAGE"],
+        [25, 2, 0, 4, 1, "CLIP"],
+        [26, 4, 1, 5, 1, "CLIP"],
+        [27, 5, 1, 12, 0, "CLIP"]
+    ],
+    "groups": [],
+    "config": {},
+    "extra": {},
+    "version": 0.4
 }

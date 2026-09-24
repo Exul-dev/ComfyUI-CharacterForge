@@ -1,0 +1,417 @@
+﻿============================================================
+CHARACTERFORGE BASELINE
+============================================================
+Data: 2026-09-24 12:22:57
+Root: D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge
+
+=== GIT ===
+main
+HEAD:
+02b0127 Initial commit: ComfyUI-CharacterForge v2.0.0
+
+STATUS:
+ M __init__.py
+ M nodes/__init__.py
+ M nodes/body_controller.py
+ M nodes/ethnicity_controller.py
+ M nodes/gender_controller.py
+ M workflows/advanced_features.json
+?? __pycache__/
+?? docs/01_Visione_e_Architettura.md
+?? docs/02_Style_Engine.md
+?? docs/03_Human_Engine.md
+?? docs/04_Creature_Engine.md
+?? docs/05_Object_Technology_Engine.md
+?? docs/06_Nature_Matter_Engine.md
+?? docs/07_Environment_World_Engine.md
+?? docs/08_Camera_Cinematography_Engine.md
+?? docs/09_Transformation_Engine.md
+?? docs/10_Reference_Sheet_System.md
+?? docs/11_ComfyUI_Implementation.md
+?? docs/12_Roadmap.md
+?? nodes/LoRAStyleCombinator.py
+?? nodes/__pycache__/
+?? nodes/_backup_conditioning_fix_20260923/
+?? nodes/lora_style_combinator.py
+?? nodes/scene_interrogator.py
+?? nodes/scene_interrogator.py.bak_florence_mtmd_20260923
+?? nodes/style_transfer_node.py
+?? nodes/style_transfer_node.py.bak_style_engine_20260924
+?? preset_styles/
+?? tests/validate_cinematic.py
+?? workflows/changetyle.json
+?? workflows/restyle.json
+
+=== PYTHON ===
+Python 3.14.7
+
+=== FILES TOP LEVEL ===
+DIR  .git
+FILE __init__.py
+DIR  __pycache__
+DIR  config
+DIR  docs
+DIR  examples
+FILE LICENSE
+DIR  nodes
+DIR  preset_styles
+FILE README.md
+FILE requirements.txt
+DIR  tests
+DIR  workflows
+
+=== PYTHON FILES ===
+112 lines	__init__.py
+135 lines	nodes\__init__.py
+387 lines	nodes\_backup_conditioning_fix_20260923\body_controller.py
+287 lines	nodes\_backup_conditioning_fix_20260923\ethnicity_controller.py
+182 lines	nodes\_backup_conditioning_fix_20260923\gender_controller.py
+363 lines	nodes\body_controller.py
+275 lines	nodes\ethnicity_controller.py
+177 lines	nodes\gender_controller.py
+329 lines	nodes\hybrid_switch.py
+379 lines	nodes\lora_style_combinator.py
+379 lines	nodes\LoRAStyleCombinator.py
+303 lines	nodes\scene_interrogator.py
+584 lines	nodes\style_transfer_node.py
+594 lines	nodes\weighted_conditioning.py
+167 lines	preset_styles\__init__.py
+549 lines	preset_styles\anime\__init__.py
+46 lines	preset_styles\anime\a1_pictures.py
+44 lines	preset_styles\anime\adieu_galaxy_express.py
+44 lines	preset_styles\anime\akira_toriyama_dragon_ball_z.py
+48 lines	preset_styles\anime\anime_2000s.py
+50 lines	preset_styles\anime\anime_90s_classic.py
+49 lines	preset_styles\anime\anime_cinematic.py
+49 lines	preset_styles\anime\anime_modern.py
+45 lines	preset_styles\anime\arakawa_hiromu.py
+49 lines	preset_styles\anime\araki.py
+46 lines	preset_styles\anime\asano.py
+47 lines	preset_styles\anime\bones.py
+47 lines	preset_styles\anime\chibi_style.py
+44 lines	preset_styles\anime\city_hunter.py
+48 lines	preset_styles\anime\clamp.py
+44 lines	preset_styles\anime\comedy_pure.py
+44 lines	preset_styles\anime\cyberpunk_classic.py
+46 lines	preset_styles\anime\cyberpunk_modern.py
+45 lines	preset_styles\anime\deen.py
+43 lines	preset_styles\anime\ecchi_modern.py
+43 lines	preset_styles\anime\eight_bit.py
+46 lines	preset_styles\anime\fujimoto_tatsuki.py
+46 lines	preset_styles\anime\gainax.py
+78 lines	preset_styles\anime\galaxy_express_999.py
+43 lines	preset_styles\anime\gege_akutami.py
+52 lines	preset_styles\anime\ghibli.py
+47 lines	preset_styles\anime\go_nagai.py
+47 lines	preset_styles\anime\gonzo.py
+45 lines	preset_styles\anime\hagiwara.py
+44 lines	preset_styles\anime\harem.py
+44 lines	preset_styles\anime\hayashida_q.py
+42 lines	preset_styles\anime\hentai.py
+46 lines	preset_styles\anime\hideaki_anno.py
+45 lines	preset_styles\anime\hino_hideshi.py
+45 lines	preset_styles\anime\historical.py
+50 lines	preset_styles\anime\horror_anime.py
+48 lines	preset_styles\anime\inoue.py
+50 lines	preset_styles\anime\isekai_fantasy.py
+45 lines	preset_styles\anime\ishida_sui.py
+47 lines	preset_styles\anime\ito_junji.py
+44 lines	preset_styles\anime\jc_staff.py
+45 lines	preset_styles\anime\kaiju_monster.py
+46 lines	preset_styles\anime\ken_akamatsu.py
+45 lines	preset_styles\anime\kim_jung_gi.py
+46 lines	preset_styles\anime\kishimoto.py
+47 lines	preset_styles\anime\kon_satoshi.py
+43 lines	preset_styles\anime\koyoharu_gotouge.py
+46 lines	preset_styles\anime\kubo.py
+45 lines	preset_styles\anime\kubo_tite_detailed.py
+47 lines	preset_styles\anime\kyoto_animation.py
+44 lines	preset_styles\anime\leiji_matsumoto.py
+46 lines	preset_styles\anime\lupin_iii.py
+46 lines	preset_styles\anime\madhouse.py
+48 lines	preset_styles\anime\makoto_shinkai.py
+47 lines	preset_styles\anime\mamoru_hosoda.py
+47 lines	preset_styles\anime\mappa.py
+44 lines	preset_styles\anime\martial_arts.py
+46 lines	preset_styles\anime\maruo_suehiro.py
+49 lines	preset_styles\anime\masaaki_yuasa.py
+44 lines	preset_styles\anime\masami_kurumada.py
+50 lines	preset_styles\anime\mecha_90s.py
+47 lines	preset_styles\anime\mecha_military.py
+44 lines	preset_styles\anime\mecha_organic.py
+46 lines	preset_styles\anime\miura.py
+46 lines	preset_styles\anime\miura_berserk_1997.py
+47 lines	preset_styles\anime\miyazaki_solo.py
+50 lines	preset_styles\anime\moe_2000s.py
+44 lines	preset_styles\anime\monkey_punch.py
+45 lines	preset_styles\anime\murata_range.py
+48 lines	preset_styles\anime\musical_idol.py
+45 lines	preset_styles\anime\naoko_takeuchi.py
+46 lines	preset_styles\anime\nihei_tsutomu.py
+46 lines	preset_styles\anime\oda.py
+44 lines	preset_styles\anime\oda_one_piece.py
+44 lines	preset_styles\anime\ohkubo_atsushi.py
+44 lines	preset_styles\anime\one_murata.py
+47 lines	preset_styles\anime\otomo.py
+46 lines	preset_styles\anime\otomo_akira_specific.py
+49 lines	preset_styles\anime\ova_80s.py
+44 lines	preset_styles\anime\pa_works.py
+46 lines	preset_styles\anime\pierrot.py
+44 lines	preset_styles\anime\post_apocalyptic.py
+46 lines	preset_styles\anime\production_ig.py
+47 lines	preset_styles\anime\psychological_thriller.py
+53 lines	preset_styles\anime\retro_80s_anime.py
+45 lines	preset_styles\anime\ryo_timo.py
+46 lines	preset_styles\anime\sadamoto_yoshiyuki.py
+44 lines	preset_styles\anime\saint_seiya.py
+52 lines	preset_styles\anime\seinen_90s.py
+46 lines	preset_styles\anime\shaft.py
+45 lines	preset_styles\anime\shinkawa_yoji.py
+47 lines	preset_styles\anime\shiro_masamune.py
+48 lines	preset_styles\anime\shojo_modern.py
+50 lines	preset_styles\anime\shonen_90s.py
+51 lines	preset_styles\anime\shonen_battle.py
+51 lines	preset_styles\anime\slice_of_life.py
+45 lines	preset_styles\anime\space_opera.py
+47 lines	preset_styles\anime\sports_modern.py
+46 lines	preset_styles\anime\sunrise.py
+46 lines	preset_styles\anime\super_robot.py
+43 lines	preset_styles\anime\takahashi_ranma.py
+48 lines	preset_styles\anime\takahashi_rumiko.py
+46 lines	preset_styles\anime\takahashi_rumiko_inuyasha.py
+46 lines	preset_styles\anime\terasawa.py
+47 lines	preset_styles\anime\tetsuo_hara.py
+47 lines	preset_styles\anime\tezuka.py
+45 lines	preset_styles\anime\toboso_yana.py
+46 lines	preset_styles\anime\toei.py
+46 lines	preset_styles\anime\togashi.py
+44 lines	preset_styles\anime\togashi_yuyu.py
+48 lines	preset_styles\anime\toriyama.py
+45 lines	preset_styles\anime\toriyama_dragon_ball.py
+48 lines	preset_styles\anime\transformers_g1.py
+51 lines	preset_styles\anime\trigger.py
+47 lines	preset_styles\anime\trigger_studio_detailed.py
+49 lines	preset_styles\anime\ufotable.py
+49 lines	preset_styles\anime\urasawa.py
+46 lines	preset_styles\anime\vampire_supernatural.py
+50 lines	preset_styles\anime\vintage_70s.py
+46 lines	preset_styles\anime\watanabe.py
+46 lines	preset_styles\anime\wit_studio.py
+43 lines	preset_styles\anime\xebec.py
+44 lines	preset_styles\anime\yaoi.py
+45 lines	preset_styles\anime\yasuhiko_yoshikazu.py
+44 lines	preset_styles\anime\yoichi_takahashi.py
+46 lines	preset_styles\anime\yoshiyuki_tomino.py
+44 lines	preset_styles\anime\yuri.py
+43 lines	preset_styles\anime\zero_g.py
+3 lines	preset_styles\artistic\__init__.py
+0 lines	preset_styles\artistic\pixel_art.py
+0 lines	preset_styles\artistic\watercolor.py
+158 lines	preset_styles\cinematic\__init__.py
+165 lines	preset_styles\cinematic\antonioni.py
+185 lines	preset_styles\cinematic\aronofsky.py
+183 lines	preset_styles\cinematic\bergman.py
+188 lines	preset_styles\cinematic\bong_joon_ho.py
+165 lines	preset_styles\cinematic\bresson.py
+162 lines	preset_styles\cinematic\bunuel.py
+193 lines	preset_styles\cinematic\burton.py
+202 lines	preset_styles\cinematic\cameron.py
+197 lines	preset_styles\cinematic\coen.py
+181 lines	preset_styles\cinematic\coppola.py
+184 lines	preset_styles\cinematic\cuaron.py
+183 lines	preset_styles\cinematic\depalma.py
+184 lines	preset_styles\cinematic\eastwood.py
+186 lines	preset_styles\cinematic\fellini.py
+192 lines	preset_styles\cinematic\fincher.py
+158 lines	preset_styles\cinematic\ford.py
+182 lines	preset_styles\cinematic\gareth_edwards.py
+158 lines	preset_styles\cinematic\godard.py
+194 lines	preset_styles\cinematic\guillermo_del_toro.py
+220 lines	preset_styles\cinematic\hitchcock.py
+216 lines	preset_styles\cinematic\inarritu.py
+276 lines	preset_styles\cinematic\kubrick.py
+184 lines	preset_styles\cinematic\kurosawa.py
+163 lines	preset_styles\cinematic\lean.py
+216 lines	preset_styles\cinematic\leone.py
+199 lines	preset_styles\cinematic\lucas.py
+209 lines	preset_styles\cinematic\lynch.py
+193 lines	preset_styles\cinematic\nolan.py
+157 lines	preset_styles\cinematic\normalizer.py
+181 lines	preset_styles\cinematic\paul_thomas_anderson.py
+25 lines	preset_styles\cinematic\profiles\__init__.py
+7 lines	preset_styles\cinematic\profiles\atmosphere.py
+20 lines	preset_styles\cinematic\profiles\camera.py
+7 lines	preset_styles\cinematic\profiles\color.py
+23 lines	preset_styles\cinematic\profiles\film_stock.py
+7 lines	preset_styles\cinematic\profiles\grain.py
+18 lines	preset_styles\cinematic\profiles\lenses.py
+27 lines	preset_styles\cinematic\profiles\lighting.py
+56 lines	preset_styles\cinematic\profiles\skin.py
+168 lines	preset_styles\cinematic\renoir.py
+186 lines	preset_styles\cinematic\ridley_scott.py
+152 lines	preset_styles\cinematic\scorsese.py
+225 lines	preset_styles\cinematic\spielberg.py
+197 lines	preset_styles\cinematic\stone.py
+195 lines	preset_styles\cinematic\tarantino.py
+184 lines	preset_styles\cinematic\tarkovsky.py
+188 lines	preset_styles\cinematic\villeneuve.py
+164 lines	preset_styles\cinematic\welles.py
+162 lines	preset_styles\cinematic\wilder.py
+188 lines	preset_styles\cinematic\wong_kar_wai.py
+183 lines	preset_styles\cinematic\zemeckis.py
+48 lines	preset_styles\retro_80s\__init__.py
+0 lines	preset_styles\retro_80s\retro_80s_anime.py
+0 lines	preset_styles\retro_80s\retro_80s_photography.py
+0 lines	preset_styles\retro_80s\synthwave_80s.py
+0 lines	preset_styles\retro_80s\vhs_retro.py
+3 lines	preset_styles\western\__init__.py
+0 lines	preset_styles\western\cartoon.py
+0 lines	preset_styles\western\comic.py
+14 lines	tests\__init__.py
+65 lines	tests\conftest.py
+156 lines	tests\test_body_controller.py
+155 lines	tests\test_ethnicity_controller.py
+176 lines	tests\test_gender_controller.py
+158 lines	tests\test_hybrid_switch.py
+152 lines	tests\test_weighted_conditioning.py
+222 lines	tests\validate_cinematic.py
+
+=== MARKDOWN DOCUMENTS ===
+13871 bytes	01_Visione_e_Architettura.md
+16990 bytes	02_Style_Engine.md
+18314 bytes	03_Human_Engine.md
+21638 bytes	04_Creature_Engine.md
+19602 bytes	05_Object_Technology_Engine.md
+20085 bytes	06_Nature_Matter_Engine.md
+20713 bytes	07_Environment_World_Engine.md
+19280 bytes	08_Camera_Cinematography_Engine.md
+26104 bytes	09_Transformation_Engine.md
+24953 bytes	10_Reference_Sheet_System.md
+30856 bytes	11_ComfyUI_Implementation.md
+31909 bytes	12_Roadmap.md
+22647 bytes	api_reference.md
+7747 bytes	hybrid_mode.md
+1668 bytes	installation.md
+13867 bytes	troubleshooting.md
+15446 bytes	usage_guide.md
+
+=== WORKFLOWS ===
+16226 bytes	advanced_features.json
+7229 bytes	basic_character_sheet.json
+8194 bytes	changetyle.json
+10351 bytes	hybrid_character_sheet.json
+8240 bytes	modular_character_sheet.json
+11898 bytes	restyle.json
+
+=== PRESET DIRECTORIES ===
+__pycache__
+anime
+artistic
+cinematic
+retro_80s
+western
+
+=== TEST FILES ===
+tests\__init__.py
+tests\conftest.py
+tests\test_body_controller.py
+tests\test_ethnicity_controller.py
+tests\test_gender_controller.py
+tests\test_hybrid_switch.py
+tests\test_weighted_conditioning.py
+tests\validate_cinematic.py
+
+=== VERSION REFERENCES ===
+--- __init__.py ---
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:8: Ottimizzato per Krea2 e compatibile con l'ultima versione di ComfyUI.
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:10: Versione: 2.1.0
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:38: __version__ = "2.1.0"
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:123: print(f"[CharacterForge] v{__version__} caricato: {len(NODE_CLASS_MAPPINGS)} nodi")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:135: '__version__',
+--- nodes\__init__.py ---
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\nodes\__init__.py:35: - Diagnostica automatica: stampa a ogni avvio se la versione
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\nodes\__init__.py:38: Versione: 2.3.0
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\nodes\__init__.py:72: # Diagnostica versione: la v3.0.0 (e la 2.2.0+) espone PRESET_CHOICES
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\nodes\__init__.py:79: print(f"[CharacterForge-Nodes]   versione VECCHIA dello StyleTransferNode")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\nodes\__init__.py:103: __version__ = "2.3.0"
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\nodes\__init__.py:119: "version": __version__,
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\nodes\__init__.py:148: print(f"[CharacterForge-Nodes] Pacchetto caricato v{__version__}")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\nodes\__init__.py:154: print(f"[CharacterForge-Nodes] Style Transfer: VERSIONE VECCHIA (vedi warning sopra)")
+--- tests\__init__.py ---
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\tests\__init__.py:20: __version__ = "2.0.0"
+--- README.md ---
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\README.md:5: Versione: 2.0.0
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\README.md:65: 1. Scarica l'ultima versione da Releases
+--- requirements.txt ---
+
+=== COMFYUI VENV RUNTIME ===
+ComfyUI venv Python non trovato: ..\..\..\..\venv\Scripts\python.exe
+
+=== NODE REGISTRATION ===
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:2: ComfyUI-CharacterForge
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:24: - CharacterForge/Basic: Controlli base (genere, corporatura)
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:25: - CharacterForge/Advanced: Controlli avanzati (etnia, conditioning)
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:26: - CharacterForge/Hybrid: Sistema switch modalità ibrida
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:27: - CharacterForge/Style: Style Transfer e combinatore LoRA
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:38: __version__ = "2.1.0"
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:42: NODE_CLASS_MAPPINGS = {}
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:43: NODE_DISPLAY_NAME_MAPPINGS = {}
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:50: from .nodes.gender_controller import CharacterForgeGenderController
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:51: NODE_CLASS_MAPPINGS["CharacterForgeGenderController"] = CharacterForgeGenderController
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:52: NODE_DISPLAY_NAME_MAPPINGS["CharacterForgeGenderController"] = "Gender Controller"
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:53: print("[CharacterForge] Gender Controller OK")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:55: from .nodes.ethnicity_controller import CharacterForgeEthnicityController
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:56: NODE_CLASS_MAPPINGS["CharacterForgeEthnicityController"] = CharacterForgeEthnicityController
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:57: NODE_DISPLAY_NAME_MAPPINGS["CharacterForgeEthnicityController"] = "Ethnicity Controller"
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:58: print("[CharacterForge] Ethnicity Controller OK")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:60: from .nodes.body_controller import CharacterForgeBodyController
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:61: NODE_CLASS_MAPPINGS["CharacterForgeBodyController"] = CharacterForgeBodyController
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:62: NODE_DISPLAY_NAME_MAPPINGS["CharacterForgeBodyController"] = "Body Type Controller"
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:63: print("[CharacterForge] Body Controller OK")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:65: from .nodes.weighted_conditioning import CharacterForgeWeightedConditioning
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:66: NODE_CLASS_MAPPINGS["CharacterForgeWeightedConditioning"] = CharacterForgeWeightedConditioning
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:67: NODE_DISPLAY_NAME_MAPPINGS["CharacterForgeWeightedConditioning"] = "Weighted Conditioning"
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:68: print("[CharacterForge] Weighted Conditioning OK")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:70: from .nodes.hybrid_switch import CharacterForgeHybridLatentSwitch
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:71: NODE_CLASS_MAPPINGS["CharacterForgeHybridLatentSwitch"] = CharacterForgeHybridLatentSwitch
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:72: NODE_DISPLAY_NAME_MAPPINGS["CharacterForgeHybridLatentSwitch"] = "Hybrid Latent Switch"
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:73: print("[CharacterForge] Hybrid Latent Switch OK")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:76: print(f"[CharacterForge] ERRORE CONTROLLI BASE: {e}")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:84: from .nodes.style_transfer_node import CharacterForgeStyleTransferNode
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:85: NODE_CLASS_MAPPINGS["CharacterForgeStyleTransferNode"] = CharacterForgeStyleTransferNode
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:86: NODE_DISPLAY_NAME_MAPPINGS["CharacterForgeStyleTransferNode"] = "Style Transfer Node"
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:87: print("[CharacterForge] Style Transfer Node OK")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:89: from .nodes.lora_style_combinator import CharacterForgeLoRAStyleCombinator
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:90: NODE_CLASS_MAPPINGS["CharacterForgeLoRAStyleCombinator"] = CharacterForgeLoRAStyleCombinator
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:91: NODE_DISPLAY_NAME_MAPPINGS["CharacterForgeLoRAStyleCombinator"] = "LoRA Style Combinator"
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:92: print("[CharacterForge] LoRA Style Combinator OK")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:95: print(f"[CharacterForge] ERRORE STYLE TRANSFER: {e}")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:105: print(f"[CharacterForge] Preset Styles caricati: {PRESET_STYLES_AVAILABLE}")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:113: print(f"[CharacterForge]   {category}: {len(styles_in_category)} stili")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:116: print(f"[CharacterForge] Warning: Preset Styles non disponibili: {e}")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:123: print(f"[CharacterForge] v{__version__} caricato: {len(NODE_CLASS_MAPPINGS)} nodi")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:126: print(f"[CharacterForge] Database stili: {PRESET_STYLES_AVAILABLE} preset disponibili")
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:133: 'NODE_CLASS_MAPPINGS',
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:134: 'NODE_DISPLAY_NAME_MAPPINGS',
+D:\AVVIO PULITO di ComfyUI\ComfyUI\custom_nodes\ComfyUI-CharacterForge\__init__.py:135: '__version__',
+
+=== DUPLICATE PYTHON FILE HASHES ===
+HASH: 060B9D8CBA401C4F6EE3BD6C6D9C270B3FE9AABBAD5B1A04C3C49394565C7DCB
+  nodes\LoRAStyleCombinator.py
+  nodes\lora_style_combinator.py
+HASH: E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855
+  preset_styles\artistic\pixel_art.py
+  preset_styles\artistic\watercolor.py
+  preset_styles\retro_80s\retro_80s_anime.py
+  preset_styles\retro_80s\retro_80s_photography.py
+  preset_styles\retro_80s\synthwave_80s.py
+  preset_styles\retro_80s\vhs_retro.py
+  preset_styles\western\cartoon.py
+  preset_styles\western\comic.py
+
+=== TEST EXECUTION ===
+pytest non trovato nel Python corrente.
+
+============================================================
+END BASELINE
+============================================================

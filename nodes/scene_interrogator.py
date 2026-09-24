@@ -1,0 +1,365 @@
+﻿"""
+CharacterForge Scene Interrogator v1.1.0 â€” MODULO 4
+====================================================
+
+Immagine di scena -> prompt video.
+
+Backend:
+- florence2 : Florence-2 large in gguf via llama.cpp (NESSUN transformers:
+              immune all'incompatibilita' transformers 5.x). Veloce (~3-10 s).
+              Produce caption generica: NON rispetta la query, aggiungere
+              a mano la camera movement nel prompt in uscita.
+              Richiede 2 file in ComfyUI/models/llama/:
+                  florence2-large-f16.gguf
+                  florence2-mmproj-f16.gguf
+              (download: huggingface.co/mrtrmll/Florence2.gguf)
+- joycaption: JoyCaption Alpha Two via transformers (qualita' massima,
+              rispetta la query). Prima esecuzione: download ~20 GB.
+
+CHANGELOG:
+v1.1.0 - Florence-2 spostato su llama.cpp (fix transformers 5.16.1:
+         Florence2ForConditionalGeneration incompatibile col checkpoint).
+       - _find_florence_files corretto (perorso fallback giusto).
+       - JoyCaption invariato.
+"""
+
+import os
+import time
+import threading
+import numpy as np
+import torch
+from PIL import Image
+
+# ============================================
+# QUERY DI DEFAULT (prompt engineer video)
+# ============================================
+
+DEFAULT_VIDEO_QUERY = (
+    "You are a prompt engineer for AI video generation models. Analyze the input image "
+    "and write ONE video generation prompt. Rules: 1. Describe only what is visible: "
+    "setting, subjects, clothing, lighting, color palette, atmosphere. 2. Infer plausible "
+    "motion from the environment: rain, waves, smoke, fire, wind, clouds, dust, sparks, "
+    "lightning. Describe each moving element in continuous present tense. 3. Human actions "
+    "must be simple, slow and sustained (standing, gazing, walking slowly, turning head), "
+    "never fast or complex. 4. Include EXACTLY ONE camera movement suited to the composition "
+    "(slow push-in, slow pan left, slow pan right, static locked shot, slow tracking shot) "
+    "and state it explicitly. 5. Order: environment and lighting, then moving elements, "
+    "then subjects and their action, then camera movement, then mood and style. 6. Fluent "
+    "prose, present tense, English, 60-100 words, one single continuous scene, no cuts. "
+    "7. Output ONLY the prompt text, no preamble, no quotes."
+)
+
+# ============================================
+# COSTANTI BACKEND
+# ============================================
+
+_FLORENCE_MODEL = "florence2-large-f16.gguf"
+_FLORENCE_MMPROJ = "florence2-mmproj-f16.gguf"
+_FLORENCE_REPO = "huggingface.co/mrtrmll/Florence2.gguf"
+_JOY_MODEL_ID = "fancyfeast/llama-joycaption-alpha-two"
+
+_BACKENDS = {}
+_BACKEND_LOCK = threading.Lock()
+
+
+# ============================================
+# UTILITY CARICAMENTO
+# ============================================
+
+def _load_pretrained(cls, model_id, dtype, device_map=None, trust=False):
+    """from_pretrained compatibile con transformers vecchi e nuovi
+    (torch_dtype e' stato rinominato dtype nelle versioni recenti)."""
+    kwargs = {"trust_remote_code": trust} if trust else {}
+    try:
+        return cls.from_pretrained(model_id, dtype=dtype, device_map=device_map, **kwargs)
+    except TypeError:
+        return cls.from_pretrained(model_id, torch_dtype=dtype, device_map=device_map, **kwargs)
+
+
+def _florence_search_dirs():
+    """Cartelle candidate dove cercare i gguf Florence-2."""
+    dirs = []
+    # Cartelle registrate da ComfyUI (e dal pacchetto LLaVA-Captioner,
+    # che registra la folder "llama")
+    try:
+        from folder_paths import folder_names_and_paths
+        for name in ("llama", "text_encoders", "unet"):
+            for d, _ in folder_names_and_paths.get(name, [[], set()]):
+                if d not in dirs:
+                    dirs.append(d)
+    except Exception:
+        pass
+    # Fallback: <ComfyUI>/models/llama e <ComfyUI>/models/text_encoders
+    # (4 livelli sopra questo file: nodes -> CharacterForge -> custom_nodes -> ComfyUI)
+    comfy_root = os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__)))))
+    for sub in ("llama", "text_encoders"):
+        d = os.path.join(comfy_root, "models", sub)
+        if d not in dirs:
+            dirs.append(d)
+    return dirs
+
+
+def _find_florence_files():
+    """Trova i 2 gguf Florence-2. Ritorna dict {model, mmproj} o {}."""
+    for folder in _florence_search_dirs():
+        m = os.path.join(folder, _FLORENCE_MODEL)
+        p = os.path.join(folder, _FLORENCE_MMPROJ)
+        if os.path.exists(m) and os.path.exists(p):
+            return {"model": m, "mmproj": p}
+    return {}
+
+
+def _get_florence(device):
+    with _BACKEND_LOCK:
+        if "florence" in _BACKENDS:
+            return _BACKENDS["florence"]
+
+        from llama_cpp import Llama
+        from llama_cpp.llama_chat_format import MTMDChatHandler
+
+        files = _find_florence_files()
+        if not files:
+            raise RuntimeError(
+                "[CharacterForge-Scene] Florence-2 non trovato. "
+                f"Richiesti: {_FLORENCE_MODEL} e {_FLORENCE_MMPROJ}"
+            )
+
+        print(
+            f"[CharacterForge-Scene] Carico Florence-2 (llama.cpp/MTMD): "
+            f"{files['model']}"
+        )
+
+        n_gpu = 99 if device != "cpu" else 0
+
+        handler = MTMDChatHandler(
+            files["mmproj"],
+            verbose=False,
+            use_gpu=(device != "cpu"),
+        )
+
+        model = Llama(
+            files["model"],
+            n_gpu_layers=n_gpu,
+            n_ctx=4096,
+            chat_handler=handler,
+            verbose=False,
+        )
+
+        _BACKENDS["florence"] = (model, handler)
+        return _BACKENDS["florence"]
+
+# ============================================
+# UTILITY IMMAGINE
+# ============================================
+
+def _tensor_to_pil(image):
+    """Tensor ComfyUI [B,H,W,C] 0-1 -> PIL (prima immagine del batch)."""
+    t = image[0].detach().cpu().numpy()
+    t = (np.clip(t, 0.0, 1.0) * 255.0).astype(np.uint8)
+    if t.shape[-1] == 4:
+        t = t[:, :, :3]
+    return Image.fromarray(t)
+
+
+def _prepare_pil(pil, max_side=768):
+    """Ridimensiona: per le caption non servono piu' di 768px."""
+    w, h = pil.size
+    if max(w, h) > max_side:
+        scale = max_side / max(w, h)
+        pil = pil.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
+    return pil
+
+
+# ============================================
+# NODO 1: SCENE INTERROGATOR
+# ============================================
+
+class CharacterForgeSceneInterrogatorNode:
+    """Immagine di scena -> prompt testuale per generazione video."""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "image": ("IMAGE", {"tooltip": "Immagine della scena da interrogare"}),
+                "instruction": ("STRING", {
+                    "default": DEFAULT_VIDEO_QUERY,
+                    "multiline": True,
+                    "tooltip": "Istruzione per il VLM (solo joycaption la rispetta)"}),
+                "backend": (["florence2", "joycaption"], {
+                    "default": "florence2",
+                    "tooltip": "florence2: veloce, offline, caption generica. "
+                               "joycaption: qualita' max, rispetta la query, ~20GB"}),
+                "max_new_tokens": ("INT", {
+                    "default": 120, "min": 20, "max": 512, "step": 10}),
+                "temperature": ("FLOAT", {
+                    "default": 0.3, "min": 0.0, "max": 1.5, "step": 0.05}),
+                "device": (["auto", "cuda", "cpu"], {
+                    "default": "auto",
+                    "tooltip": "auto: GPU per florence2, distribuito per joycaption"}),
+            }
+        }
+
+    RETURN_TYPES = ("STRING", "STRING",)
+    RETURN_NAMES = ("prompt", "info",)
+    FUNCTION = "interrogate"
+    CATEGORY = "CharacterForge/Scene"
+
+    def interrogate(self, image, instruction, backend, max_new_tokens,
+                    temperature, device):
+        if image is None:
+            raise ValueError("[CharacterForge-Scene] Immagine non valida")
+
+        pil = _prepare_pil(_tensor_to_pil(image))
+
+        if backend == "florence2":
+            prompt, info = self._run_florence(pil, max_new_tokens, device)
+            info += " | NOTE: caption generica, aggiungere camera a mano"
+        else:
+            prompt, info = self._run_joycaption(pil, instruction,
+                                                max_new_tokens, temperature, device)
+
+        print(f"[CharacterForge-Scene] prompt generato ({len(prompt)} caratteri) [{info}]")
+        return (prompt, info)
+
+    # ---------- BACKEND FLORENCE-2 (llama.cpp) ----------
+
+    def _run_florence(self, pil, max_new_tokens, device):
+        model, mmproj = _get_florence(device)
+
+        # Florence-2: il task token e' il prompt.
+        task = "<MORE_DETAILED_CAPTION>"
+        try:
+            out = model.create_chat_completion(
+                messages=[{
+                    "role": "user",
+                    "content": [
+                        {"type": "image_url", "image_url": {"url": pil}},
+                        {"type": "text", "text": task},
+                    ],
+                }],
+                max_tokens=max_new_tokens,
+                temperature=0.0,
+            )
+            text = out["choices"][0]["message"]["content"].strip()
+        except Exception as e:
+            raise RuntimeError(
+                f"[CharacterForge-Scene] Florence-2 (llama.cpp) fallito "
+                f"({type(e).__name__}: {e}). Opzioni: 1) backend 'joycaption' "
+                f"nel nodo, 2) usare il nodo LlavaCaptioner "
+                f"(ComfyUI-LLaVA-Captioner), 3) riportare l'errore esatto."
+            )
+        return text, f"florence2-llamacpp | device={device}"
+
+    # ---------- BACKEND JOYCAPTION (transformers) ----------
+
+    def _run_joycaption(self, pil, instruction, max_new_tokens, temperature, device):
+        model, processor = _get_joycaption(device)
+
+        # Chat template: prova i formati delle varie versioni di transformers
+        prompt_text = None
+        for key in ("image", "content", "image_url"):
+            conversation = [
+                {"role": "user", "content": [
+                    {"type": "image", key: pil},
+                    {"type": "text", "text": instruction},
+                ]},
+            ]
+            try:
+                prompt_text = processor.apply_chat_template(
+                    conversation, add_generation_prompt=True)
+                break
+            except Exception:
+                continue
+
+        if prompt_text is None:
+            # Fallback: template Llama-3 manuale
+            prompt_text = (
+                "<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n"
+                "<image>\n" + instruction +
+                "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+            )
+
+        inputs = processor(images=pil, text=prompt_text, return_tensors="pt")
+        inputs = {k: (v.to(model.device) if hasattr(v, "to") else v)
+                  for k, v in inputs.items()}
+        if "pixel_values" in inputs and hasattr(model, "dtype"):
+            if inputs["pixel_values"].dtype != model.dtype:
+                inputs["pixel_values"] = inputs["pixel_values"].to(model.dtype)
+
+        gen_kwargs = {"max_new_tokens": max_new_tokens,
+                      "do_sample": temperature > 0.0}
+        if temperature > 0.0:
+            gen_kwargs["temperature"] = temperature
+        output_ids = model.generate(**inputs, **gen_kwargs)
+
+        in_len = inputs["input_ids"].shape[-1]
+        text = processor.decode(output_ids[0][in_len:],
+                                skip_special_tokens=True).strip()
+        return text, f"joycaption | tokens={len(output_ids[0]) - in_len} | device={device}"
+
+    @classmethod
+    def IS_CHANGED(s, *args, **kwargs):
+        return float("NaN")
+
+
+# ============================================
+# NODO 2: SAVE PROMPT
+# ============================================
+
+class CharacterForgeSavePromptNode:
+    """Salva un prompt testuale su file .txt nella cartella output di ComfyUI."""
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "text": ("STRING", {"forceInput": True,
+                                    "tooltip": "Collegare all'output prompt dell'interrogator"}),
+                "filename_prefix": ("STRING", {"default": "prompt_video"}),
+            }
+        }
+
+    RETURN_TYPES = ("STRING", "STRING",)
+    RETURN_NAMES = ("text", "file_path",)
+    FUNCTION = "save_prompt"
+    CATEGORY = "CharacterForge/Scene"
+
+    def save_prompt(self, text, filename_prefix):
+        try:
+            from folder_paths import get_output_directory
+            out_dir = get_output_directory()
+        except Exception:
+            out_dir = os.getcwd()
+
+        safe = "".join(c if (c.isalnum() or c in "-_") else "_"
+                       for c in filename_prefix) or "prompt"
+        ts = time.strftime("%Y%m%d_%H%M%S")
+        path = os.path.join(out_dir, f"{safe}_{ts}.txt")
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(text)
+        print(f"[CharacterForge-Scene] Prompt salvato: {path}")
+        return (text, path)
+
+    @classmethod
+    def IS_CHANGED(s, *args, **kwargs):
+        return float("NaN")
+
+
+# ============================================
+# REGISTRAZIONE
+# ============================================
+
+NODE_CLASS_MAPPINGS = {
+    "CharacterForgeSceneInterrogatorNode": CharacterForgeSceneInterrogatorNode,
+    "CharacterForgeSavePromptNode": CharacterForgeSavePromptNode,
+}
+
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "CharacterForgeSceneInterrogatorNode": "Scene Interrogator (Immagine -> Prompt Video)",
+    "CharacterForgeSavePromptNode": "Save Prompt (.txt)",
+}
+
+print("[CharacterForge] scene_interrogator v1.1.0 caricato "
+      "(Modulo 4 â€” Florence via llama.cpp, JoyCaption via transformers)")

@@ -1,4 +1,4 @@
-"""
+﻿"""
 CharacterForge Gender Controller
 ================================
 
@@ -105,7 +105,7 @@ class CharacterForgeGenderController:
             gender_prompt = preset["prompt"]
         
         # Modifica del conditioning
-        # ComfyUI conditioning è una lista di [tensor, metadata_dict]
+        # ComfyUI conditioning Ã¨ una lista di [tensor, metadata_dict]
         modified_conditioning = []
         
         for cond_tuple in conditioning:
@@ -124,16 +124,12 @@ class CharacterForgeGenderController:
                     "prompt_used": gender_prompt[:100] + "..." if len(gender_prompt) > 100 else gender_prompt
                 }
                 
-                # Applica il peso al conditioning tensor
-                if isinstance(cond_tensor, torch.Tensor):
-                    # Applica peso limitato tra 0 e 1.5
-                    # Il conditioning viene scalato in base al peso
-                    safe_weight = max(0.0, min(weight, 1.5))
-                    modified_tensor = cond_tensor * safe_weight
-                else:
-                    # Se non è un tensor, mantieni invariato
-                    modified_tensor = cond_tensor
-                
+                # IMPORTANTE:
+                # Questo controller non riceve un CLIP encoder, quindi non puo' aggiungere
+                # il proprio prompt testuale al conditioning in modo corretto.
+                # Manteniamo intatto il conditioning ricevuto per non alterare lo stile.
+                modified_tensor = cond_tensor
+
                 modified_conditioning.append([modified_tensor, modified_dict])
             else:
                 # Format non riconosciuto, mantieni invariato
