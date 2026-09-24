@@ -7,6 +7,7 @@ from .arms import Arms
 from .body_fat import BodyFat
 from .body_type import BodyType, Height, Proportions
 from .musculature import Musculature
+from .neck import Neck
 from .shoulders import Shoulders
 from .torso import Torso
 
@@ -26,6 +27,7 @@ class HumanAnatomy(AnatomyComponent):
         body_fat: BodyFat | None = None,
         shoulders: Shoulders | None = None,
         torso: Torso | None = None,
+        neck: Neck | None = None,
         arms: Arms | None = None,
     ) -> None:
         super().__init__()
@@ -37,6 +39,7 @@ class HumanAnatomy(AnatomyComponent):
         self.body_fat = body_fat or BodyFat()
         self.shoulders = shoulders or Shoulders()
         self.torso = torso or Torso()
+        self.neck = neck or Neck()
         self.arms = arms or Arms()
 
         self.validate()
@@ -52,6 +55,7 @@ class HumanAnatomy(AnatomyComponent):
             self.body_fat,
             self.shoulders,
             self.torso,
+            self.neck,
             self.arms,
         )
 
@@ -68,5 +72,6 @@ class HumanAnatomy(AnatomyComponent):
             "body_fat": self.body_fat.to_dict(),
             "shoulders": self.shoulders.to_dict(),
             "torso": self.torso.to_dict(),
+            "neck": self.neck.to_dict(),
             "arms": self.arms.to_dict(),
         }

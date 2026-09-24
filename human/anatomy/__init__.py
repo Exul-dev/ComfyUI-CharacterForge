@@ -17,6 +17,7 @@ from .shoulders import Shoulders
 from .torso import Torso
 from .upper_arm import UpperArm
 from .wrist import Wrist
+from .neck import Neck
 
 __all__ = [
     "AnatomyComponent",
@@ -34,6 +35,7 @@ __all__ = [
     "HumanAnatomy",
     "Musculature",
     "Nail",
+    "Neck",
     "Palm",
     "Proportions",
     "Shoulder",
