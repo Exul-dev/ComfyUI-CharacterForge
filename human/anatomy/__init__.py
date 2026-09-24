@@ -12,6 +12,7 @@ from .human_anatomy import HumanAnatomy
 from .musculature import Musculature
 from .nail import Nail
 from .palm import Palm
+from .shoulder import Shoulder
 from .shoulders import Shoulders
 from .torso import Torso
 from .upper_arm import UpperArm
@@ -35,6 +36,7 @@ __all__ = [
     "Nail",
     "Palm",
     "Proportions",
+    "Shoulder",
     "Shoulders",
     "Torso",
     "UpperArm",

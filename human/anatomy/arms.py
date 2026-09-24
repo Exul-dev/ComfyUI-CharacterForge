@@ -6,6 +6,7 @@ from .anatomy_component import AnatomyComponent
 from .elbow import Elbow
 from .forearm import Forearm
 from .hands import Hands
+from .shoulders import Shoulders
 from .upper_arm import UpperArm
 from .wrist import Wrist
 
@@ -18,6 +19,7 @@ class Arms(AnatomyComponent):
     def __init__(
         self,
         *,
+        shoulders: Shoulders | None = None,
         upper_arm: UpperArm | None = None,
         elbow: Elbow | None = None,
         forearm: Forearm | None = None,
@@ -26,6 +28,7 @@ class Arms(AnatomyComponent):
     ) -> None:
         super().__init__()
 
+        self.shoulders = shoulders or Shoulders()
         self.upper_arm = upper_arm or UpperArm()
         self.elbow = elbow or Elbow()
         self.forearm = forearm or Forearm()
@@ -37,6 +40,7 @@ class Arms(AnatomyComponent):
     def validate(self) -> None:
         super().validate()
 
+        self.shoulders.validate()
         self.upper_arm.validate()
         self.elbow.validate()
         self.forearm.validate()
@@ -46,6 +50,7 @@ class Arms(AnatomyComponent):
     def to_dict(self) -> dict[str, Any]:
         return {
             **super().to_dict(),
+            "shoulders": self.shoulders.to_dict(),
             "upper_arm": self.upper_arm.to_dict(),
             "elbow": self.elbow.to_dict(),
             "forearm": self.forearm.to_dict(),
