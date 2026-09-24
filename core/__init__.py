@@ -73,4 +73,11 @@ __all__ = [
     "EntityRegistry",
     "create_default_registry",
     "DEFAULT_REGISTRY",
+    "EngineContract",
+    "EngineContractError",
 ]
+from .engine_contract import (
+    EngineContract,
+    EngineContractError,
+)
+
