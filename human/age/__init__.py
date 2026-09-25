@@ -25,6 +25,12 @@ from .operator import (
     FieldChange,
     apparent_age,
 )
+from .trajectory import (
+    AgeTrajectory,
+    TransitReport,
+    transit,
+    transit_steps,
+)
 
 __all__ = [
     "AgeCurves",
@@ -32,4 +38,8 @@ __all__ = [
     "AgeResult",
     "FieldChange",
     "apparent_age",
+    "AgeTrajectory",
+    "TransitReport",
+    "transit",
+    "transit_steps",
 ]
