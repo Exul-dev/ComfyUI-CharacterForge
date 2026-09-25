@@ -65,6 +65,8 @@ from .landmark_modify import (
 )
 from .waist import Waist
 from .abdomen import Abdomen
+from .flank import Flank
+from .flanks import Flanks
 from .glute import Glute
 from .gluteal_region import GlutealRegion
 from .hip import Hip
@@ -228,6 +230,8 @@ __all__ = [
     "Wrist",
     "Pelvis",
     "Glute",
+    "Flank",
+    "Flanks",
     "GlutealRegion",
     "Hip",
     "Hips",

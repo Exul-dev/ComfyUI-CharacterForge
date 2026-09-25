@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from .anatomy_component import AnatomyComponent
+from .flanks import Flanks
 
 
 class Abdomen(AnatomyComponent):
@@ -27,6 +28,7 @@ class Abdomen(AnatomyComponent):
         muscularity: float = 0.5,
         fat_distribution: float = 0.5,
         shape: str = "average",
+        flanks: Flanks | None = None,
     ) -> None:
         super().__init__()
 
@@ -36,6 +38,7 @@ class Abdomen(AnatomyComponent):
         self.muscularity = float(muscularity)
         self.fat_distribution = float(fat_distribution)
         self.shape = shape
+        self.flanks = flanks or Flanks()
 
         self.validate()
 
@@ -70,6 +73,13 @@ class Abdomen(AnatomyComponent):
                 f"Expected one of {self.VALID_SHAPES}."
             )
 
+        if not isinstance(self.flanks, Flanks):
+            raise ValueError(
+                "Abdomen flanks must be a Flanks instance."
+            )
+
+        self.flanks.validate()
+
     def to_dict(self) -> dict[str, Any]:
         return {
             **super().to_dict(),
@@ -79,4 +89,5 @@ class Abdomen(AnatomyComponent):
             "muscularity": self.muscularity,
             "fat_distribution": self.fat_distribution,
             "shape": self.shape,
+            "flanks": self.flanks.to_dict(),
         }
