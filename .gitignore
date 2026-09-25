@@ -1,3 +1,7 @@
 ﻿__pycache__/
 *.py[cod]
 .pytest_cache/
+# Backup files: history lives in git, backups stay out of it
+*.bak
+*.bak_*
+nodes/_backup_*/
