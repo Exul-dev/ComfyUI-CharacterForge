@@ -22,8 +22,31 @@ from .torso import Torso
 from .upper_arm import UpperArm
 from .wrist import Wrist
 
-__all__=[
-"AnatomyComponent","Arms","Back","BodyFat","BodySide","BodyType","Chest",
-"Elbow","Finger","FingerType","Forearm","Hand","Hands","Height","HumanAnatomy",
-"Musculature","Nail","Neck","Palm","Proportions","RibCage","Shoulder",
-"Shoulders","Torso","UpperArm","Wrist"]
+__all__ = [
+    "AnatomyComponent",
+    "Arms",
+    "Back",
+    "BodyFat",
+    "BodySide",
+    "BodyType",
+    "Chest",
+    "Elbow",
+    "Finger",
+    "FingerType",
+    "Forearm",
+    "Hand",
+    "Hands",
+    "Height",
+    "HumanAnatomy",
+    "Musculature",
+    "Nail",
+    "Neck",
+    "Palm",
+    "Proportions",
+    "RibCage",
+    "Shoulder",
+    "Shoulders",
+    "Torso",
+    "UpperArm",
+    "Wrist",
+]
