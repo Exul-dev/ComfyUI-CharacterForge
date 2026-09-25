@@ -1,6 +1,6 @@
-# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H5-D)
+# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H6)
 
-> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H5-D — The Complete Hair System** (chiusa, D-1/D-2/D-3). Il sistema-peli è completo: H4, H5 e H5-D chiuse.
+> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H6 — The Age Engine** (chiusa, A1/A2/A3/C1/C2/C2b/D/B). Il tempo è ora controllabile: H4, H5, H5-D e H6 chiuse.
 
 ---
 
@@ -222,7 +222,7 @@ CharacterForge non sostituisce ComfyUI: **lo rende più consapevole di ciò che 
 
 ## La visione finale, oltre la milestone attuale
 
-Oggi: **H5-D — pieno controllo su calvizie, acconciature e peli** ✅ (scalpo, barba, corpo). Poi, progressivamente:
+Oggi: **H6 — The Age Engine** ✅ (età→aspetto, bidirezionale, profili). Poi, progressivamente:
 
 ```text
 Morphology → Geometry → Transformations → Identity → State
@@ -850,9 +850,9 @@ Il **Custom Node è l'interfaccia di CharacterForge dentro ComfyUI**. Ma **Chara
 ---
 ---
 
-# PARTE V — Stato tecnico attuale (H5-D)
+# PARTE V — Stato tecnico attuale (H6)
 
-Siamo arrivati alla **H5-D** del ramo Human Engine. Il repository è **sincronizzato con origin/main**: i capitoli da H4.12 a H5, i completamenti anatomici post-H5 e il sistema-peli completo H5-D sono stati pushati.
+Siamo arrivati alla **H6** del ramo Human Engine. Il repository è **sincronizzato con origin/main**: i capitoli da H4.12 a H6 (incluso l Age Engine completo) sono stati pushati.
 
 ```text
 main
@@ -860,9 +860,9 @@ main
     └── working tree CLEAN
 ```
 
-L'ultima milestone chiusa è: **H5-D — The Complete Hair System** ✅
+L'ultima milestone chiusa è: **H6 — The Age Engine** ✅
 
-I capitoli da H4.12 a H5, i completamenti anatomici post-H5 e H5-D (sistema-peli), chiusi in sottosezioni:
+I capitoli da H4.12 a H6 (incluso l Age Engine), chiusi in sottosezioni:
 
 ```text
 H4.12-A  CoordinateSpace / Coordinate / CoordinateSystem / Landmark   b3cf564
@@ -898,6 +898,14 @@ H4.20   Sistema riproduttivo componibile (bias corretto)     b043086
 H5-D-1  Scalpo: calvizie mediche + stili + fatture        87429ae
 H5-D-2  Barba per regioni con preset-factory              8b68950
 H5-D-3  Corpo per regioni + parita arti 9x4               6820c60
+H6-A1   SkinAging: rughe per zona + fotoaging separato    c7c5e6f
+H6-A2   HairAging: graying progressivo per regione       c9008de
+H6-A3   FaceAging: 12 assi discesa/volume/ptosi/osso     245a1b1
+H6-C1   AgeCurves: 26 curve gerontologiche smoothstep    df4a7a5
+H6-C2   apparent_age: l operatore monomanopola           ed2d997
+H6-C2b  Age Profiles: 7 profili x 3 varianti sesso       ff03ad2
+H6-D    Traiettorie bidirezionali round-trip coerente     3d21c53
+H6-B    BodyAging: dissociazione forza/massa             095e150
 ```
 
 ## 1. Architettura generale raggiunta
@@ -1577,7 +1585,134 @@ guardie di evoluzione verificano assenza del vecchio, non solo
 presenza del nuovo.
 ```
 
-## 39. Sistema di validazione
+## 39. H6 — The Age Engine
+
+```text
+Nato dalla direttiva: "voglio che il personaggio debba poter
+invecchiare o ringiovanire in modo realisticamente
+proporzionale" — e dallo smascheramento che l'età, pur
+esistendo nei Demographics (ChronologicalAge /
+DevelopmentalStage / ApparentAge, già tripartita bene dal
+design originale), era COMPLETAMENTE SCOLLEGATA da anatomia
+e appearance: un'etichetta che non pilotava nulla.
+
+L'AGE ENGINE la collega — e fa dell'età la seconda dimensione
+del controllo (accanto allo spazio H4.12):
+
+    apparent_age(human, 70)
+    ├── 26 curve gerontologiche calcolate
+    ├── 4 componenti aging configurati in-place
+    ├── report changed/preserved campo per campo
+    └── apparent_age(human, 25) → ringiovanisce:
+        la matrice si inverte, round-trip IDENTICO
+
+H6-A1  SkinAging                                         c7c5e6f
+├── wrinkle_map PER ZONA (10 zone: fronte, zampe di gallina,
+│   nasolabiali, marionette, perioculari, collo, décolleté,
+│   mani...) — una ruga per zona, non un valore globale
+├── elasticity INVERTITA (1.0 = giovane, cala con l'età)
+├── sun_damage SEPARATO dal cronoinvecchiamento (il
+│   marinaio e l'impiegato invecchiano diversamente)
+└── default age-neutral (pattern: glabro, clean-shaven)
+
+H6-A2  HairAging                                         c9008de
+├── graying_pattern enum (6: none, temples_first, diffuse,
+│   salt_pepper, patchy, root_shadow — la SEQUENZA reale)
+├── graying_extent 0..1 CONTINUO (non binario)
+├── PER-REGIONE: barba grigia PRIMA dei capelli (scalp/
+│   facial/body extent indipendenti — tratto reale)
+└── gray_hair_texture (il capello bianco è più ruvido)
+
+H6-A3  FaceAging                                         245a1b1
+├── 12 assi: discesa tessuti (midface, jowl, pieghe),
+│   volume (labbra, lobi, tempie), ptosi (palpebra,
+│   sopracciglio), contorno osseo (orbite, mandibola)
+├── separazione DOCUMENTATA da SkinAging: SkinAging possiede
+│   la LINEA (superficie), FaceAging la PIEGA (tessuto)
+└── componente registrabile/opzionale (pattern
+    ReproductiveSystem: l'età è uno STATO che si somma)
+
+H6-C1  AgeCurves — LA MATRICE                            df4a7a5
+├── 20 curve (poi 26 con H6-B), anchor-interpolate
+│   (4-6 punti per asse, smoothstep tra anchor)
+├── ogni asse ha onset/pendenza/forma PROPRI dalla
+│   gerontologia: la nasolabiale inizia a ~25 (la PRIMA
+│   piega!), il grigiore a ~30-35, la ptosi ACCELERA dopo
+│   i 55, l'osso è ULTIMO (~45-60)
+├── le PROPORZIONI sono nella matrice: folds lead, bone
+│   follows, beard grays first, elasticity inverts
+└── monotone (sulla curva i segni non regrediscono:
+    la regressione è H6-D, non una proprietà della curva)
+
+H6-C2  apparent_age() — L'OPERATORE                     ed2d997
+├── UNA manovola: apparent_age(human, N) configura TUTTO
+├── in-place: legge lo stato esistente, lo aggiorna — il
+│   report è VERITIERO (contro lo stato attuale, non i
+│   default) e l'idempotenza è per costruzione
+├── seconda chiamata stessa età = tutto preserved
+└── NON tocca ChronologicalAge/DevelopmentalStage né
+    identity/anatomia: solo i componenti aging
+
+H6-C2b Age Profiles                                      ff03ad2
+├── 7 profili (lifestyles): TYPICAL, GRACEFUL, WEATHERED,
+│   SEDENTARY, ATHLETIC, SMOKER, PREMATURE
+├── moltiplicatori per asse che SCALANO le curve (la
+│   forma gerontologica resta, il profilo la inclina)
+├── 3 varianti sesso (NEUTRAL/MALE/FEMALE) con override
+│   SOLO dove la gerontologia documenta differenze reali
+│   (grigiore, sarcopenia, statura, stooping)
+├── il sesso NON viene MAI dedotto: esplicito per
+│   costruzione (principio Sex≠Gender di H4.20)
+└── clamp [0,1] dopo il prodotto (mai fuori range)
+
+H6-D   Traiettorie                                       3d21c53
+├── AgeTrajectory: waypoint (t, age) — la STORIA del
+│   personaggio, non un singolo stato
+├── transit(human, traj, t_from, t_to): il passaggio,
+│   con TransitReport (direction, changes, preserved)
+├── transit_steps(..., steps=N): il passaggio animato
+│   (frame-by-frame)
+├── distinzione t-vs-age TESTATA (traiettorie non lineari:
+│   30 anni percepiti in 10 anni narrativi)
+└── ROUND-TRIP COERENZA: 20→70→20 torna IDENTICO —
+    la storia è reversibile per costruzione (curve
+    deterministiche = ringiovanire inverte la stessa
+    matrice, non inventa nulla)
+
+H6-B   BodyAging                                         095e150
+├── 6 assi corpo: sarcopenia (massa), strength_loss,
+│   fat_redistribution, postural_stooping, stature_loss,
+│   body_skin_thinning
+├── DISSOCIAZIONE FORZA/MASSA: la forza cala PRIMA e PIÙ
+│   della massa (due assi separati, il fenomeno reale)
+├── lo stooping è ULTIMO, la statura perde poco
+└── apparent_age estesa: il corpo invecchia NELLA STESSA
+    CHIAMATA (26 assi totali nella matrice)
+```
+
+ARCHITETTURA: complessi sotto, semplici sopra. Il futuro
+nodo ComfyUI "Age" avrà UNO slider — dietro: 26 curve
+gerontologiche × 7 profili × 3 varianti sesso = 546
+combinazioni, un operatore idempotente e traiettorie
+reversibili. Filosofia del progetto mantenuta.
+
+SCOPE: invecchiamento dell'ADULTO. Il modello pediatrico
+(8enne ≠ 30enne con meno rughe: proporzioni corporee
+diverse) è un capitolo separato (developmental scaling),
+registrato in roadmap.
+
+LEZIONI DI PROCESSO (tutte nate da rossi reali):
+- onset "ancora zero" = età dell'ANCHOR (smoothstep vivo
+  tra anchor): violata due volte (mandibola, statura)
+- i contratti di cardinalità/set evolvono CON l'operatore:
+  il test che fallisce è il guardiano che fa il suo lavoro
+- i replace strutturali di operator.py si fanno per INDICE
+  (IndexOf), mai per pattern sulla firma
+- quando si sostituisce un blocco contenente definizioni
+  di modulo (le mappe _*_AXIS_MAP), enumerarle prima e
+  verificarle dopo
+
+## 40. Sistema di validazione
 
 ```text
 AnatomyComponent → SemanticComponent → CharacterForgeObject
@@ -1587,14 +1722,14 @@ Contratto: `validate()` **solleva ValueError**, `is_valid()` la cattura e restit
 
 Nota di sviluppo: durante H4.12-B il primo abbozzo restituiva una lista di errori invece di sollevare `ValueError`, rompendo il contratto della gerarchia; corretto prima del commit. Lezione: il contratto di validazione del progetto è a eccezioni.
 
-## 40. Test e procedura canonica
+## 41. Test e procedura canonica
 
 Python di riferimento per sviluppo e test: **il venv di ComfyUI** — `D:\AVVIO PULITO di ComfyUI\ComfyUI\venv\Scripts\python.exe` (Python 3.12.10, pytest 9.1.1). Il Python 3.14 globale non ha pytest e non deve essere usato.
 
 ```text
 regressione unittest : python -m unittest discover -s tests -p "test_*.py"  → Ran 196 tests OK
-suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B/C + H4.14-A/B/C/D + H4.15-A/B + H4.16-A/B + H4.17 + H5-A/B/C + H4.18-A/B/C/D + H4.19-A/B/C/D + H4.20 + H5-D-1/2/3 → 802 passed
-TOTALE TEST UNICI   : 998 verdi
+suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B/C + H4.14-A/B/C/D + H4.15-A/B + H4.16-A/B + H4.17 + H5-A/B/C + H4.18-A/B/C/D + H4.19-A/B/C/D + H4.20 + H5-D-1/2/3 → 910 passed
+TOTALE TEST UNICI   : 1106 verdi
 ```
 
 - H4.10: 14 test → OK
@@ -1631,14 +1766,21 @@ TOTALE TEST UNICI   : 998 verdi
 - H5-D-1: 18 test → OK (pytest)
 - H5-D-2: 19 test → OK (pytest)
 - H5-D-3: 19 test → OK (pytest)
+- H6-A1: 16 test → OK (pytest)
+- H6-A2: 16 test → OK (pytest)
+- H6-A3: 13 test → OK (pytest)
+- H6-C1: 18 test → OK (pytest)
+- H6-C2: 14 test → OK (pytest)
+- H6-D: 17 test → OK (pytest)
+- H6-B: 14 test → OK (pytest)
 
-Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **54 test**. Totale capitolo H4.14: **97 test**. Totale capitolo H4.15: **62 test**. Totale capitolo H4.16: **60 test**. Totale capitolo H4.17: **24 test**. Totale capitolo H5: **56 test**. Totale capitolo H4.18: **78 test**. Totale capitolo H4.19: **94 test**. Totale capitolo H4.20: **30 test**. Totale capitolo H5-D: **56 test**.
+Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **54 test**. Totale capitolo H4.14: **97 test**. Totale capitolo H4.15: **62 test**. Totale capitolo H4.16: **60 test**. Totale capitolo H4.17: **24 test**. Totale capitolo H5: **56 test**. Totale capitolo H4.18: **78 test**. Totale capitolo H4.19: **94 test**. Totale capitolo H4.20: **30 test**. Totale capitolo H5-D: **56 test**. Totale capitolo H6: **108 test**. Totale capitolo H4.20: **30 test**. Totale capitolo H5-D: **56 test**.
 
 Nota storica: i 5 errori di import `No module named 'pytest'` documentati fino a H4.11 nascevano dall'uso del Python 3.14 globale; con il venv di ComfyUI l'intera suite gira senza errori. Da H4.12 in poi la procedura canonica usa il venv.
 
-## 41. Git
+## 42. Git
 
-Ultimo checkpoint: **H5-D-3** — commit `feat(human): add H5-D-3 body hair per region and four-segment limb parity` (`6820c60`).
+Ultimo checkpoint: **H6-C2b** — commit `feat(human): add H6-C2b age profiles seven lifestyles with sex-specific multipliers` (`ff03ad2`).
 
 ```text
 main
@@ -1646,9 +1788,17 @@ main
 working tree clean
 ```
 
-Commit dei capitoli H4.12 … H5-D:
+Commit dei capitoli H4.12 … H6:
 
 ```text
+ff03ad2 feat(human): add H6-C2b age profiles seven lifestyles with sex-specific multipliers
+095e150 feat(human): add H6-B body aging with strength-mass dissociation and six body curves
+3d21c53 feat(human): add H6-D age trajectories bidirectional transit with round-trip coherence
+ed2d997 feat(human): add H6-C2 apparent_age operator with in-place updates and truthful report
+df4a7a5 feat(human): add H6-C1 age response curves twenty-axis gerontological matrix
+245a1b1 feat(human): add H6-A3 face aging twelve-axis soft tissue descent and volume loss
+c9008de feat(human): add H6-A2 hair aging progressive graying per region
+c7c5e6f feat(human): add H6-A1 skin aging per-zone wrinkle map with independent fotoaging
 6820c60 feat(human): add H5-D-3 body hair per region and four-segment limb parity
 8b68950 feat(human): add H5-D-2 facial hair per region with style factories
 87429ae feat(human): add H5-D-1 scalp hair control baldness patterns and styling
@@ -1685,11 +1835,11 @@ c5b560e feat(human): add H4.12-B landmark relation component
 b3cf564 feat(human): add H4.12-A coordinate and landmark foundation
 ```
 
-I capitoli da H4.12 a H5, i completamenti H4.18/H4.19/H4.20, il sistema-peli H5-D e il documento della visione sono stati pushati su `origin/main`.
+I capitoli da H4.12 a H6, l Age Engine completo e il documento della visione sono stati pushati su `origin/main`.
 
-## 42. Dove NON siamo ancora arrivati
+## 43. Dove NON siamo ancora arrivati
 
-Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica, l'anatomia a dettaglio estremo e TOTALE, l'appearance completa (pelle, capelli con pieno controllo su calvizie e acconciature, occhi, barba per regioni, peli corporei per regioni con glabro emergente) esistono ora. CharacterForge **non è ancora un generatore 3D anatomico**. **H4 (fino a H4.19) e H5 sono complete.** Mancano:
+Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica, l'anatomia a dettaglio estremo e TOTALE, l'appearance completa (pelle, capelli, occhi, barba, corpo, calvizie mediche, acconciature, peli corporei) e il TEMPO (l Age Engine: età→aspetto bidirezionale con profili) esistono ora. CharacterForge **non è ancora un generatore 3D anatomico**. **H4 (fino a H4.19) e H5 sono complete.** Mancano:
 
 ```text
 3D representation
@@ -1700,7 +1850,7 @@ Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica,
 → Model Adapters
 ```
 
-## 43. Il salto concettuale successivo
+## 44. Il salto concettuale successivo
 
 Fino a H4.11: **"CHE COS'È una parte anatomica?"** Con H4.12: **"DOVE SI TROVA e COME SI RELAZIONA alle altre parti?"** Con H4.13: **"COME SI DERIVA una misura da un'altra?"** — e la risposta è nel codice.
 
@@ -1717,9 +1867,9 @@ move zygion ±δ (H4.14-D, bottom-up) ≡ widen_bizygomatic (H4.14-B, top-down)
 → stesso modello: equivalenza provata, report changed/preserved certificato
 ```
 
-La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Con H4.14: **"COME SI PROPAGA una modifica?"** — e la risposta è codice con report a tre livelli. Con H5-D il sistema-peli è completo: calvizie mediche, acconciature su due assi, barba per regioni, corpo per regioni, glabro emergente. Prossimo: **H6 — Clothing**, il primo layer relazionale (copre ciò che abbiamo costruito).
+La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Con H4.14: **"COME SI PROPAGA una modifica?"** — e la risposta è codice con report a tre livelli. Con H6 il tempo è controllabile: apparent_age() con profili, traiettorie bidirezionali, proporzioni gerontologiche certificate. Prossimo: **H7 — Clothing**, il primo layer relazionale (copre ciò che abbiamo costruito).
 
-## 44. In sintesi — percorso fatto
+## 45. In sintesi — percorso fatto
 
 ```text
 FASE 1  Core semantico
@@ -1745,11 +1895,12 @@ H4.18   Lower Body Extreme Detail + Integrità (A→D)       ← CHIUSA
 H4.19   Anatomy Completion: voglio tutto (A→D)            ← CHIUSA
 H4.20   Composable Reproductive System                   ← CHIUSA
 H5-D    The Complete Hair System (D-1/2/3)              ← CHIUSA
+H6      The Age Engine (A/C/D/B: 8 milestone)          ← CHIUSA
 ```
 
 H4.12 ha costruito il ponte tra **modello anatomico semantico** e **modello geometrico parametrico**: ora esiste. H4.13 lo ha reso percorribile in entrambe le direzioni: le proporzioni non si dichiarano più, si derivano — cranio compreso. H4.14 lo ha reso reversibile e verificabile: ogni modifica torna con il certificato di cosa è cambiato e cosa è sopravvissuto.
 
-## 45. Roadmap estesa oltre H6
+## 46. Roadmap estesa oltre H7
 
 ```text
 H4  HUMAN ANATOMY
@@ -1763,7 +1914,9 @@ H4  HUMAN ANATOMY
 ├── H4.19 Censimento "voglio tutto" a zero (31/31)         ✅
 ├── H4.20 Sistema riproduttivo componibile                   ✅
 ├── H5-D  The Complete Hair System (calvizie/stili/peli)     ✅
-└── H4+H5+H5-D CHIUSE: struttura + superficie + peli
+├── H5-D  The Complete Hair System (calvizie/stili/peli)    ✅
+├── H6   The Age Engine (età bidirezionale + profili)        ✅
+└── H4+H5+H5-D+H6 CHIUSE: struttura + superficie + tempo
         ↓
 H5  APPEARANCE
 │
@@ -1791,7 +1944,7 @@ H12 VISION / IMAGE-TO-ENTITY
 H13 SCENE / RELATIONSHIPS
 ```
 
-## 46. Il punto fondamentale del progetto, in una frase
+## 47. Il punto fondamentale del progetto, in una frase
 
 All'inizio si stava costruendo un **Character Generator**. Ora la visione è diventata:
 
@@ -1809,4 +1962,4 @@ Con le due direzioni ormai chiarite (vedi Parte II e Parte III):
       IMAGE ←──── ADAPTER ←── ENTITY
 ```
 
-E con H4.20 chiusa, il censimento anatomico è TOTALE: ogni struttura del corpo umano ha componente semantica certificata — visibile o interna, bilateralmente asimmetrica dove l'anatomia lo è, componibile dove la configurazione deve restare esplicita. Il modello è pronto per H6.
+E con H4.20 chiusa, il censimento anatomico è TOTALE: ogni struttura del corpo umano ha componente semantica certificata — visibile o interna, bilateralmente asimmetrica dove l'anatomia lo è, componibile dove la configurazione deve restare esplicita. Il modello è pronto per H7..
