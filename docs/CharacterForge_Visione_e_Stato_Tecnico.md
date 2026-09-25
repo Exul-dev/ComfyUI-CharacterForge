@@ -1,6 +1,6 @@
-# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H4.17)
+# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H5)
 
-> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H4.17 — Bilateral Upper Limbs** (chiusa). Con H4.17 l'anatomia H4 è bilateralmente completa.
+> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H5 — Appearance** (chiusa, sottosezioni A→C: skin, hair, eyes). H4 e H5 sono complete.
 
 ---
 
@@ -222,7 +222,7 @@ CharacterForge non sostituisce ComfyUI: **lo rende più consapevole di ciò che 
 
 ## La visione finale, oltre la milestone attuale
 
-Oggi: **H4.17 — H4 CHIUSA** ✅ (anatomia completa e bilateralmente completa). Poi, progressivamente:
+Oggi: **H5 — Appearance** ✅ (chiusa, H5-A/B/C). Poi, progressivamente:
 
 ```text
 Morphology → Geometry → Transformations → Identity → State
@@ -850,9 +850,9 @@ Il **Custom Node è l'interfaccia di CharacterForge dentro ComfyUI**. Ma **Chara
 ---
 ---
 
-# PARTE V — Stato tecnico attuale (H4.17)
+# PARTE V — Stato tecnico attuale (H5)
 
-Siamo arrivati alla **H4.17** del ramo Human Engine: **H4 è completa**. Il repository è **sincronizzato con origin/main**: i capitoli da H4.12 a H4.17 sono stati pushati.
+Siamo arrivati alla **H5** del ramo Human Engine: **H4 e H5 sono complete**. Il repository è **sincronizzato con origin/main**: i capitoli da H4.12 a H5 sono stati pushati.
 
 ```text
 main
@@ -860,9 +860,9 @@ main
     └── working tree CLEAN
 ```
 
-L'ultima milestone chiusa è: **H4.17 — Bilateral Upper Limbs** ✅
+L'ultima milestone chiusa è: **H5 — Appearance** ✅
 
-I capitoli da H4.12 a H4.16, chiusi in sottosezioni, più la milestone finale H4.17:
+I capitoli da H4.12 a H4.17, chiusi in sottosezioni, più il capitolo H5:
 
 ```text
 H4.12-A  CoordinateSpace / Coordinate / CoordinateSystem / Landmark   b3cf564
@@ -883,6 +883,9 @@ H4.16-A  Ear/Ears bilaterali + Nose + Mouth/Philtrum            92752e8
 H4.16-B  Waist + Abdomen + fix Torso a cm reali                6c745d8
 H4.16-C  Rimozione backup tracciati + .gitignore                604d16e
 H4.17   Arm/Arms dual-mode (bilateralità totale)            31a4ed7
+H5-A    Skin (SemanticComponent, standard stretto)          0aafb31
+H5-B    Hair (bald ortogonale, graded strict)                a12c135
+H5-C    Eyes bilaterali (eterocromia emergente)              ba2b284
 ```
 
 ## 1. Architettura generale raggiunta
@@ -904,7 +907,8 @@ CharacterForge
 │   ├── Human
 │   │   ├── Identity
 │   │   ├── Demographics
-│   │   └── Anatomy
+│   │   ├── Anatomy
+│   │   └── Appearance (skin, hair, eyes)
 │   │
 │   └── Anatomy
 │       ├── Body structure
@@ -1361,7 +1365,42 @@ arms.py — dual-mode (pattern Shoulders, H4.5)
 
 Con H4.17 ogni struttura bilaterale del corpo segue lo standard forte: spalle, orecchie, mani, regione mammaria, gambe, braccia. **L'anatomia H4 è bilateralmente completa.**
 
-## 34. Sistema di validazione
+## 34. H5 — Appearance (A→C)
+
+```text
+Architettura del layer: l'appearance vive ACCANTO all'anatomia —
+SemanticComponent puri (pattern Coordinate), agganciati a Human
+tramite register_component. Nessuna dipendenza da AnatomyComponent
+(verificata da test dedicati); unico contatto: BodySide, il
+vocabolario condiviso della bilateralità.
+
+H5-A — Skin (human/skin)                          0aafb31
+├── tone (7 nominali) + tone_hex opzionale
+├── skin_type: Fitzpatrick I..VI — scala INDIPENDENTE dal tono
+│   (reattività UV ≠ colore percepito: nessuna mappa forzata)
+├── undertone, texture, oiliness/hydration/sensitivity 0..1
+└── freckle_density, mole_count (≥ 0, strict int)
+
+H5-B — Hair (human/hair)                          a12c135
+├── color (12 nominali) + hex, texture (Andre Walker semplificato)
+├── length ORTOGONALE: bald descrive la copertura, gli attributi
+│   della fibra restano significativi (stubble, regrowth)
+├── density/volume/gloss 0..1
+└── STANDARD STRETTO: niente cast nel costruttore, bool rifiutati,
+    ValueError per input non numerici (mai TypeError)
+
+H5-C — Eye/Eyes (human/eyes)                      ba2b284
+├── Eye side-required (pattern Ear/Leg/Arm): iris (9 colori +
+│   pattern), sclera_tint, lashes
+└── Eyes bilaterale forte — ETEROCROMIA emergente: nessun campo
+    esplicito, è semplicemente left.iris_color ≠ right.iris_color
+```
+
+Due lezioni di processo codificate in H5: (1) mai `int()` prima di un check `isinstance(int)` — il cast maschera l'input sporco (scoperto da test_skin_rejects_invalid_mole_count, fixato in 0aafb31); (2) le attese dei test si contano dal file (`def test_`), non a occhio — il conteggio automatico è parte del protocollo da H5-B.
+
+Con H5 il registro componenti di Human ospita il layer appearance completo: skin + hair + eyes convivono sullo stesso personaggio (test_full_appearance_layer_coexists).
+
+## 35. Sistema di validazione
 
 ```text
 AnatomyComponent → SemanticComponent → CharacterForgeObject
@@ -1371,14 +1410,14 @@ Contratto: `validate()` **solleva ValueError**, `is_valid()` la cattura e restit
 
 Nota di sviluppo: durante H4.12-B il primo abbozzo restituiva una lista di errori invece di sollevare `ValueError`, rompendo il contratto della gerarchia; corretto prima del commit. Lezione: il contratto di validazione del progetto è a eccezioni.
 
-## 35. Test e procedura canonica
+## 36. Test e procedura canonica
 
 Python di riferimento per sviluppo e test: **il venv di ComfyUI** — `D:\AVVIO PULITO di ComfyUI\ComfyUI\venv\Scripts\python.exe` (Python 3.12.10, pytest 9.1.1). Il Python 3.14 globale non ha pytest e non deve essere usato.
 
 ```text
 regressione unittest : python -m unittest discover -s tests -p "test_*.py"  → Ran 196 tests OK
-suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B/C + H4.14-A/B/C/D + H4.15-A/B + H4.16-A/B + H4.17 → 488 passed
-TOTALE TEST UNICI   : 684 verdi
+suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B/C + H4.14-A/B/C/D + H4.15-A/B + H4.16-A/B + H4.17 + H5-A/B/C → 544 passed
+TOTALE TEST UNICI   : 740 verdi
 ```
 
 - H4.10: 14 test → OK
@@ -1400,14 +1439,17 @@ TOTALE TEST UNICI   : 684 verdi
 - H4.16-A: 42 test → OK (pytest)
 - H4.16-B: 18 test → OK (pytest)
 - H4.17: 24 test → OK (pytest)
+- H5-A: 20 test → OK (pytest)
+- H5-B: 17 test → OK (pytest)
+- H5-C: 19 test → OK (pytest)
 
-Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **54 test**. Totale capitolo H4.14: **97 test**. Totale capitolo H4.15: **62 test**. Totale capitolo H4.16: **60 test**. Totale capitolo H4.17: **24 test**.
+Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **54 test**. Totale capitolo H4.14: **97 test**. Totale capitolo H4.15: **62 test**. Totale capitolo H4.16: **60 test**. Totale capitolo H4.17: **24 test**. Totale capitolo H5: **56 test**.
 
 Nota storica: i 5 errori di import `No module named 'pytest'` documentati fino a H4.11 nascevano dall'uso del Python 3.14 globale; con il venv di ComfyUI l'intera suite gira senza errori. Da H4.12 in poi la procedura canonica usa il venv.
 
-## 36. Git
+## 37. Git
 
-Ultimo checkpoint: **H4.17** — commit `feat(human): add H4.17 bilateral arm model with legacy compatibility` (`31a4ed7`).
+Ultimo checkpoint: **H5-C** — commit `feat(human): add H5-C eyes appearance component` (`ba2b284`).
 
 ```text
 main
@@ -1415,9 +1457,12 @@ main
 working tree clean
 ```
 
-Commit dei capitoli H4.12 … H4.17:
+Commit dei capitoli H4.12 … H5:
 
 ```text
+ba2b284 feat(human): add H5-C eyes appearance component
+a12c135 feat(human): add H5-B hair appearance component
+0aafb31 feat(human): add H5-A skin appearance component
 31a4ed7 feat(human): add H4.17 bilateral arm model with legacy compatibility
 604d16e chore: remove tracked backup files and ignore future ones
 6c745d8 feat(human): add H4.16-B waist abdomen and real-unit torso defaults
@@ -1438,11 +1483,11 @@ c5b560e feat(human): add H4.12-B landmark relation component
 b3cf564 feat(human): add H4.12-A coordinate and landmark foundation
 ```
 
-I capitoli da H4.12 a H4.17 e il documento della visione sono stati pushati su `origin/main`.
+I capitoli da H4.12 a H5 e il documento della visione sono stati pushati su `origin/main`.
 
-## 37. Dove NON siamo ancora arrivati
+## 38. Dove NON siamo ancora arrivati
 
-Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica e l'anatomia bilateralmente completa esistono ora. CharacterForge **non è ancora un generatore 3D anatomico**. **L'anatomia di H4 è completa.** Mancano:
+Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica, l'anatomia bilateralmente completa e l'appearance base (skin, hair, eyes) esistono ora. CharacterForge **non è ancora un generatore 3D anatomico**. **H4 e H5 sono complete.** Mancano:
 
 ```text
 3D representation
@@ -1453,7 +1498,7 @@ Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica 
 → Model Adapters
 ```
 
-## 38. Il salto concettuale successivo
+## 39. Il salto concettuale successivo
 
 Fino a H4.11: **"CHE COS'È una parte anatomica?"** Con H4.12: **"DOVE SI TROVA e COME SI RELAZIONA alle altre parti?"** Con H4.13: **"COME SI DERIVA una misura da un'altra?"** — e la risposta è nel codice.
 
@@ -1470,9 +1515,9 @@ move zygion ±δ (H4.14-D, bottom-up) ≡ widen_bizygomatic (H4.14-B, top-down)
 → stesso modello: equivalenza provata, report changed/preserved certificato
 ```
 
-La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Con H4.14: **"COME SI PROPAGA una modifica?"** — e la risposta è codice con report a tre livelli. Con H4.16 la copertura anatomica era totale; con H4.17 è anche bilateralmente completa: **H4 è CHIUSA**. Prossimo: il salto di strato verso **H5 — Appearance**.
+La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Con H4.14: **"COME SI PROPAGA una modifica?"** — e la risposta è codice con report a tre livelli. Con H4 l'anatomia era completa; con H5 il personaggio ha la superficie: pelle, capelli, occhi. Prossimo: **H6 — Clothing**, l'abbigliamento che vive sopra l'appearance.
 
-## 39. In sintesi — percorso fatto
+## 40. In sintesi — percorso fatto
 
 ```text
 FASE 1  Core semantico
@@ -1493,11 +1538,12 @@ H4.14   Parametric Builder (A→D)                          ← CHIUSA
 H4.15   Lower Body (A→B)                                  ← CHIUSA
 H4.16   Anatomy Completion (A→C)                           ← CHIUSA
 H4.17   Bilateral Upper Limbs (dual-mode Arms)             ← CHIUSA
+H5      Appearance (A→C: skin, hair, eyes)               ← CHIUSA
 ```
 
 H4.12 ha costruito il ponte tra **modello anatomico semantico** e **modello geometrico parametrico**: ora esiste. H4.13 lo ha reso percorribile in entrambe le direzioni: le proporzioni non si dichiarano più, si derivano — cranio compreso. H4.14 lo ha reso reversibile e verificabile: ogni modifica torna con il certificato di cosa è cambiato e cosa è sopravvissuto.
 
-## 40. Roadmap estesa oltre H4.17
+## 41. Roadmap estesa oltre H5
 
 ```text
 H4  HUMAN ANATOMY
@@ -1510,6 +1556,11 @@ H4  HUMAN ANATOMY
 └── H4 CHIUSA: anatomia completa e bilateralmente completa
         ↓
 H5  APPEARANCE
+│
+├── H5-A Skin (SemanticComponent, standard stretto)          ✅
+├── H5-B Hair (bald ortogonale, graded strict)               ✅
+├── H5-C Eyes bilaterali (eterocromia emergente)             ✅
+└── H5 CHIUSA: appearance base completa
         ↓
 H6  CLOTHING
         ↓
@@ -1530,7 +1581,7 @@ H12 VISION / IMAGE-TO-ENTITY
 H13 SCENE / RELATIONSHIPS
 ```
 
-## 41. Il punto fondamentale del progetto, in una frase
+## 42. Il punto fondamentale del progetto, in una frase
 
 All'inizio si stava costruendo un **Character Generator**. Ora la visione è diventata:
 
@@ -1548,4 +1599,4 @@ Con le due direzioni ormai chiarite (vedi Parte II e Parte III):
       IMAGE ←──── ADAPTER ←── ENTITY
 ```
 
-E con H4.17 chiusa, l'anatomia umana è rappresentata per intero e per entrambi i lati — struttura, geometria, derivazione, modifica e bilateralità. **H4 è completa**: il modello è pronto per H5, l'apparenza che vive sopra questa struttura.
+E con H5 chiusa, il personaggio ha struttura E superficie: anatomia bilateralmente completa sotto, appearance (pelle, capelli, occhi) sopra. Il modello è pronto per H6, l'abbigliamento che vive su entrambe.
