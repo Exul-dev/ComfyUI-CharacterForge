@@ -1,5 +1,5 @@
 ﻿"""
-CharacterForge Scene Interrogator v1.1.0 â€” MODULO 4
+CharacterForge Scene Interrogator v1.1.0 — MODULO 4
 ====================================================
 
 Immagine di scena -> prompt video.
@@ -362,4 +362,4 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 }
 
 print("[CharacterForge] scene_interrogator v1.1.0 caricato "
-      "(Modulo 4 â€” Florence via llama.cpp, JoyCaption via transformers)")
+      "(Modulo 4 — Florence via llama.cpp, JoyCaption via transformers)")

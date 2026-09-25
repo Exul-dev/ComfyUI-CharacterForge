@@ -1,5 +1,5 @@
 ﻿"""
-CharacterForge Cinematic â€” Alfred Hitchcock
+CharacterForge Cinematic — Alfred Hitchcock
 ===========================================
 
 Preset cinematografici ispirati alla fotografia e alla grammatica visiva
@@ -14,11 +14,11 @@ e materica per il motore CharacterForge.
 HITCHCOCK_STYLES = {
 
 # ================================================================
-# HITCHCOCK â€” ANNI 1950
+# HITCHCOCK — ANNI 1950
 # ================================================================
 
 "hitchcock_1950s": {
-    "name": "Alfred Hitchcock â€” 1950s",
+    "name": "Alfred Hitchcock — 1950s",
     "description": (
         "Cinema thriller classico degli anni '50: fotografia controllata, "
         "composizioni geometriche, tensione psicologica, illuminazione "
@@ -128,15 +128,15 @@ HITCHCOCK_STYLES = {
 
 
 # ================================================================
-# HITCHCOCK â€” ANNI 1960
+# HITCHCOCK — ANNI 1960
 # ================================================================
 
 "hitchcock_1960s": {
-    "name": "Alfred Hitchcock â€” 1960s",
+    "name": "Alfred Hitchcock — 1960s",
     "description": (
-        "Thriller psicologico degli anni '60 con fotografia piÃ¹ "
+        "Thriller psicologico degli anni '60 con fotografia più "
         "contrastata, composizione grafica, atmosfera inquietante, "
-        "ombre piÃ¹ profonde e una resa cromatica piÃ¹ drammatica."
+        "ombre più profonde e una resa cromatica più drammatica."
     ),
 
     "category": "cinematic",

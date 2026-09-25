@@ -105,7 +105,7 @@ class CharacterForgeGenderController:
             gender_prompt = preset["prompt"]
         
         # Modifica del conditioning
-        # ComfyUI conditioning Ã¨ una lista di [tensor, metadata_dict]
+        # ComfyUI conditioning è una lista di [tensor, metadata_dict]
         modified_conditioning = []
         
         for cond_tuple in conditioning:

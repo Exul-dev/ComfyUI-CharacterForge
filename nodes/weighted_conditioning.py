@@ -14,7 +14,7 @@ Metodi di combinazione disponibili:
 - blend: Interpolazione lineare pesata
 
 Ogni metodo preserva la struttura del conditioning base
-se l'opzione preserve_structure Ã¨ attiva.
+se l'opzione preserve_structure è attiva.
 """
 
 import torch
@@ -49,7 +49,7 @@ class CharacterForgeWeightedConditioning:
             "base_influence": None
         },
         "concat": {
-            "description": "Concatenazione sequenziale (massima varietÃ  info)",
+            "description": "Concatenazione sequenziale (massima varietà info)",
             "preserves_base": True,
             "base_influence": 0.0
         },
@@ -232,7 +232,7 @@ class CharacterForgeWeightedConditioning:
         """
         Somma pesata con preservazione opzionale struttura base.
         
-        Formula: result = base * base_weight + Î£(cond_i * weight_i)
+        Formula: result = base * base_weight + Σ(cond_i * weight_i)
         dove base_weight = 1.0 - (somma pesi normalizzati * fattore)
         """
         # Estrai tensor dal base
@@ -246,7 +246,7 @@ class CharacterForgeWeightedConditioning:
         base_influence = method_config["base_influence"]
         
         if preserve_structure:
-            # Base ha influenza fissa del 50%, il resto Ã¨ distribuito
+            # Base ha influenza fissa del 50%, il resto è distribuito
             base_weight = base_influence
             cond_weights = [(1.0 - base_influence) * w for w in weights]
         else:
@@ -466,7 +466,7 @@ class CharacterForgeWeightedConditioning:
         Formula: result = base * (1 - t) + weighted_avg(cond) * t
         dove t = 1.0 - structure_strength
         """
-        # Fattore interpolazione (piÃ¹ struttura = meno condizionamento)
+        # Fattore interpolazione (più struttura = meno condizionamento)
         t = 1.0 - structure_strength
         
         result = []

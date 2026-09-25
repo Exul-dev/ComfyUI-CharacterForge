@@ -194,10 +194,10 @@ class CharacterForgeBodyController:
         if body_fat not in self.BODY_FAT_LEVELS:
             raise ValueError(f"Livello grasso corporeo '{body_fat}' non riconosciuto")
         
-        # Verifica compatibilitÃ  altezza con tipo corporatura
+        # Verifica compatibilità altezza con tipo corporatura
         height_range = self.BODY_DATABASE[body_type]["height_range"]
         if height < height_range["min"] or height > height_range["max"]:
-            # Non Ã¨ un errore, ma avvisa nel log
+            # Non è un errore, ma avvisa nel log
             print(f"[BodyController] Warning: Altezza {height}cm fuori range tipico "
                   f"per {body_type} ({height_range['min']}-{height_range['max']}cm)")
         
@@ -325,7 +325,7 @@ class CharacterForgeBodyController:
         Genera dettagli formattati delle caratteristiche corporatura applicate.
         """
         body_data = self.BODY_DATABASE[body_type]
-        height_range = body_data["height_range"]  # âœ… DEFINITA QUI!
+        height_range = body_data["height_range"]  # ✅ DEFINITA QUI!
         
         details = {
             "controller": "BodyController",

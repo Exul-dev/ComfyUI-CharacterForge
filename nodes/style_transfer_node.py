@@ -6,7 +6,7 @@ Nodo che prende l'IMMAGINE output dal character sheet
 e la trasforma applicando LoRA combinabili.
 
 Il nodo preserva completamente la struttura dell'immagine
-(identitÃ , pose, layout) cambiando SOLO lo stile visivo.
+(identità, pose, layout) cambiando SOLO lo stile visivo.
 
 CHANGELOG v2.2.0:
 - IL MENU style_preset ORA INCLUDE I 128 STILI ANIME
@@ -279,7 +279,7 @@ class CharacterForgeStyleTransferNode:
                     "min": 0.0,
                     "max": 1.5,
                     "step": 0.01,
-                    "tooltip": "IntensitÃ  applicazione stile (0.0-1.5)"
+                    "tooltip": "Intensità applicazione stile (0.0-1.5)"
                 }),
                 "structure_preservation": ("FLOAT", {
                     "default": 0.9,
@@ -293,7 +293,7 @@ class CharacterForgeStyleTransferNode:
                 "custom_prompt": ("STRING", {
                     "default": "",
                     "multiline": True,
-                    "tooltip": "Prompt custom (ha prioritÃ  sul preset). Usare con custom_combo."
+                    "tooltip": "Prompt custom (ha priorità sul preset). Usare con custom_combo."
                 }),
                 "extra_style_keywords": ("STRING", {
                     "default": "",
@@ -322,7 +322,7 @@ class CharacterForgeStyleTransferNode:
         if model is None or clip is None or vae is None:
             raise ValueError("[CharacterForge StyleTransfer] Model, CLIP o VAE non collegati")
 
-        # 1. Risolvi lo stile (il DATABASE anime ha prioritÃ  sui preset storici)
+        # 1. Risolvi lo stile (il DATABASE anime ha priorità sui preset storici)
         if style_preset in CINEMATIC_STYLES:
             cinematic_style = CINEMATIC_STYLES[style_preset]
             base_prompt = cinematic_style.get("prompt", "")
@@ -378,7 +378,7 @@ class CharacterForgeStyleTransferNode:
         )
 
         print(f"[CharacterForge StyleTransfer] stile='{style_preset}' ({source}) "
-              f"intensitÃ ={style_intensity} preservazione={structure_preservation} "
+              f"intensità={style_intensity} preservazione={structure_preservation} "
               f"-> denoise={optimized_denoise}")
 
         return (conditioning, latent, optimized_denoise, style_prompt)
@@ -411,7 +411,7 @@ class CharacterForgeStyleTransferNode:
         prompt_parts = []
 
         if custom_prompt and custom_prompt.strip():
-            # Custom prompt ha prioritÃ 
+            # Custom prompt ha priorità
             prompt_parts.append(custom_prompt.strip())
         elif base_prompt:
             prompt_parts.append(base_prompt)

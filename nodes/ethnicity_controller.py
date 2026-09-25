@@ -209,7 +209,7 @@ class CharacterForgeEthnicityController:
         prompt_parts.append(primary_features["hair"])
         prompt_parts.append(primary_features["eyes"])
         
-        # Se c'Ã¨ un'etnia secondaria, aggiungi mix
+        # Se c'è un'etnia secondaria, aggiungi mix
         if secondary != "none":
             secondary_features = self.ETHNICITY_DATABASE[secondary]
             
@@ -217,7 +217,7 @@ class CharacterForgeEthnicityController:
             prompt_parts.append(f"mixed {primary}-{secondary} heritage")
             
             # Aggiungi alcune caratteristiche secondarie
-            # in base al peso (piÃ¹ peso = piÃ¹ influenza secondaria)
+            # in base al peso (più peso = più influenza secondaria)
             influence = weight * 0.4  # Max 40% di influenza secondaria
             
             if influence > 0.2:

@@ -12,7 +12,7 @@ Evoluzione cinematografica per periodo:
 KUBRICK_STYLES = {
 
     "kubrick_1960s": {
-        "name": "Stanley Kubrick â€” 1960s",
+        "name": "Stanley Kubrick — 1960s",
         "description": "Cinematic realism inspired by Kubrick's 1960s visual language: controlled compositions, crisp monochrome or restrained color, wide-angle spatial clarity and precise photographic lighting.",
         "category": "cinematic",
         "artist": "Stanley Kubrick",
@@ -75,7 +75,7 @@ KUBRICK_STYLES = {
     },
 
     "kubrick_1970s": {
-        "name": "Stanley Kubrick â€” 1970s",
+        "name": "Stanley Kubrick — 1970s",
         "description": "1970s cinematic realism with controlled symmetry, naturalistic interiors, available-light atmosphere, wide-angle compositions and tactile photochemical texture.",
         "category": "cinematic",
         "artist": "Stanley Kubrick",
@@ -142,7 +142,7 @@ KUBRICK_STYLES = {
     },
 
     "kubrick_1980s": {
-        "name": "Stanley Kubrick â€” 1980s",
+        "name": "Stanley Kubrick — 1980s",
         "description": "1980s Kubrick-inspired cinematic realism emphasizing cold interiors, geometric symmetry, controlled wide-angle perspective and atmospheric practical lighting.",
         "category": "cinematic",
         "artist": "Stanley Kubrick",
@@ -211,7 +211,7 @@ KUBRICK_STYLES = {
     },
 
     "kubrick_1990s": {
-        "name": "Stanley Kubrick â€” 1990s",
+        "name": "Stanley Kubrick — 1990s",
         "description": "Late-period 1990s cinematic realism with controlled movement, naturalistic low-light interiors, precise framing and dense photochemical texture.",
         "category": "cinematic",
         "artist": "Stanley Kubrick",
