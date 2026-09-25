@@ -98,7 +98,7 @@ def _to_coordinate(point: tuple[float, float, float]) -> Coordinate:
     )
 
 
-def _ramanujan_perimeter(
+def ramanujan_perimeter(
     semi_axis_a: float,
     semi_axis_b: float,
 ) -> float:
@@ -228,7 +228,7 @@ def cranial_measurements(
             coordinates["left_orbitale"],
         )
     )
-    cranial_circumference = _ramanujan_perimeter(
+    cranial_circumference = ramanujan_perimeter(
         cranial_width / 2.0,
         cranial_length / 2.0,
     )

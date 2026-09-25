@@ -31,6 +31,7 @@ from .head_morphometry import (
     head_dimensions_from_cranial_measurements,
     head_dimensions_from_face_dimensions,
     head_proportions_from_dimensions,
+    ramanujan_perimeter,
 )
 from .cranial_landmarks import CranialLandmarks
 from .modify import (
@@ -44,6 +45,13 @@ from .facial_modify import (
     modify_face_dimensions,
     widen_bizygomatic,
     widen_jaw,
+)
+from .head_modify import (
+    HeadModification,
+    adjust_neurocranial_height,
+    lengthen_cranial,
+    modify_head_dimensions,
+    widen_cranial,
 )
 from .areola import Areola
 from .arms import Arms
@@ -126,6 +134,12 @@ __all__ = [
     "modify_face_dimensions",
     "widen_bizygomatic",
     "widen_jaw",
+    "HeadModification",
+    "adjust_neurocranial_height",
+    "lengthen_cranial",
+    "modify_head_dimensions",
+    "widen_cranial",
+    "ramanujan_perimeter",
     "Areola",
     "Arms",
     "Back",
