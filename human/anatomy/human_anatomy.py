@@ -7,6 +7,8 @@ from .arms import Arms
 from .legs import Legs
 from .pelvis import Pelvis
 from .back import Back
+from .abdomen import Abdomen
+from .waist import Waist
 from .body_fat import BodyFat
 from .body_type import BodyType, Height, Proportions
 from .chest import Chest
@@ -34,6 +36,8 @@ class HumanAnatomy(AnatomyComponent):
         chest=None,
         ribcage=None,
         back=None,
+        waist=None,
+        abdomen=None,
         arms=None,
         pelvis=None,
         legs=None,
@@ -51,6 +55,8 @@ class HumanAnatomy(AnatomyComponent):
         self.chest = chest or Chest()
         self.ribcage = ribcage or RibCage()
         self.back = back or Back()
+        self.waist = waist or Waist()
+        self.abdomen = abdomen or Abdomen()
         self.arms = arms or Arms()
         self.pelvis = pelvis or Pelvis()
         self.legs = legs or Legs()
@@ -72,6 +78,8 @@ class HumanAnatomy(AnatomyComponent):
             self.chest,
             self.ribcage,
             self.back,
+            self.waist,
+            self.abdomen,
             self.arms,
             self.pelvis,
             self.legs,
@@ -92,6 +100,8 @@ class HumanAnatomy(AnatomyComponent):
             "chest": self.chest.to_dict(),
             "ribcage": self.ribcage.to_dict(),
             "back": self.back.to_dict(),
+            "waist": self.waist.to_dict(),
+            "abdomen": self.abdomen.to_dict(),
             "arms": self.arms.to_dict(),
             "pelvis": self.pelvis.to_dict(),
             "legs": self.legs.to_dict(),

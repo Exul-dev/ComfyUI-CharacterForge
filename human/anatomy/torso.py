@@ -21,9 +21,9 @@ class Torso(AnatomyComponent):
     def __init__(
         self,
         *,
-        length: float = 1.0,
-        width: float = 1.0,
-        depth: float = 1.0,
+        length: float = 52.0,
+        width: float = 36.0,
+        depth: float = 24.0,
         shape: str = "straight",
     ) -> None:
         super().__init__()
