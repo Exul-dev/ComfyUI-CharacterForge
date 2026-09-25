@@ -113,6 +113,7 @@ class TestHumanEngineH417:
         assert isinstance(arms.upper_arm, UpperArm)
         assert isinstance(arms.forearm, Forearm)
         assert isinstance(arms.hands, Hands)
+        assert isinstance(arms.shoulders, type(arms.shoulders))
 
     def test_arms_legacy_explicit_parameters(self):
         arms = Arms(
@@ -179,6 +180,7 @@ class TestHumanEngineH417:
         assert data["schema_version"] == "1.0"
         assert data["component_type"] == "arms"
 
+        # legacy keys
         for key in (
             "shoulders",
             "upper_arm",
@@ -189,6 +191,7 @@ class TestHumanEngineH417:
         ):
             assert key in data
 
+        # bilateral keys
         assert data["left"]["component_type"] == "arm"
         assert data["right"]["component_type"] == "arm"
         assert data["left"]["side"] == "left"
