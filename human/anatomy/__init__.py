@@ -63,6 +63,11 @@ from .landmark_modify import (
     widen_euryons,
     widen_zygions,
 )
+from .pelvis import Pelvis
+from .thigh import Thigh
+from .knee import Knee
+from .lower_leg import LowerLeg
+from .ankle import Ankle
 from .areola import Areola
 from .arms import Arms
 from .back import Back
@@ -200,4 +205,9 @@ __all__ = [
     "Torso",
     "UpperArm",
     "Wrist",
+    "Pelvis",
+    "Thigh",
+    "Knee",
+    "LowerLeg",
+    "Ankle",
 ]
