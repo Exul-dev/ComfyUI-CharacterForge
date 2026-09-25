@@ -5,12 +5,16 @@ from .coordinate_system import CoordinateSystem
 from .landmark import Landmark, LandmarkSource, LandmarkStatus
 from .landmark_relation import LandmarkRelation, LandmarkRelationType
 from .landmark_graph import LandmarkGraph
+from .anatomical_plane import AnatomicalPlane, AnatomicalPlaneType
 from .landmark_geometry import (
     angle_at_vertex,
     computed_relation,
     depth_offset,
     euclidean_distance,
     horizontal_offset,
+    is_on_plane,
+    plane_normal,
+    signed_distance_to_plane,
     vertical_offset,
 )
 from .areola import Areola
@@ -63,12 +67,17 @@ __all__ = [
     "LandmarkRelation",
     "LandmarkRelationType",
     "LandmarkGraph",
+    "AnatomicalPlane",
+    "AnatomicalPlaneType",
     "angle_at_vertex",
     "computed_relation",
     "depth_offset",
     "euclidean_distance",
     "horizontal_offset",
     "vertical_offset",
+    "is_on_plane",
+    "plane_normal",
+    "signed_distance_to_plane",
     "Areola",
     "Arms",
     "Back",
