@@ -1,6 +1,6 @@
-# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H4.12)
+# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H4.13)
 
-> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H4.12 — Anatomical Coordinate & Landmark Framework** (chiusa, sottosezioni A→E).
+> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H4.13 — Morphometric Derivation** (chiusa, sottosezioni A→B).
 
 ---
 
@@ -222,7 +222,7 @@ CharacterForge non sostituisce ComfyUI: **lo rende più consapevole di ciò che 
 
 ## La visione finale, oltre la milestone attuale
 
-Oggi: **H4.12 — Anatomical Coordinate & Landmark Framework** ✅ (chiusa). Domani: **H4.13 — derivazione morfometrica**. Poi, progressivamente:
+Oggi: **H4.13 — Morphometric Derivation** ✅ (chiusa, H4.13-A/B). Poi, progressivamente:
 
 ```text
 Morphology → Geometry → Transformations → Identity → State
@@ -800,7 +800,7 @@ Molte proporzioni oggi rimangono implicite: il progetto le rende dati espliciti 
 
 ### 6. Il problema della morfometria
 
-Progressione concettuale: descrizione → componente semantico → misura → proporzione → landmark → coordinate → relazione geometrica → trasformazione → geometria. Con H4.12 questa progressione ha ora la sua infrastruttura completa (coordinate, relazioni, grafo, misure, piani).
+Progressione concettuale: descrizione → componente semantico → misura → proporzione → landmark → coordinate → relazione geometrica → trasformazione → geometria. Con H4.12 questa progressione ha la sua infrastruttura completa (coordinate, relazioni, grafo, misure, piani); con H4.13 la derivazione morfometrica chiude il cerchio (misure → dimensioni → proporzioni derivate).
 
 ### 7. Il problema delle modifiche indipendenti
 
@@ -850,19 +850,19 @@ Il **Custom Node è l'interfaccia di CharacterForge dentro ComfyUI**. Ma **Chara
 ---
 ---
 
-# PARTE V — Stato tecnico attuale (H4.12)
+# PARTE V — Stato tecnico attuale (H4.13)
 
-Siamo arrivati alla **H4.12** del ramo Human Engine, con **24 commit locali non ancora pushati** su `origin/main`.
+Siamo arrivati alla **H4.13** del ramo Human Engine, con **27 commit locali non ancora pushati** su `origin/main`.
 
 ```text
 main
-└── 24 commit avanti rispetto a origin/main
+└── 27 commit avanti rispetto a origin/main
     └── working tree CLEAN
 ```
 
-L'ultima milestone chiusa è: **H4.12 — Anatomical Coordinate & Landmark Framework** ✅
+L'ultima milestone chiusa è: **H4.13 — Morphometric Derivation** ✅
 
-chiusa in cinque sottosezioni:
+I capitoli H4.12 e H4.13, chiusi in sottosezioni:
 
 ```text
 H4.12-A  CoordinateSpace / Coordinate / CoordinateSystem / Landmark   b3cf564
@@ -870,6 +870,8 @@ H4.12-B  LandmarkRelation                                             c5b560e
 H4.12-C  LandmarkGraph                                                38a7828
 H4.12-D  LandmarkGeometry (distanze / offset / angoli)                766a9f9
 H4.12-E  AnatomicalPlane (semantica + geometria dei piani)            f5d48d3
+H4.13-A  FacialMorphometry (misure → dimensioni → proporzioni)      be36725
+H4.13-B  HeadMorphometry (FaceDimensions → HeadDimensions)          7bd554f
 ```
 
 ## 1. Architettura generale raggiunta
@@ -902,7 +904,8 @@ CharacterForge
 │       ├── Thorax
 │       ├── Mammary region
 │       ├── Head / Face morphometrics
-│       └── Landmark framework (coordinate, relazioni, grafo, geometria, piani)
+│       ├── Landmark framework (coordinate, relazioni, grafo, geometria, piani)
+│       └── Morphometric derivation (misure → dimensioni → proporzioni derivate)
 │
 ├── Cinematic
 ├── Reference Sheets
@@ -1040,7 +1043,7 @@ facial height/width/depth, upper/mid/lower face height, forehead width, bizygoma
 
 ## 13. FacialProportions
 
-`upper_to_mid_ratio`, `mid_to_lower_ratio`, `width_to_height_ratio`, `forehead_to_cheek_ratio`, `cheek_to_jaw_ratio`, `jaw_to_chin_ratio`. **Nota:** da rendere derivabili dalle dimensioni in futuro — candidato naturale per H4.13 (vedi sezione 31).
+`upper_to_mid_ratio`, `mid_to_lower_ratio`, `width_to_height_ratio`, `forehead_to_cheek_ratio`, `cheek_to_jaw_ratio`, `jaw_to_chin_ratio`. **Nota H4.10 — chiusa in H4.13-A:** le proporzioni sono ora derivabili dalle dimensioni tramite `facial_proportions_from_dimensions`.
 
 ## 14. Forehead
 
@@ -1171,7 +1174,42 @@ landmark_geometry
 
 Applicazioni dimostrate nei test: simmetria bilaterale rispetto al mid-sagittal (`left_zygion` −0.14 / `right_zygion` +0.14), piano di Frankfurt end-to-end nel grafo.
 
-## 27. Sistema di validazione
+## 27. H4.13-A — Facial Morphometric Derivation
+
+```text
+facial_morphometry.py
+├── FacialMeasurements (AnatomyComponent)
+│   └── 11 misure normalizzate: facial_height, terzi (upper/mid/lower),
+│       chin_height, bizygomatic, bigonial, eye_inner/eye_outer,
+│       mouth_width, facial_depth
+├── facial_measurements(FacialLandmarks) → FacialMeasurements
+│   └── 15 landmark richiesti; i mancanti sono elencati nel ValueError
+├── facial_scale_factor(measurements, target_height) → scala normalizzato→fisico
+├── face_dimensions_from_measurements(m, scale, *, forehead_width, chin_width)
+│   └── forehead_width e chin_width: fallback fisici NON derivabili dai landmark
+└── facial_proportions_from_dimensions(FaceDimensions) → FacialProportions
+    └── le 6 proporzioni DERIVATE — chiude la nota H4.10 (sezione 13)
+```
+
+Convenzioni documentate nel modulo: misure verticali con |Δy| (terzi additivi: upper + mid + lower = facial_height), larghezze bilaterali con distanza euclidea 3D, profondità facciale come range z. `facial_width := bizygomatic`, `jaw_width := bigonial`. Le proporzioni puramente geometriche sono invarianti di scala; le due che coinvolgono i fallback fisici (forehead_to_cheek, jaw_to_chin) sono scale-dipendenti — proprietà di design documentata e testata esplicitamente.
+
+## 28. H4.13-B — Head Morphometric Derivation
+
+```text
+head_morphometry.py
+├── head_dimensions_from_face_dimensions(face_dimensions, *, fallback cranici)
+│   ├── iniettati dal FaceDimensions: facial_height, bizygomatic, bigonial
+│   ├── cranial_length := cranial_depth; cranial_breadth := cranial_width
+│   └── fallback cranici: cranial_height/width/depth/circumference,
+│       neurocranial_height (i landmark facciali NON coprono il neurocranio)
+└── head_proportions_from_dimensions(HeadDimensions) → HeadProportions
+    ├── cephalic_index = cranial_breadth / cranial_length × 100 (formula classica)
+    └── cranial_height_to_width legge neurocranial_height (13/15 → 0.87, default H4.11)
+```
+
+Catena completa: `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions). Sei delle sette proporzioni dichiarate in H4.11 sono i rapporti dei default arrotondati a due decimali; il default `cephalic_index` 78.0 è la media tabellare mesocefalica (il valore derivato dai default dimensionali è 78.95).
+
+## 29. Sistema di validazione
 
 ```text
 AnatomyComponent → SemanticComponent → CharacterForgeObject
@@ -1181,14 +1219,14 @@ Contratto: `validate()` **solleva ValueError**, `is_valid()` la cattura e restit
 
 Nota di sviluppo: durante H4.12-B il primo abbozzo restituiva una lista di errori invece di sollevare `ValueError`, rompendo il contratto della gerarchia; corretto prima del commit. Lezione: il contratto di validazione del progetto è a eccezioni.
 
-## 28. Test e procedura canonica
+## 30. Test e procedura canonica
 
 Python di riferimento per sviluppo e test: **il venv di ComfyUI** — `D:\AVVIO PULITO di ComfyUI\ComfyUI\venv\Scripts\python.exe` (Python 3.12.10, pytest 9.1.1). Il Python 3.14 globale non ha pytest e non deve essere usato.
 
 ```text
 regressione unittest : python -m unittest discover -s tests -p "test_*.py"  → Ran 196 tests OK
-suite pytest         : 5 suite storiche + H4.12-B/C/D/E                      → 191 passed
-TOTALE TEST UNICI   : 387 verdi
+suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B   → 226 passed
+TOTALE TEST UNICI   : 422 verdi
 ```
 
 - H4.10: 14 test → OK
@@ -1198,24 +1236,28 @@ TOTALE TEST UNICI   : 387 verdi
 - H4.12-C: 17 test → OK (pytest)
 - H4.12-D: 26 test → OK (pytest)
 - H4.12-E: 23 test → OK (pytest)
+- H4.13-A: 21 test → OK (pytest)
+- H4.13-B: 14 test → OK (pytest)
 
-Totale capitolo H4.12: **92 test**.
+Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **35 test**.
 
 Nota storica: i 5 errori di import `No module named 'pytest'` documentati fino a H4.11 nascevano dall'uso del Python 3.14 globale; con il venv di ComfyUI l'intera suite gira senza errori. Da H4.12 in poi la procedura canonica usa il venv.
 
-## 29. Git
+## 31. Git
 
-Ultimo checkpoint: **H4.12-E** — commit `feat(human): add H4.12-E anatomical planes` (`f5d48d3`).
+Ultimo checkpoint: **H4.13-B** — commit `feat(human): add H4.13-B head morphometric derivation` (`7bd554f`).
 
 ```text
 main
-↑ 24 commit locali rispetto a origin/main
+↑ 27 commit locali rispetto a origin/main
 working tree clean
 ```
 
-Commit del capitolo H4.12:
+Commit dei capitoli H4.12 / H4.13:
 
 ```text
+7bd554f feat(human): add H4.13-B head morphometric derivation
+be36725 feat(human): add H4.13-A facial morphometric derivation
 f5d48d3 feat(human): add H4.12-E anatomical planes
 766a9f9 feat(human): add H4.12-D landmark geometry measurements
 38a7828 feat(human): add H4.12-C landmark graph container
@@ -1225,13 +1267,12 @@ b3cf564 feat(human): add H4.12-A coordinate and landmark foundation
 
 Nessun `git push` eseguito.
 
-## 30. Dove NON siamo ancora arrivati
+## 32. Dove NON siamo ancora arrivati
 
-Le fondamenta geometriche esistono ora (coordinate, grafo, misure, piani), ma CharacterForge **non è ancora un generatore 3D anatomico**. Mancano:
+Le fondamenta geometriche e la derivazione morfometrica esistono ora (coordinate, grafo, misure, piani, dimensioni e proporzioni derivate), ma CharacterForge **non è ancora un generatore 3D anatomico**. Mancano:
 
 ```text
-Derivazione automatica proporzioni/dimensioni dalle misure (H4.13)
-→ Parametric deformation
+Parametric deformation
 → 3D representation
 → Reference Sheet generation
 → Consistent image generation
@@ -1240,19 +1281,20 @@ Derivazione automatica proporzioni/dimensioni dalle misure (H4.13)
 → Model Adapters
 ```
 
-## 31. Il salto concettuale successivo
+## 33. Il salto concettuale successivo
 
-Fino a H4.11: **"CHE COS'È una parte anatomica?"** Con H4.12: **"DOVE SI TROVA e COME SI RELAZIONA alle altre parti?"** Prossimo: **"COME SI DERIVA una misura da un'altra?"**
+Fino a H4.11: **"CHE COS'È una parte anatomica?"** Con H4.12: **"DOVE SI TROVA e COME SI RELAZIONA alle altre parti?"** Con H4.13: **"COME SI DERIVA una misura da un'altra?"** — e la risposta è nel codice.
 
 ```text
 left_zygion ↔ right_zygion → bizygomatic width (calcolata, H4.12-D)
-→ FaceDimensions.bizygomatic_width / HeadDimensions (derivate, H4.13)
-→ FacialProportions / HeadProportions (derivate, H4.13)
+→ FaceDimensions.bizygomatic_width (derivata, H4.13-A)
+→ HeadDimensions.bizygomatic_width (derivata, H4.13-B)
+→ FacialProportions / HeadProportions (derivate, H4.13-A/B)
 ```
 
-Il candidato naturale per H4.13 è un **MorphometricCalculator**: da `LandmarkGraph` → misure calcolate → proporzioni e dimensioni derivate. Chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13 (proporzioni da rendere derivabili dalle dimensioni).
+La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Prossimo: **"COME SI PROPAGA una modifica?"** — la direzione del parametric builder.
 
-## 32. In sintesi — percorso fatto
+## 34. In sintesi — percorso fatto
 
 ```text
 FASE 1  Core semantico
@@ -1268,18 +1310,18 @@ H4.9    Head → Face
 H4.10   Facial Morphometric Core
 H4.11   Head Morphometric Core
 H4.12   Anatomical Coordinate & Landmark Framework (A→E)   ← CHIUSA
-H4.13   Morphometric Derivation (MorphometricCalculator)   ← prossimo gradino
+H4.13   Morphometric Derivation (A→B)                      ← CHIUSA
 ```
 
-H4.12 ha costruito il ponte tra **modello anatomico semantico** e **modello geometrico parametrico**: ora esiste.
+H4.12 ha costruito il ponte tra **modello anatomico semantico** e **modello geometrico parametrico**: ora esiste. H4.13 lo ha reso percorribile in entrambe le direzioni: le proporzioni non si dichiarano più, si derivano.
 
-## 33. Roadmap estesa oltre H4.13
+## 35. Roadmap estesa oltre H4.14
 
 ```text
 H4  HUMAN ANATOMY
 │
-├── H4.13 Morphometric derivation (proporzioni/dimensioni derivate)
-├── H4.14 ...
+├── H4.13 Morphometric derivation (proporzioni/dimensioni derivate)   ✅
+├── H4.14 Parametric builder / propagazione delle modifiche
 └── completamento Human Anatomy
         ↓
 H5  APPEARANCE
@@ -1303,7 +1345,7 @@ H12 VISION / IMAGE-TO-ENTITY
 H13 SCENE / RELATIONSHIPS
 ```
 
-## 34. Il punto fondamentale del progetto, in una frase
+## 36. Il punto fondamentale del progetto, in una frase
 
 All'inizio si stava costruendo un **Character Generator**. Ora la visione è diventata:
 
@@ -1321,4 +1363,4 @@ Con le due direzioni ormai chiarite (vedi Parte II e Parte III):
       IMAGE ←──── ADAPTER ←── ENTITY
 ```
 
-E con H4.12 chiusa, l'infrastruttura geometrica che serve a **entrambe** le direzioni — generazione controllata e futuro percorso Image → Entity — è ora al suo posto.
+E con H4.12 e H4.13 chiuse, l'infrastruttura geometrica e morfometrica che serve a **entrambe** le direzioni — generazione controllata e futuro percorso Image → Entity — è ora al suo posto.
