@@ -1,5 +1,13 @@
-from .hair import Hair
+from .hair import (
+    Hair,
+    HairArrangement,
+    HairBaldnessPattern,
+    HairStyle,
+)
 
 __all__ = [
     "Hair",
+    "HairBaldnessPattern",
+    "HairStyle",
+    "HairArrangement",
 ]

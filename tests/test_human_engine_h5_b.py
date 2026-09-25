@@ -63,7 +63,9 @@ class TestHumanEngineH5B:
         assert len(Hair.VALID_COLORS) == 12
         assert len(Hair.VALID_TEXTURES) == 4
         assert len(Hair.VALID_THICKNESSES) == 3
-        assert len(Hair.VALID_LENGTHS) == 6
+        # H5-D-1: "shaved" joins the vocabulary (distinct from
+        # bald) — 6 -> 7, requirement evolved, contract updated.
+        assert len(Hair.VALID_LENGTHS) == 7
         assert len(Hair.VALID_HAIRLINES) == 5
 
     # --- nominal validation (5) ---
