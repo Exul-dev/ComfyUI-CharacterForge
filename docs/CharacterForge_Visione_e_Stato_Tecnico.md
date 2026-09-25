@@ -1,6 +1,6 @@
-# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H4.16)
+# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H4.17)
 
-> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H4.16 — Anatomy Completion** (chiusa, sottosezioni A→C).
+> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H4.17 — Bilateral Upper Limbs** (chiusa). Con H4.17 l'anatomia H4 è bilateralmente completa.
 
 ---
 
@@ -222,7 +222,7 @@ CharacterForge non sostituisce ComfyUI: **lo rende più consapevole di ciò che 
 
 ## La visione finale, oltre la milestone attuale
 
-Oggi: **H4.16 — Anatomy Completion** ✅ (chiusa, H4.16-A/B/C). Poi, progressivamente:
+Oggi: **H4.17 — H4 CHIUSA** ✅ (anatomia completa e bilateralmente completa). Poi, progressivamente:
 
 ```text
 Morphology → Geometry → Transformations → Identity → State
@@ -850,9 +850,9 @@ Il **Custom Node è l'interfaccia di CharacterForge dentro ComfyUI**. Ma **Chara
 ---
 ---
 
-# PARTE V — Stato tecnico attuale (H4.16)
+# PARTE V — Stato tecnico attuale (H4.17)
 
-Siamo arrivati alla **H4.16** del ramo Human Engine. Il repository è **sincronizzato con origin/main**: i capitoli da H4.12 a H4.16 sono stati pushati.
+Siamo arrivati alla **H4.17** del ramo Human Engine: **H4 è completa**. Il repository è **sincronizzato con origin/main**: i capitoli da H4.12 a H4.17 sono stati pushati.
 
 ```text
 main
@@ -860,9 +860,9 @@ main
     └── working tree CLEAN
 ```
 
-L'ultima milestone chiusa è: **H4.16 — Anatomy Completion** ✅
+L'ultima milestone chiusa è: **H4.17 — Bilateral Upper Limbs** ✅
 
-I capitoli da H4.12 a H4.16, chiusi in sottosezioni:
+I capitoli da H4.12 a H4.16, chiusi in sottosezioni, più la milestone finale H4.17:
 
 ```text
 H4.12-A  CoordinateSpace / Coordinate / CoordinateSystem / Landmark   b3cf564
@@ -882,6 +882,7 @@ H4.15-B  Toe/Foot/Leg/Legs bilaterali + integrazione       2250c39
 H4.16-A  Ear/Ears bilaterali + Nose + Mouth/Philtrum            92752e8
 H4.16-B  Waist + Abdomen + fix Torso a cm reali                6c745d8
 H4.16-C  Rimozione backup tracciati + .gitignore                604d16e
+H4.17   Arm/Arms dual-mode (bilateralità totale)            31a4ed7
 ```
 
 ## 1. Architettura generale raggiunta
@@ -917,6 +918,7 @@ CharacterForge
 │       ├── Lower limbs (pelvis, gambe, piedi)
 │       ├── Trunk completo (waist, abdomen, torso a cm reali)
 │       ├── Volto completo (nose, mouth, ears bilaterali)
+│       ├── Arti superiori bilaterali (Arm/Arms dual-mode)
 │       ├── Landmark framework (coordinate, relazioni, grafo, geometria, piani)
 │       ├── Morphometric derivation (misure → dimensioni → proporzioni derivate, cranio compreso)
 │       └── Parametric modification (contratto changed/preserved + operatori top-down/bottom-up)
@@ -1342,7 +1344,24 @@ H4.16-C — Igiene repository
 
 Con H4.16 la copertura anatomica del Human Engine è COMPLETA: ogni regione del corpo, dalla testa ai piedi, ha struttura semantica. I landmark framework (H4.12) forniscono i punti di collegamento geometrici documentati nei docstring dei nuovi componenti.
 
-## 33. Sistema di validazione
+## 33. H4.17 — Bilateral Upper Limbs
+
+```text
+arm.py — NUOVO (pattern Leg, H4.15-B)
+└── Arm: side OBBLIGATORIO + upper_arm/elbow/forearm/wrist/hand
+    per-braccio; elbow/wrist/hand side-MATCHED
+
+arms.py — dual-mode (pattern Shoulders, H4.5)
+├── legacy: API H4.2/H4.3 intatta (segmenti condivisi) —
+│   i test storici h43/h44 girano intatti: la regressione
+│   come prova vivente della backward compatibility
+└── bilaterale: left/right Arm side-matched, asimmetria
+    rappresentabile, indipendente dal modello legacy
+```
+
+Con H4.17 ogni struttura bilaterale del corpo segue lo standard forte: spalle, orecchie, mani, regione mammaria, gambe, braccia. **L'anatomia H4 è bilateralmente completa.**
+
+## 34. Sistema di validazione
 
 ```text
 AnatomyComponent → SemanticComponent → CharacterForgeObject
@@ -1352,14 +1371,14 @@ Contratto: `validate()` **solleva ValueError**, `is_valid()` la cattura e restit
 
 Nota di sviluppo: durante H4.12-B il primo abbozzo restituiva una lista di errori invece di sollevare `ValueError`, rompendo il contratto della gerarchia; corretto prima del commit. Lezione: il contratto di validazione del progetto è a eccezioni.
 
-## 34. Test e procedura canonica
+## 35. Test e procedura canonica
 
 Python di riferimento per sviluppo e test: **il venv di ComfyUI** — `D:\AVVIO PULITO di ComfyUI\ComfyUI\venv\Scripts\python.exe` (Python 3.12.10, pytest 9.1.1). Il Python 3.14 globale non ha pytest e non deve essere usato.
 
 ```text
 regressione unittest : python -m unittest discover -s tests -p "test_*.py"  → Ran 196 tests OK
-suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B/C + H4.14-A/B/C/D + H4.15-A/B + H4.16-A/B → 464 passed
-TOTALE TEST UNICI   : 660 verdi
+suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B/C + H4.14-A/B/C/D + H4.15-A/B + H4.16-A/B + H4.17 → 488 passed
+TOTALE TEST UNICI   : 684 verdi
 ```
 
 - H4.10: 14 test → OK
@@ -1380,14 +1399,15 @@ TOTALE TEST UNICI   : 660 verdi
 - H4.15-B: 32 test → OK (pytest)
 - H4.16-A: 42 test → OK (pytest)
 - H4.16-B: 18 test → OK (pytest)
+- H4.17: 24 test → OK (pytest)
 
-Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **54 test**. Totale capitolo H4.14: **97 test**. Totale capitolo H4.15: **62 test**. Totale capitolo H4.16: **60 test**.
+Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **54 test**. Totale capitolo H4.14: **97 test**. Totale capitolo H4.15: **62 test**. Totale capitolo H4.16: **60 test**. Totale capitolo H4.17: **24 test**.
 
 Nota storica: i 5 errori di import `No module named 'pytest'` documentati fino a H4.11 nascevano dall'uso del Python 3.14 globale; con il venv di ComfyUI l'intera suite gira senza errori. Da H4.12 in poi la procedura canonica usa il venv.
 
-## 35. Git
+## 36. Git
 
-Ultimo checkpoint: **H4.16-C** — commit `chore: remove tracked backup files and ignore future ones` (`604d16e`).
+Ultimo checkpoint: **H4.17** — commit `feat(human): add H4.17 bilateral arm model with legacy compatibility` (`31a4ed7`).
 
 ```text
 main
@@ -1395,9 +1415,10 @@ main
 working tree clean
 ```
 
-Commit dei capitoli H4.12 … H4.16:
+Commit dei capitoli H4.12 … H4.17:
 
 ```text
+31a4ed7 feat(human): add H4.17 bilateral arm model with legacy compatibility
 604d16e chore: remove tracked backup files and ignore future ones
 6c745d8 feat(human): add H4.16-B waist abdomen and real-unit torso defaults
 92752e8 feat(human): add H4.16-A ears nose mouth components
@@ -1417,11 +1438,11 @@ c5b560e feat(human): add H4.12-B landmark relation component
 b3cf564 feat(human): add H4.12-A coordinate and landmark foundation
 ```
 
-I capitoli da H4.12 a H4.16 e il documento della visione sono stati pushati su `origin/main`.
+I capitoli da H4.12 a H4.17 e il documento della visione sono stati pushati su `origin/main`.
 
-## 36. Dove NON siamo ancora arrivati
+## 37. Dove NON siamo ancora arrivati
 
-Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica e l'anatomia completa (dalla testa ai piedi, viso e tronco inclusi) esistono ora. CharacterForge **non è ancora un generatore 3D anatomico**. Restano in H4: la bilateralità completa degli arti superiori (H4.17). Mancano:
+Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica e l'anatomia bilateralmente completa esistono ora. CharacterForge **non è ancora un generatore 3D anatomico**. **L'anatomia di H4 è completa.** Mancano:
 
 ```text
 3D representation
@@ -1432,7 +1453,7 @@ Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica 
 → Model Adapters
 ```
 
-## 37. Il salto concettuale successivo
+## 38. Il salto concettuale successivo
 
 Fino a H4.11: **"CHE COS'È una parte anatomica?"** Con H4.12: **"DOVE SI TROVA e COME SI RELAZIONA alle altre parti?"** Con H4.13: **"COME SI DERIVA una misura da un'altra?"** — e la risposta è nel codice.
 
@@ -1449,9 +1470,9 @@ move zygion ±δ (H4.14-D, bottom-up) ≡ widen_bizygomatic (H4.14-B, top-down)
 → stesso modello: equivalenza provata, report changed/preserved certificato
 ```
 
-La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Con H4.14: **"COME SI PROPAGA una modifica?"** — e la risposta è codice con report a tre livelli. Con H4.16 la copertura anatomica è totale. Prossimo: **H4.17 — bilateralità completa degli arti superiori** (portare Arms allo standard di Legs), poi il salto verso **H5 — Appearance**.
+La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Con H4.14: **"COME SI PROPAGA una modifica?"** — e la risposta è codice con report a tre livelli. Con H4.16 la copertura anatomica era totale; con H4.17 è anche bilateralmente completa: **H4 è CHIUSA**. Prossimo: il salto di strato verso **H5 — Appearance**.
 
-## 38. In sintesi — percorso fatto
+## 39. In sintesi — percorso fatto
 
 ```text
 FASE 1  Core semantico
@@ -1471,11 +1492,12 @@ H4.13   Morphometric Derivation (A→C)                      ← CHIUSA
 H4.14   Parametric Builder (A→D)                          ← CHIUSA
 H4.15   Lower Body (A→B)                                  ← CHIUSA
 H4.16   Anatomy Completion (A→C)                           ← CHIUSA
+H4.17   Bilateral Upper Limbs (dual-mode Arms)             ← CHIUSA
 ```
 
 H4.12 ha costruito il ponte tra **modello anatomico semantico** e **modello geometrico parametrico**: ora esiste. H4.13 lo ha reso percorribile in entrambe le direzioni: le proporzioni non si dichiarano più, si derivano — cranio compreso. H4.14 lo ha reso reversibile e verificabile: ogni modifica torna con il certificato di cosa è cambiato e cosa è sopravvissuto.
 
-## 39. Roadmap estesa oltre H4.16
+## 40. Roadmap estesa oltre H4.17
 
 ```text
 H4  HUMAN ANATOMY
@@ -1484,7 +1506,8 @@ H4  HUMAN ANATOMY
 ├── H4.14 Parametric builder / propagazione delle modifiche     ✅
 ├── H4.15 Lower body (pelvis, gambe, piedi)                  ✅
 ├── H4.16 Anatomy completion (viso, tronco, igiene)          ✅
-└── H4.17 Bilateralità completa degli arti superiori (Arms)
+├── H4.17 Bilateralità completa degli arti superiori (Arms)  ✅
+└── H4 CHIUSA: anatomia completa e bilateralmente completa
         ↓
 H5  APPEARANCE
         ↓
@@ -1507,7 +1530,7 @@ H12 VISION / IMAGE-TO-ENTITY
 H13 SCENE / RELATIONSHIPS
 ```
 
-## 40. Il punto fondamentale del progetto, in una frase
+## 41. Il punto fondamentale del progetto, in una frase
 
 All'inizio si stava costruendo un **Character Generator**. Ora la visione è diventata:
 
@@ -1525,4 +1548,4 @@ Con le due direzioni ormai chiarite (vedi Parte II e Parte III):
       IMAGE ←──── ADAPTER ←── ENTITY
 ```
 
-E con H4.16 chiusa, l'anatomia umana è rappresentata per intero — struttura, geometria, derivazione e modifica — e il modello è pronto per il prossimo strato: l'apparenza che vive sopra questa struttura completa.
+E con H4.17 chiusa, l'anatomia umana è rappresentata per intero e per entrambi i lati — struttura, geometria, derivazione, modifica e bilateralità. **H4 è completa**: il modello è pronto per H5, l'apparenza che vive sopra questa struttura.
