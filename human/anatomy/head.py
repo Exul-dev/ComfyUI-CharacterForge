@@ -4,10 +4,12 @@ from typing import Any
 
 from .anatomy_component import AnatomyComponent
 from .face import Face
+from .head_dimensions import HeadDimensions
+from .head_proportions import HeadProportions
 
 
 class Head(AnatomyComponent):
-    """Represents the anatomical head structure."""
+    """Parametric morphometric structure of the human head."""
 
     component_type = "head"
 
@@ -29,6 +31,8 @@ class Head(AnatomyComponent):
         width: float = 15.0,
         depth: float = 19.0,
         shape: str = "oval",
+        dimensions: HeadDimensions | None = None,
+        proportions: HeadProportions | None = None,
         face: Face | None = None,
     ) -> None:
         super().__init__()
@@ -37,6 +41,9 @@ class Head(AnatomyComponent):
         self.width = float(width)
         self.depth = float(depth)
         self.shape = shape
+
+        self.dimensions = dimensions or HeadDimensions()
+        self.proportions = proportions or HeadProportions()
         self.face = face or Face()
 
         self.validate()
@@ -62,6 +69,8 @@ class Head(AnatomyComponent):
                 f"Expected one of {self.VALID_SHAPES}."
             )
 
+        self.dimensions.validate()
+        self.proportions.validate()
         self.face.validate()
 
     def to_dict(self) -> dict[str, Any]:
@@ -71,5 +80,7 @@ class Head(AnatomyComponent):
             "width": self.width,
             "depth": self.depth,
             "shape": self.shape,
+            "dimensions": self.dimensions.to_dict(),
+            "proportions": self.proportions.to_dict(),
             "face": self.face.to_dict(),
         }

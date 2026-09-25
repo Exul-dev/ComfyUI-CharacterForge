@@ -21,6 +21,8 @@ from .forehead import Forehead
 from .hand import Hand
 from .hands import Hands
 from .head import Head
+from .head_dimensions import HeadDimensions
+from .head_proportions import HeadProportions
 from .human_anatomy import HumanAnatomy
 from .jaw import Jaw
 from .mammary_region import MammaryRegion
@@ -63,6 +65,8 @@ __all__ = [
     "Hands",
     "Height",
     "Head",
+    "HeadDimensions",
+    "HeadProportions",
     "HumanAnatomy",
     "Jaw",
     "MammaryRegion",
