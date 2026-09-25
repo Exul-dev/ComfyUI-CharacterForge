@@ -53,6 +53,16 @@ from .head_modify import (
     modify_head_dimensions,
     widen_cranial,
 )
+from .landmark_modify import (
+    CranialLandmarkModification,
+    LandmarkModification,
+    advance_pronasale,
+    lower_gnathion,
+    modify_cranial_landmarks,
+    modify_facial_landmarks,
+    widen_euryons,
+    widen_zygions,
+)
 from .areola import Areola
 from .arms import Arms
 from .back import Back
@@ -140,6 +150,14 @@ __all__ = [
     "modify_head_dimensions",
     "widen_cranial",
     "ramanujan_perimeter",
+    "LandmarkModification",
+    "CranialLandmarkModification",
+    "modify_facial_landmarks",
+    "modify_cranial_landmarks",
+    "widen_zygions",
+    "lower_gnathion",
+    "advance_pronasale",
+    "widen_euryons",
     "Areola",
     "Arms",
     "Back",
