@@ -7,8 +7,83 @@ from .enums import BodySide, ToeType
 from .toe import Toe
 
 
+class Heel(AnatomyComponent):
+    """Represents the heel (posterior foot structure).
+
+    Distinct from the legacy heel_width of Foot: heel_width is the
+    PLANTAR width of the heel base; Heel is the full posterior
+    structure — projection, Achilles tendon thickness, fat pad and
+    calcaneal prominence.
+    """
+
+    component_type = "heel"
+
+    def __init__(
+        self,
+        *,
+        width: float = 5.5,
+        height: float = 7.0,
+        projection: float = 0.5,
+        achilles_thickness: float = 0.5,
+        fat_pad_thickness: float = 0.5,
+        calcaneal_prominence: float = 0.4,
+    ) -> None:
+        super().__init__()
+
+        self.width = float(width)
+        self.height = float(height)
+        self.projection = float(projection)
+        self.achilles_thickness = float(achilles_thickness)
+        self.fat_pad_thickness = float(fat_pad_thickness)
+        self.calcaneal_prominence = float(calcaneal_prominence)
+
+        self.validate()
+
+    def validate(self) -> None:
+        super().validate()
+
+        if self.width <= 0:
+            raise ValueError(
+                "Heel width must be greater than zero."
+            )
+
+        if self.height <= 0:
+            raise ValueError(
+                "Heel height must be greater than zero."
+            )
+
+        for name in (
+            "projection",
+            "achilles_thickness",
+            "fat_pad_thickness",
+            "calcaneal_prominence",
+        ):
+            value = getattr(self, name)
+
+            if not 0.0 <= value <= 1.0:
+                raise ValueError(
+                    f"Heel {name} must be between 0 and 1."
+                )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            **super().to_dict(),
+            "width": self.width,
+            "height": self.height,
+            "projection": self.projection,
+            "achilles_thickness": self.achilles_thickness,
+            "fat_pad_thickness": self.fat_pad_thickness,
+            "calcaneal_prominence": self.calcaneal_prominence,
+        }
+
+
 class Foot(AnatomyComponent):
-    """Represents one complete human foot."""
+    """Represents one complete human foot.
+
+    Composite since H4.18-C: the posterior structure is a full
+    Heel component (projection, Achilles, fat pad); the legacy
+    heel_width stays as the plantar base width.
+    """
 
     component_type = "foot"
 
@@ -32,6 +107,7 @@ class Foot(AnatomyComponent):
         arch: float = 0.5,
         heel_width: float = 6.0,
         ball_width: float = 9.0,
+        heel: Heel | None = None,
         toes: dict[ToeType, Toe] | None = None,
         condition: str = "healthy",
     ) -> None:
@@ -45,6 +121,7 @@ class Foot(AnatomyComponent):
         self.arch = float(arch)
         self.heel_width = float(heel_width)
         self.ball_width = float(ball_width)
+        self.heel = heel or Heel()
         self.condition = condition
 
         default_toes = {
@@ -105,6 +182,11 @@ class Foot(AnatomyComponent):
                 "Foot ball width must be greater than zero."
             )
 
+        if not isinstance(self.heel, Heel):
+            raise ValueError(
+                "Foot heel must be a Heel instance."
+            )
+
         if not self.condition:
             raise ValueError("Foot condition must not be empty.")
 
@@ -130,6 +212,8 @@ class Foot(AnatomyComponent):
 
             toe.validate()
 
+        self.heel.validate()
+
     def to_dict(self) -> dict[str, Any]:
         return {
             **super().to_dict(),
@@ -141,6 +225,7 @@ class Foot(AnatomyComponent):
             "arch": self.arch,
             "heel_width": self.heel_width,
             "ball_width": self.ball_width,
+            "heel": self.heel.to_dict(),
             "toes": {
                 toe_type.value: toe.to_dict()
                 for toe_type, toe in self.toes.items()

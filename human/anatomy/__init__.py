@@ -76,7 +76,7 @@ from .thigh import Thigh
 from .knee import Knee
 from .lower_leg import LowerLeg
 from .toe import Toe
-from .foot import Foot
+from .foot import Foot, Heel
 from .leg import Leg
 from .ear import Ear
 from .ears import Ears
@@ -244,6 +244,7 @@ __all__ = [
     "ToeType",
     "Toe",
     "Foot",
+    "Heel",
     "Leg",
     "Legs",
 ]
