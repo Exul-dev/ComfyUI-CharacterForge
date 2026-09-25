@@ -75,6 +75,20 @@ from .glute import Glute
 from .gluteal_region import GlutealRegion
 from .hip import Hip
 from .hips import Hips
+from .male_genitalia import (
+    MaleGenitalia,
+    Penis,
+    Scrotum,
+    Testicle,
+)
+from .female_genitalia import (
+    FemaleGenitalia,
+    LabiumMajus,
+    LabiumMinus,
+    ClitoralStructure,
+    Vulva,
+)
+from .reproductive_system import ReproductiveSystem
 from .pelvis import Pelvis, PubicRegion
 from .thigh import Thigh
 from .knee import Knee
@@ -252,6 +266,16 @@ __all__ = [
     "Axillae",
     "Navel",
     "PubicRegion",
+    "MaleGenitalia",
+    "Penis",
+    "Scrotum",
+    "Testicle",
+    "FemaleGenitalia",
+    "LabiumMajus",
+    "LabiumMinus",
+    "ClitoralStructure",
+    "Vulva",
+    "ReproductiveSystem",
     "Flank",
     "Flanks",
     "GlutealRegion",

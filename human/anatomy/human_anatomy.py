@@ -6,6 +6,7 @@ from .anatomy_component import AnatomyComponent
 from .arms import Arms
 from .legs import Legs
 from .pelvis import Pelvis
+from .reproductive_system import ReproductiveSystem
 from .back import Back
 from .abdomen import Abdomen
 from .waist import Waist
@@ -49,6 +50,7 @@ class HumanAnatomy(AnatomyComponent):
         legs=None,
         head=None,
         mammary_region=None,
+        reproductive_system=None,
     ):
         super().__init__()
 
@@ -72,6 +74,7 @@ class HumanAnatomy(AnatomyComponent):
         self.legs = legs or Legs()
         self.head = head or Head()
         self.mammary_region = mammary_region or MammaryRegion()
+        self.reproductive_system = reproductive_system or ReproductiveSystem()
 
         self.validate()
 
@@ -99,6 +102,7 @@ class HumanAnatomy(AnatomyComponent):
             self.legs,
             self.head,
             self.mammary_region,
+            self.reproductive_system,
         ):
             component.validate()
 
@@ -125,4 +129,5 @@ class HumanAnatomy(AnatomyComponent):
             "legs": self.legs.to_dict(),
             "head": self.head.to_dict(),
             "mammary_region": self.mammary_region.to_dict(),
+            "reproductive_system": self.reproductive_system.to_dict(),
         }
