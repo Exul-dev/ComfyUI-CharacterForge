@@ -1,6 +1,6 @@
 # CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H4.13)
 
-> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H4.13 — Morphometric Derivation** (chiusa, sottosezioni A→B).
+> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H4.13 — Morphometric Derivation** (chiusa, sottosezioni A→C).
 
 ---
 
@@ -852,11 +852,11 @@ Il **Custom Node è l'interfaccia di CharacterForge dentro ComfyUI**. Ma **Chara
 
 # PARTE V — Stato tecnico attuale (H4.13)
 
-Siamo arrivati alla **H4.13** del ramo Human Engine, con **27 commit locali non ancora pushati** su `origin/main`.
+Siamo arrivati alla **H4.13** del ramo Human Engine. Il repository è **sincronizzato con origin/main**: i capitoli H4.12 e H4.13 sono stati pushati.
 
 ```text
 main
-└── 27 commit avanti rispetto a origin/main
+└── sincronizzato con origin/main
     └── working tree CLEAN
 ```
 
@@ -872,6 +872,7 @@ H4.12-D  LandmarkGeometry (distanze / offset / angoli)                766a9f9
 H4.12-E  AnatomicalPlane (semantica + geometria dei piani)            f5d48d3
 H4.13-A  FacialMorphometry (misure → dimensioni → proporzioni)      be36725
 H4.13-B  HeadMorphometry (FaceDimensions → HeadDimensions)          7bd554f
+H4.13-C  CranialLandmarks / cranio interamente derivabile     8de9481
 ```
 
 ## 1. Architettura generale raggiunta
@@ -905,7 +906,7 @@ CharacterForge
 │       ├── Mammary region
 │       ├── Head / Face morphometrics
 │       ├── Landmark framework (coordinate, relazioni, grafo, geometria, piani)
-│       └── Morphometric derivation (misure → dimensioni → proporzioni derivate)
+│       └── Morphometric derivation (misure → dimensioni → proporzioni derivate, cranio compreso)
 │
 ├── Cinematic
 ├── Reference Sheets
@@ -1209,7 +1210,42 @@ head_morphometry.py
 
 Catena completa: `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions). Sei delle sette proporzioni dichiarate in H4.11 sono i rapporti dei default arrotondati a due decimali; il default `cephalic_index` 78.0 è la media tabellare mesocefalica (il valore derivato dai default dimensionali è 78.95).
 
-## 29. Sistema di validazione
+Il percorso fallback è legacy: con landmark cranici disponibili, H4.13-C (sezione 29) deriva il cranio per intero.
+
+## 29. H4.13-C — Cranial Landmark Coverage
+
+```text
+cranial_landmarks.py
+└── CranialLandmarks — separato da FacialLandmarks: normalizzato al
+    bounding box della TESTA (non del viso). 10 punti validi:
+    vertex, euryon L/R, opisthocranion, porion L/R, orbitale L/R,
+    glabella, nasion. 8 richiesti per la derivazione.
+
+head_morphometry.py (estensione H4.13-C)
+├── CranialMeasurements (AnatomyComponent)
+├── cranial_measurements(CranialLandmarks)
+│   ├── cranial_width  = euryon↔euryon (euclidea 3D)
+│   ├── cranial_length = glabella→opisthocranion (depth := length)
+│   ├── neurocranial_height = distanza perpendicolare del vertex
+│   │   dal piano di FRANKFURT (porion L/R + orbitale): la
+│   │   geometria dei piani H4.12-E diventa strumento di misura
+│   └── cranial_circumference ≈ perimetro ellittico di Ramanujan
+│       costruito su width e length
+├── cranial_scale_factor(m, target_cranial_length)
+└── head_dimensions_from_cranial_measurements(FaceDimensions, m, scale)
+    ├── cranio interamente DERIVATO: width/depth/length/breadth/
+    │   circumference/neurocranial_height dalle misure scalate
+    ├── cranial_height (vertex→menton) non misurabile dal solo set
+    │   cranico: approssimata come neurocranial + facial, o esplicita
+    └── head_dimensions_from_face_dimensions resta come percorso
+        LEGACY (fallback H4.13-B, nessun refactor distruttivo)
+```
+
+I due set di landmark vivono in normalizzazioni DIVERSE (bounding box del viso vs della testa): ciascuno viene scalato ai valori fisici col proprio fattore, e il modello combinato è coerente perché entrambi i lati convergono nelle stesse unità fisiche.
+
+Con H4.13-C l'intera testa è derivabile dai punti anatomici: nel percorso landmark → misure → dimensioni → proporzioni non sopravvive alcun valore dichiarato a mano (restano come eccezioni documentate le larghezze frontale/mentale facciali e l'altezza totale del cranio, non misurabile senza il menton).
+
+## 30. Sistema di validazione
 
 ```text
 AnatomyComponent → SemanticComponent → CharacterForgeObject
@@ -1219,14 +1255,14 @@ Contratto: `validate()` **solleva ValueError**, `is_valid()` la cattura e restit
 
 Nota di sviluppo: durante H4.12-B il primo abbozzo restituiva una lista di errori invece di sollevare `ValueError`, rompendo il contratto della gerarchia; corretto prima del commit. Lezione: il contratto di validazione del progetto è a eccezioni.
 
-## 30. Test e procedura canonica
+## 31. Test e procedura canonica
 
 Python di riferimento per sviluppo e test: **il venv di ComfyUI** — `D:\AVVIO PULITO di ComfyUI\ComfyUI\venv\Scripts\python.exe` (Python 3.12.10, pytest 9.1.1). Il Python 3.14 globale non ha pytest e non deve essere usato.
 
 ```text
 regressione unittest : python -m unittest discover -s tests -p "test_*.py"  → Ran 196 tests OK
-suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B   → 226 passed
-TOTALE TEST UNICI   : 422 verdi
+suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B/C → 245 passed
+TOTALE TEST UNICI   : 441 verdi
 ```
 
 - H4.10: 14 test → OK
@@ -1238,24 +1274,26 @@ TOTALE TEST UNICI   : 422 verdi
 - H4.12-E: 23 test → OK (pytest)
 - H4.13-A: 21 test → OK (pytest)
 - H4.13-B: 14 test → OK (pytest)
+- H4.13-C: 19 test → OK (pytest)
 
-Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **35 test**.
+Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **54 test**.
 
 Nota storica: i 5 errori di import `No module named 'pytest'` documentati fino a H4.11 nascevano dall'uso del Python 3.14 globale; con il venv di ComfyUI l'intera suite gira senza errori. Da H4.12 in poi la procedura canonica usa il venv.
 
-## 31. Git
+## 32. Git
 
-Ultimo checkpoint: **H4.13-B** — commit `feat(human): add H4.13-B head morphometric derivation` (`7bd554f`).
+Ultimo checkpoint: **H4.13-C** — commit `feat(human): add H4.13-C cranial landmark coverage` (`8de9481`).
 
 ```text
 main
-↑ 27 commit locali rispetto a origin/main
+↑ 0 commit locali rispetto a origin/main (sincronizzato)
 working tree clean
 ```
 
 Commit dei capitoli H4.12 / H4.13:
 
 ```text
+8de9481 feat(human): add H4.13-C cranial landmark coverage
 7bd554f feat(human): add H4.13-B head morphometric derivation
 be36725 feat(human): add H4.13-A facial morphometric derivation
 f5d48d3 feat(human): add H4.12-E anatomical planes
@@ -1265,11 +1303,11 @@ c5b560e feat(human): add H4.12-B landmark relation component
 b3cf564 feat(human): add H4.12-A coordinate and landmark foundation
 ```
 
-Nessun `git push` eseguito.
+I capitoli H4.12 e H4.13 e il documento della visione sono stati pushati su `origin/main`.
 
-## 32. Dove NON siamo ancora arrivati
+## 33. Dove NON siamo ancora arrivati
 
-Le fondamenta geometriche e la derivazione morfometrica esistono ora (coordinate, grafo, misure, piani, dimensioni e proporzioni derivate), ma CharacterForge **non è ancora un generatore 3D anatomico**. Mancano:
+Le fondamenta geometriche e la derivazione morfometrica esistono ora (coordinate, grafo, misure, piani, dimensioni e proporzioni derivate, cranio compreso), ma CharacterForge **non è ancora un generatore 3D anatomico**. Mancano:
 
 ```text
 Parametric deformation
@@ -1281,7 +1319,7 @@ Parametric deformation
 → Model Adapters
 ```
 
-## 33. Il salto concettuale successivo
+## 34. Il salto concettuale successivo
 
 Fino a H4.11: **"CHE COS'È una parte anatomica?"** Con H4.12: **"DOVE SI TROVA e COME SI RELAZIONA alle altre parti?"** Con H4.13: **"COME SI DERIVA una misura da un'altra?"** — e la risposta è nel codice.
 
@@ -1290,11 +1328,14 @@ left_zygion ↔ right_zygion → bizygomatic width (calcolata, H4.12-D)
 → FaceDimensions.bizygomatic_width (derivata, H4.13-A)
 → HeadDimensions.bizygomatic_width (derivata, H4.13-B)
 → FacialProportions / HeadProportions (derivate, H4.13-A/B)
+
+vertex / euryon↔euryon / glabella→opisthocranion → misure craniche (H4.13-C)
+→ HeadDimensions craniali complete (derivate, H4.13-C, piano Frankfurt reale)
 ```
 
 La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Prossimo: **"COME SI PROPAGA una modifica?"** — la direzione del parametric builder.
 
-## 34. In sintesi — percorso fatto
+## 35. In sintesi — percorso fatto
 
 ```text
 FASE 1  Core semantico
@@ -1310,12 +1351,12 @@ H4.9    Head → Face
 H4.10   Facial Morphometric Core
 H4.11   Head Morphometric Core
 H4.12   Anatomical Coordinate & Landmark Framework (A→E)   ← CHIUSA
-H4.13   Morphometric Derivation (A→B)                      ← CHIUSA
+H4.13   Morphometric Derivation (A→C)                      ← CHIUSA
 ```
 
-H4.12 ha costruito il ponte tra **modello anatomico semantico** e **modello geometrico parametrico**: ora esiste. H4.13 lo ha reso percorribile in entrambe le direzioni: le proporzioni non si dichiarano più, si derivano.
+H4.12 ha costruito il ponte tra **modello anatomico semantico** e **modello geometrico parametrico**: ora esiste. H4.13 lo ha reso percorribile in entrambe le direzioni: le proporzioni non si dichiarano più, si derivano — cranio compreso.
 
-## 35. Roadmap estesa oltre H4.14
+## 36. Roadmap estesa oltre H4.14
 
 ```text
 H4  HUMAN ANATOMY
@@ -1345,7 +1386,7 @@ H12 VISION / IMAGE-TO-ENTITY
 H13 SCENE / RELATIONSHIPS
 ```
 
-## 36. Il punto fondamentale del progetto, in una frase
+## 37. Il punto fondamentale del progetto, in una frase
 
 All'inizio si stava costruendo un **Character Generator**. Ora la visione è diventata:
 
