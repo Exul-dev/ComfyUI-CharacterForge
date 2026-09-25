@@ -18,3 +18,11 @@ class FingerType(Enum):
     MIDDLE = "middle"
     RING = "ring"
     LITTLE = "little"
+class ToeType(Enum):
+    """Semantic type of a human toe."""
+
+    HALLUX = "hallux"
+    SECOND = "second"
+    THIRD = "third"
+    FOURTH = "fourth"
+    FIFTH = "fifth"

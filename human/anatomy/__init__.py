@@ -67,6 +67,10 @@ from .pelvis import Pelvis
 from .thigh import Thigh
 from .knee import Knee
 from .lower_leg import LowerLeg
+from .toe import Toe
+from .foot import Foot
+from .leg import Leg
+from .legs import Legs
 from .ankle import Ankle
 from .areola import Areola
 from .arms import Arms
@@ -78,7 +82,7 @@ from .cheek_structure import CheekStructure
 from .chest import Chest
 from .chin import Chin
 from .elbow import Elbow
-from .enums import BodySide, FingerType
+from .enums import BodySide, FingerType, ToeType
 from .face import Face
 from .face_dimensions import FaceDimensions
 from .facial_landmarks import FacialLandmarks
@@ -210,4 +214,9 @@ __all__ = [
     "Knee",
     "LowerLeg",
     "Ankle",
+    "ToeType",
+    "Toe",
+    "Foot",
+    "Leg",
+    "Legs",
 ]

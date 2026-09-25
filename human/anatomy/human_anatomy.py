@@ -4,6 +4,8 @@ from typing import Any
 
 from .anatomy_component import AnatomyComponent
 from .arms import Arms
+from .legs import Legs
+from .pelvis import Pelvis
 from .back import Back
 from .body_fat import BodyFat
 from .body_type import BodyType, Height, Proportions
@@ -33,6 +35,8 @@ class HumanAnatomy(AnatomyComponent):
         ribcage=None,
         back=None,
         arms=None,
+        pelvis=None,
+        legs=None,
     ):
         super().__init__()
 
@@ -48,6 +52,8 @@ class HumanAnatomy(AnatomyComponent):
         self.ribcage = ribcage or RibCage()
         self.back = back or Back()
         self.arms = arms or Arms()
+        self.pelvis = pelvis or Pelvis()
+        self.legs = legs or Legs()
 
         self.validate()
 
@@ -67,6 +73,8 @@ class HumanAnatomy(AnatomyComponent):
             self.ribcage,
             self.back,
             self.arms,
+            self.pelvis,
+            self.legs,
         ):
             component.validate()
 
@@ -85,4 +93,6 @@ class HumanAnatomy(AnatomyComponent):
             "ribcage": self.ribcage.to_dict(),
             "back": self.back.to_dict(),
             "arms": self.arms.to_dict(),
+            "pelvis": self.pelvis.to_dict(),
+            "legs": self.legs.to_dict(),
         }
