@@ -1,0 +1,27 @@
+# CharacterForge line-ending policy: LF nel repository, sempre.
+* text=auto
+
+*.py   text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.cfg  text eol=lf
+*.ini  text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+*.sh   text eol=lf
+
+# Script Windows: CRLF convenzionale
+*.bat  text eol=crlf
+*.ps1  text eol=crlf
+
+# Asset binari: mai toccati
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.webp binary
+*.gif  binary
+*.ico  binary
+*.pt   binary
+*.safetensors binary
