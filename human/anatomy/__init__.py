@@ -38,6 +38,13 @@ from .modify import (
     PropertyChange,
     diff_properties,
 )
+from .facial_modify import (
+    FacialModification,
+    adjust_facial_height,
+    modify_face_dimensions,
+    widen_bizygomatic,
+    widen_jaw,
+)
 from .areola import Areola
 from .arms import Arms
 from .back import Back
@@ -114,6 +121,11 @@ __all__ = [
     "ModifyResult",
     "PropertyChange",
     "diff_properties",
+    "FacialModification",
+    "adjust_facial_height",
+    "modify_face_dimensions",
+    "widen_bizygomatic",
+    "widen_jaw",
     "Areola",
     "Arms",
     "Back",
