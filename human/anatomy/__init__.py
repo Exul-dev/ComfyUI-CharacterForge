@@ -1,4 +1,4 @@
-from .anatomy_component import AnatomyComponent
+﻿from .anatomy_component import AnatomyComponent
 from .areola import Areola
 from .arms import Arms
 from .back import Back
@@ -8,6 +8,7 @@ from .breast import Breast, BreastUnit
 from .chest import Chest
 from .elbow import Elbow
 from .enums import BodySide, FingerType
+from .face import Face
 from .finger import Finger
 from .forearm import Forearm
 from .hand import Hand
@@ -39,13 +40,14 @@ __all__ = [
     "BreastUnit",
     "Chest",
     "Elbow",
+    "Face",
     "Finger",
     "FingerType",
     "Forearm",
     "Hand",
     "Hands",
-    "Head",
     "Height",
+    "Head",
     "HumanAnatomy",
     "MammaryRegion",
     "Musculature",

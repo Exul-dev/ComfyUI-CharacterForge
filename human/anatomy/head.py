@@ -3,6 +3,7 @@
 from typing import Any
 
 from .anatomy_component import AnatomyComponent
+from .face import Face
 
 
 class Head(AnatomyComponent):
@@ -28,6 +29,7 @@ class Head(AnatomyComponent):
         width: float = 15.0,
         depth: float = 19.0,
         shape: str = "oval",
+        face: Face | None = None,
     ) -> None:
         super().__init__()
 
@@ -35,6 +37,7 @@ class Head(AnatomyComponent):
         self.width = float(width)
         self.depth = float(depth)
         self.shape = shape
+        self.face = face or Face()
 
         self.validate()
 
@@ -59,6 +62,8 @@ class Head(AnatomyComponent):
                 f"Expected one of {self.VALID_SHAPES}."
             )
 
+        self.face.validate()
+
     def to_dict(self) -> dict[str, Any]:
         return {
             **super().to_dict(),
@@ -66,4 +71,5 @@ class Head(AnatomyComponent):
             "width": self.width,
             "depth": self.depth,
             "shape": self.shape,
+            "face": self.face.to_dict(),
         }
