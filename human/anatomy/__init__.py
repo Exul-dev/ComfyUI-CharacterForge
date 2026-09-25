@@ -68,6 +68,7 @@ from .abdomen import Abdomen, Navel
 from .flank import Flank
 from .flanks import Flanks
 from .clavicle import Clavicle, Clavicles
+from .scapula import Scapula, Scapulae
 from .sternum import Sternum
 from .axilla import Axilla, Axillae
 from .glute import Glute
@@ -245,6 +246,8 @@ __all__ = [
     "Clavicle",
     "Clavicles",
     "Sternum",
+    "Scapula",
+    "Scapulae",
     "Axilla",
     "Axillae",
     "Navel",
