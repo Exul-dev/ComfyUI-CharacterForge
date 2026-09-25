@@ -20,8 +20,16 @@ package makes that one dial truthful.
 """
 
 from .curves import AgeCurves, AgeAxis
+from .operator import (
+    AgeResult,
+    FieldChange,
+    apparent_age,
+)
 
 __all__ = [
     "AgeCurves",
     "AgeAxis",
+    "AgeResult",
+    "FieldChange",
+    "apparent_age",
 ]
