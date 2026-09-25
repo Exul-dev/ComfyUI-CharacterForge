@@ -14,6 +14,8 @@ from .body_type import BodyType, Height, Proportions
 from .chest import Chest
 from .musculature import Musculature
 from .neck import Neck
+from .head import Head
+from .mammary_region import MammaryRegion
 from .ribcage import RibCage
 from .shoulders import Shoulders
 from .torso import Torso
@@ -41,6 +43,8 @@ class HumanAnatomy(AnatomyComponent):
         arms=None,
         pelvis=None,
         legs=None,
+        head=None,
+        mammary_region=None,
     ):
         super().__init__()
 
@@ -60,6 +64,8 @@ class HumanAnatomy(AnatomyComponent):
         self.arms = arms or Arms()
         self.pelvis = pelvis or Pelvis()
         self.legs = legs or Legs()
+        self.head = head or Head()
+        self.mammary_region = mammary_region or MammaryRegion()
 
         self.validate()
 
@@ -83,6 +89,8 @@ class HumanAnatomy(AnatomyComponent):
             self.arms,
             self.pelvis,
             self.legs,
+            self.head,
+            self.mammary_region,
         ):
             component.validate()
 
@@ -105,4 +113,6 @@ class HumanAnatomy(AnatomyComponent):
             "arms": self.arms.to_dict(),
             "pelvis": self.pelvis.to_dict(),
             "legs": self.legs.to_dict(),
+            "head": self.head.to_dict(),
+            "mammary_region": self.mammary_region.to_dict(),
         }
