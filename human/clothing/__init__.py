@@ -3,17 +3,13 @@
 The first RELATIONAL layer of CharacterForge: garments do not
 describe the character — they describe WHAT COVERS him/her.
 A glove knows it covers a hand. A jacket knows it covers
-torso and arms. This is the architectural novelty of H7:
-the coverage regions hook into the anatomy that already
-exists, creating the first cross-layer relationship
-(garment → body region → anatomical component).
-
-Layers of the engine (built progressively):
+torso and arms.
 
 - the VOCABULARY (H7-A): GarmentType, CoverageRegion,
   Garment — the building blocks;
-- the COMPOSITION (H7-B): Outfit — a collection of garments
-  with documented soft coherence rules;
+- the COMPOSITION (H7-B): Outfit — a named collection of
+  garments with coherence checking (conflicts detected,
+  never rejected) and preset factories;
 - the INTEGRATION (H7-C): registration on Human, coexistence
   with anatomy + appearance + aging.
 
@@ -29,6 +25,10 @@ from .garment import (
     GarmentState,
     GarmentType,
 )
+from .outfit import (
+    Outfit,
+    OutfitPreset,
+)
 
 __all__ = [
     "GarmentType",
@@ -38,4 +38,6 @@ __all__ = [
     "GarmentMaterial",
     "GarmentState",
     "Garment",
+    "Outfit",
+    "OutfitPreset",
 ]
