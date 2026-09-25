@@ -2,6 +2,10 @@ from .body_hair import (
     BodyHair,
     BodyHairRegion,
 )
+from .hair_aging import (
+    GrayingPattern,
+    HairAging,
+)
 from .facial_hair import (
     FacialHair,
     FacialHairGrooming,
@@ -28,4 +32,6 @@ __all__ = [
     "FacialHairStyle",
     "BodyHair",
     "BodyHairRegion",
+    "GrayingPattern",
+    "HairAging",
 ]
