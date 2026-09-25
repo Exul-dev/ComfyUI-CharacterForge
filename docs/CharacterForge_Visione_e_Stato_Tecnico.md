@@ -1,6 +1,6 @@
-# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H6)
+# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H7)
 
-> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H6 — The Age Engine** (chiusa, A1/A2/A3/C1/C2/C2b/D/B). Il tempo è ora controllabile: H4, H5, H5-D e H6 chiuse.
+> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H7 — The Clothing Engine** (chiusa, A/B). Il personaggio ora indossa: H4, H5, H5-D, H6 e H7 chiuse.
 
 ---
 
@@ -222,7 +222,7 @@ CharacterForge non sostituisce ComfyUI: **lo rende più consapevole di ciò che 
 
 ## La visione finale, oltre la milestone attuale
 
-Oggi: **H6 — The Age Engine** ✅ (età→aspetto, bidirezionale, profili). Poi, progressivamente:
+Oggi: **H7 — The Clothing Engine** ✅ (garments, outfit, coerenza, preset). Poi, progressivamente:
 
 ```text
 Morphology → Geometry → Transformations → Identity → State
@@ -850,9 +850,9 @@ Il **Custom Node è l'interfaccia di CharacterForge dentro ComfyUI**. Ma **Chara
 ---
 ---
 
-# PARTE V — Stato tecnico attuale (H6)
+# PARTE V — Stato tecnico attuale (H7)
 
-Siamo arrivati alla **H6** del ramo Human Engine. Il repository è **sincronizzato con origin/main**: i capitoli da H4.12 a H6 (incluso l Age Engine completo) sono stati pushati.
+Siamo arrivati alla **H7** del ramo Human Engine. Il repository è **sincronizzato con origin/main**: i capitoli da H4.12 a H7 (incluso il Clothing Engine) sono stati pushati.
 
 ```text
 main
@@ -860,9 +860,9 @@ main
     └── working tree CLEAN
 ```
 
-L'ultima milestone chiusa è: **H6 — The Age Engine** ✅
+L'ultima milestone chiusa è: **H7 — The Clothing Engine** ✅
 
-I capitoli da H4.12 a H6 (incluso l Age Engine), chiusi in sottosezioni:
+I capitoli da H4.12 a H7 (incluso il Clothing Engine), chiusi in sottosezioni:
 
 ```text
 H4.12-A  CoordinateSpace / Coordinate / CoordinateSystem / Landmark   b3cf564
@@ -906,6 +906,8 @@ H6-C2   apparent_age: l operatore monomanopola           ed2d997
 H6-C2b  Age Profiles: 7 profili x 3 varianti sesso       ff03ad2
 H6-D    Traiettorie bidirezionali round-trip coerente     3d21c53
 H6-B    BodyAging: dissociazione forza/massa             095e150
+H7-A    Garment: 11 tipi, 9 regioni, stacking, bilaterale     82d05da
+H7-B    Outfit: coerenza, 6 preset, add atomico               d2818cb
 ```
 
 ## 1. Architettura generale raggiunta
@@ -1712,7 +1714,83 @@ LEZIONI DI PROCESSO (tutte nate da rossi reali):
   di modulo (le mappe _*_AXIS_MAP), enumerarle prima e
   verificarle dopo
 
-## 40. Sistema di validazione
+## 40. H7 — The Clothing Engine (A/B)
+
+```text
+Nato dalla prosecuzione della roadmap dopo la chiusura
+dell'Age Engine: il primo layer RELAZIALE di CharacterForge.
+Un indumento non descrive il personaggio — descrive CIÒ CHE
+COPRE di lui. Il guanto sa che copre una mano. La giacca sa
+che copre torso e braccia.
+
+H7-A  Garment Foundation                              82d05da
+├── GarmentType: 11 categorie (hat, scarf, top, bottom,
+│   full_body, outerwear, gloves, socks, shoes, belt,
+│   accessory)
+├── CoverageRegion: 9 regioni corporee (head, neck, torso,
+│   arms, hands, waist, legs, feet, ankles) — agganciate
+│   al vocabolario anatomico esistente (allineate con
+│   BodyHairRegion di H5-D-3): il layer vestiti PARLA
+│   IL LINGUAGGIO DEL CORPO
+├── GarmentLayer: base / mid / outer (stacking)
+├── GarmentFit: tight / regular / loose / oversized
+├── GarmentMaterial: 10 tessuti semantici (cotton, wool,
+│   silk, linen, leather, denim, synthetic, knit, suede,
+│   mixed)
+├── GarmentState: new / worn / damaged / dirty
+├── bilateralità (side: left / right / None)
+└── to_dict() robusto (guardia _enum_value contro
+    mutazioni post-costruzione)
+
+H7-B  Outfit — la composizione                       d2818cb
+├── Outfit: collezione NOMINATA di Garment (è un'entità
+│   composita, non una semplice lista)
+├── covered_regions() / uncovered_regions(): IL PONTE verso
+│   appearance (cosa è visibile), aging (cosa invecchia)
+│   e il futuro generation compiler
+├── COERENZA: conflicting(a,b) — due capi confliggono se
+│   coprono la stessa regione, stesso layer, stesso side.
+│   conflicts() elenca TUTTI i conflitti. MA validate()
+│   NON li rifiuta mai: un outfit incoerente è
+│   RAPPRESENTABILE (costume, errore, stato temporaneo).
+│   Il metodo espone l'informazione; la decisione è del
+│   chiamante. Stessa filosofia del preset non-gabbia.
+├── ATOMICITÀ: add() atomico — append solo dopo
+│   validate(), rollback altrimenti. Un add rifiutato
+│   NON lascia traccia (nato da un rosso reale dello
+│   smoke: il capo duplicato restava nella lista)
+├── 6 PRESET (OutfitPreset): casual, formal, sport,
+│   winter, summer, business — tutti validi e
+│   conflict-free, tutti tunabili dopo la creazione
+└── add / remove / get: gestione dinamica
+
+INTEGRAZIONE: registrazione su Human (componenti
+"garment_*" o "outfit"), coesistenza totale con anatomy +
+appearance + aging. Un personaggio vestito, invecchiato a
+70 anni con profilo apparente, con pelle, capelli e barba:
+tutto insieme, tutto valido, tutto serializzato.
+```
+
+SCOPE: il modello è SEMANTICO (categorie, copertura,
+tessuto), non una simulazione fisica dei tessuti. Il
+collegamento esplicito garment↔anatomia (il guanto SA
+quale mano copre) è la relazione architetturale che rende
+H7 il primo layer relazionale: la direzione indicata dalla
+Parte I del documento visione.
+
+LEZIONI DI PROCESSO:
+- il guard di idempotenza cerca l'IMPORT specifico, non
+  una parola che può stare in un docstring (la parola
+  "Outfit" era nella docstring di __init__.py: il guard
+  aveva saltato il patch)
+- mutazione atomica: ogni operazione che modifica lo stato
+  deve essere o-completa-o-mai-avvenuta (il pattern di
+  apparent_age applicato anche a Outfit.add)
+- i test file si scrivono PRIMA di chiudere il ciclo: un
+  blocco che fallisce allo smoke non deve mai lasciare la
+  suite non scritta (accaduto due volte in H7-B)
+
+## 41. Sistema di validazione
 
 ```text
 AnatomyComponent → SemanticComponent → CharacterForgeObject
@@ -1722,14 +1800,14 @@ Contratto: `validate()` **solleva ValueError**, `is_valid()` la cattura e restit
 
 Nota di sviluppo: durante H4.12-B il primo abbozzo restituiva una lista di errori invece di sollevare `ValueError`, rompendo il contratto della gerarchia; corretto prima del commit. Lezione: il contratto di validazione del progetto è a eccezioni.
 
-## 41. Test e procedura canonica
+## 42. Test e procedura canonica
 
 Python di riferimento per sviluppo e test: **il venv di ComfyUI** — `D:\AVVIO PULITO di ComfyUI\ComfyUI\venv\Scripts\python.exe` (Python 3.12.10, pytest 9.1.1). Il Python 3.14 globale non ha pytest e non deve essere usato.
 
 ```text
 regressione unittest : python -m unittest discover -s tests -p "test_*.py"  → Ran 196 tests OK
-suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B/C + H4.14-A/B/C/D + H4.15-A/B + H4.16-A/B + H4.17 + H5-A/B/C + H4.18-A/B/C/D + H4.19-A/B/C/D + H4.20 + H5-D-1/2/3 → 910 passed
-TOTALE TEST UNICI   : 1106 verdi
+suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B/C + H4.14-A/B/C/D + H4.15-A/B + H4.16-A/B + H4.17 + H5-A/B/C + H4.18-A/B/C/D + H4.19-A/B/C/D + H4.20 + H5-D-1/2/3 → 943 passed
+TOTALE TEST UNICI   : 1139 verdi
 ```
 
 - H4.10: 14 test → OK
@@ -1773,14 +1851,16 @@ TOTALE TEST UNICI   : 1106 verdi
 - H6-C2: 14 test → OK (pytest)
 - H6-D: 17 test → OK (pytest)
 - H6-B: 14 test → OK (pytest)
+- H7-A: 16 test → OK (pytest)
+- H7-B: 17 test → OK (pytest)
 
-Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **54 test**. Totale capitolo H4.14: **97 test**. Totale capitolo H4.15: **62 test**. Totale capitolo H4.16: **60 test**. Totale capitolo H4.17: **24 test**. Totale capitolo H5: **56 test**. Totale capitolo H4.18: **78 test**. Totale capitolo H4.19: **94 test**. Totale capitolo H4.20: **30 test**. Totale capitolo H5-D: **56 test**. Totale capitolo H6: **108 test**. Totale capitolo H4.20: **30 test**. Totale capitolo H5-D: **56 test**.
+Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **54 test**. Totale capitolo H4.14: **97 test**. Totale capitolo H4.15: **62 test**. Totale capitolo H4.16: **60 test**. Totale capitolo H4.17: **24 test**. Totale capitolo H5: **56 test**. Totale capitolo H4.18: **78 test**. Totale capitolo H4.19: **94 test**. Totale capitolo H4.20: **30 test**. Totale capitolo H5-D: **56 test**. Totale capitolo H6: **108 test**. Totale capitolo H7: **33 test**. Totale capitolo H4.20: **30 test**. Totale capitolo H5-D: **56 test**.
 
 Nota storica: i 5 errori di import `No module named 'pytest'` documentati fino a H4.11 nascevano dall'uso del Python 3.14 globale; con il venv di ComfyUI l'intera suite gira senza errori. Da H4.12 in poi la procedura canonica usa il venv.
 
-## 42. Git
+## 43. Git
 
-Ultimo checkpoint: **H6-C2b** — commit `feat(human): add H6-C2b age profiles seven lifestyles with sex-specific multipliers` (`ff03ad2`).
+Ultimo checkpoint: **H7-B** — commit `feat(human): add H7-B outfit composition with coherence checking and preset factories` (`d2818cb`).
 
 ```text
 main
@@ -1788,9 +1868,11 @@ main
 working tree clean
 ```
 
-Commit dei capitoli H4.12 … H6:
+Commit dei capitoli H4.12 … H7:
 
 ```text
+d2818cb feat(human): add H7-B outfit composition with coherence checking and preset factories
+82d05da feat(human): add H7-A garment foundation with coverage regions and stacking layers
 ff03ad2 feat(human): add H6-C2b age profiles seven lifestyles with sex-specific multipliers
 095e150 feat(human): add H6-B body aging with strength-mass dissociation and six body curves
 3d21c53 feat(human): add H6-D age trajectories bidirectional transit with round-trip coherence
@@ -1835,11 +1917,11 @@ c5b560e feat(human): add H4.12-B landmark relation component
 b3cf564 feat(human): add H4.12-A coordinate and landmark foundation
 ```
 
-I capitoli da H4.12 a H6, l Age Engine completo e il documento della visione sono stati pushati su `origin/main`.
+I capitoli da H4.12 a H7, il Clothing Engine e il documento della visione sono stati pushati su `origin/main`.
 
-## 43. Dove NON siamo ancora arrivati
+## 44. Dove NON siamo ancora arrivati
 
-Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica, l'anatomia a dettaglio estremo e TOTALE, l'appearance completa (pelle, capelli, occhi, barba, corpo, calvizie mediche, acconciature, peli corporei) e il TEMPO (l Age Engine: età→aspetto bidirezionale con profili) esistono ora. CharacterForge **non è ancora un generatore 3D anatomico**. **H4 (fino a H4.19) e H5 sono complete.** Mancano:
+Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica, l'anatomia a dettaglio estremo e TOTALE, l'appearance completa, il TEMPO (Age Engine bidirezionale con profili) e il VESTITO (Clothing Engine con coerenza e preset) esistono ora. CharacterForge **non è ancora un generatore 3D anatomico**. **H4 (fino a H4.19) e H5 sono complete.** Mancano:
 
 ```text
 3D representation
@@ -1850,7 +1932,7 @@ Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica,
 → Model Adapters
 ```
 
-## 44. Il salto concettuale successivo
+## 45. Il salto concettuale successivo
 
 Fino a H4.11: **"CHE COS'È una parte anatomica?"** Con H4.12: **"DOVE SI TROVA e COME SI RELAZIONA alle altre parti?"** Con H4.13: **"COME SI DERIVA una misura da un'altra?"** — e la risposta è nel codice.
 
@@ -1867,9 +1949,9 @@ move zygion ±δ (H4.14-D, bottom-up) ≡ widen_bizygomatic (H4.14-B, top-down)
 → stesso modello: equivalenza provata, report changed/preserved certificato
 ```
 
-La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Con H4.14: **"COME SI PROPAGA una modifica?"** — e la risposta è codice con report a tre livelli. Con H6 il tempo è controllabile: apparent_age() con profili, traiettorie bidirezionali, proporzioni gerontologiche certificate. Prossimo: **H7 — Clothing**, il primo layer relazionale (copre ciò che abbiamo costruito).
+La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Con H4.14: **"COME SI PROPAGA una modifica?"** — e la risposta è codice con report a tre livelli. Con H7 il personaggio si veste: garments con coverage relazionale, outfit con coerenza, preset tunabili. Prossimo: **H8 — Context/Environment**, il personaggio sa DOVE si trova.
 
-## 45. In sintesi — percorso fatto
+## 46. In sintesi — percorso fatto
 
 ```text
 FASE 1  Core semantico
@@ -1896,11 +1978,12 @@ H4.19   Anatomy Completion: voglio tutto (A→D)            ← CHIUSA
 H4.20   Composable Reproductive System                   ← CHIUSA
 H5-D    The Complete Hair System (D-1/2/3)              ← CHIUSA
 H6      The Age Engine (A/C/D/B: 8 milestone)          ← CHIUSA
+H7      The Clothing Engine (A/B)                     ← CHIUSA
 ```
 
 H4.12 ha costruito il ponte tra **modello anatomico semantico** e **modello geometrico parametrico**: ora esiste. H4.13 lo ha reso percorribile in entrambe le direzioni: le proporzioni non si dichiarano più, si derivano — cranio compreso. H4.14 lo ha reso reversibile e verificabile: ogni modifica torna con il certificato di cosa è cambiato e cosa è sopravvissuto.
 
-## 46. Roadmap estesa oltre H7
+## 47. Roadmap estesa oltre H8
 
 ```text
 H4  HUMAN ANATOMY
@@ -1916,7 +1999,9 @@ H4  HUMAN ANATOMY
 ├── H5-D  The Complete Hair System (calvizie/stili/peli)     ✅
 ├── H5-D  The Complete Hair System (calvizie/stili/peli)    ✅
 ├── H6   The Age Engine (età bidirezionale + profili)        ✅
-└── H4+H5+H5-D+H6 CHIUSE: struttura + superficie + tempo
+├── H6    The Age Engine (età bidirezionale + profili)        ✅
+├── H7    The Clothing Engine (garments + outfit)              ✅
+└── H4→H7 CHIUSE: struttura + superficie + tempo + vestiario
         ↓
 H5  APPEARANCE
 │
@@ -1944,7 +2029,7 @@ H12 VISION / IMAGE-TO-ENTITY
 H13 SCENE / RELATIONSHIPS
 ```
 
-## 47. Il punto fondamentale del progetto, in una frase
+## 48. Il punto fondamentale del progetto, in una frase
 
 All'inizio si stava costruendo un **Character Generator**. Ora la visione è diventata:
 
@@ -1962,4 +2047,4 @@ Con le due direzioni ormai chiarite (vedi Parte II e Parte III):
       IMAGE ←──── ADAPTER ←── ENTITY
 ```
 
-E con H4.20 chiusa, il censimento anatomico è TOTALE: ogni struttura del corpo umano ha componente semantica certificata — visibile o interna, bilateralmente asimmetrica dove l'anatomia lo è, componibile dove la configurazione deve restare esplicita. Il modello è pronto per H7..
+E con H4.20 chiusa, il censimento anatomico è TOTALE: ogni struttura del corpo umano ha componente semantica certificata — visibile o interna, bilateralmente asimmetrica dove l'anatomia lo è, componibile dove la configurazione deve restare esplicita. Il modello è pronto per H8..
