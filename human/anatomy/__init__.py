@@ -1,4 +1,8 @@
 ﻿from .anatomy_component import AnatomyComponent
+from .coordinate import Coordinate
+from .coordinate_space import CoordinateSpace
+from .coordinate_system import CoordinateSystem
+from .landmark import Landmark, LandmarkSource, LandmarkStatus
 from .areola import Areola
 from .arms import Arms
 from .back import Back
@@ -40,6 +44,12 @@ from .wrist import Wrist
 
 __all__ = [
     "AnatomyComponent",
+    "Coordinate",
+    "CoordinateSpace",
+    "CoordinateSystem",
+    "Landmark",
+    "LandmarkSource",
+    "LandmarkStatus",
     "Areola",
     "Arms",
     "Back",

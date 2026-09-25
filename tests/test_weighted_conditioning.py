@@ -1,4 +1,4 @@
-"""
+﻿"""
 Test per CharacterForgeWeightedConditioning.
 """
 
@@ -48,9 +48,9 @@ class TestWeightedConditioningValidation:
         with pytest.raises(ValueError):
             controller.combine_weighted(
                 invalid_conditioning, 
-                [mock_conditioning], 1.0,
-                [mock_conditioning], 0.8,
-                [mock_conditioning], 0.6,
+                invalid_conditioning, 1.0,
+                invalid_conditioning, 0.8,
+                invalid_conditioning, 0.6,
                 "weighted_sum", True
             )
     
@@ -68,22 +68,15 @@ class TestWeightedConditioningValidation:
     
     def test_zero_total_weights(self, mock_conditioning):
         controller = CharacterForgeWeightedConditioning()
-        
-        # Dovrebbe restituire base conditioning senza errore
-        result = controller.combine_weighted(
-            mock_conditioning,
-            mock_conditioning, 0.0,
-            mock_conditioning, 0.0,
-            mock_conditioning, 0.0,
-            "weighted_sum", True
-        )
-        
-        assert result is not None
+        with pytest.raises(ValueError, match="somma dei pesi"):
+            controller.combine_weighted(
+                mock_conditioning,
+                mock_conditioning, 0.0,
+                mock_conditioning, 0.0,
+                mock_conditioning, 0.0,
+                "weighted_sum", True
+            )
 
-
-class TestWeightedConditioningExecution:
-    """Test esecuzione con tutti i metodi."""
-    
     @pytest.fixture
     def controller(self):
         return CharacterForgeWeightedConditioning()

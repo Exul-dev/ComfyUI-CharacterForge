@@ -1,8 +1,8 @@
-"""
+﻿"""
 CharacterForge Hybrid Latent Switch
 ====================================
 
-Switch intelligente per commutazione automatica tra modalità
+Switch intelligente per commutazione automatica tra modalitÃ 
 Text-to-Sheet e Image-to-Sheet.
 
 Gestisce il routing del latent input:
@@ -10,7 +10,7 @@ Gestisce il routing del latent input:
 - Image-to-Sheet: usa VAEEncode da immagine riferimento
 
 Il nodo include validazione input, logging dettagliato
-e gestione errori robusta per un'affidabilità production-ready.
+e gestione errori robusta per un'affidabilitÃ  production-ready.
 """
 
 import torch
@@ -22,28 +22,28 @@ class CharacterForgeHybridLatentSwitch:
     
     Permette di commutare tra:
     - Empty Latent (Text-to-Sheet): generazione completa da prompt
-    - VAE Encode da immagine (Image-to-Sheet): mantiene identità
+    - VAE Encode da immagine (Image-to-Sheet): mantiene identitÃ 
     
     Caratteristiche:
     - Validazione automatica input latent
-    - Logging dettagliato modalità attiva
+    - Logging dettagliato modalitÃ  attiva
     - Gestione fallback intelligente
-    - Metadati tracciabilità per debugging
+    - Metadati tracciabilitÃ  per debugging
     """
     
-    # Configurazione modalità disponibili
+    # Configurazione modalitÃ  disponibili
     MODE_CONFIGS = {
         "text_to_sheet": {
             "description": "Generazione character sheet da prompt testuale",
             "uses": "EmptyLatentImage (2048x1024 consigliato)",
             "denoise_suggestion": 1.0,
-            "k_sampler_notes": "Generazione completa, nessuna identità di partenza"
+            "k_sampler_notes": "Generazione completa, nessuna identitÃ  di partenza"
         },
         "image_to_sheet": {
             "description": "Generazione character sheet da immagine riferimento",
-            "uses": "VAEEncode + IPAdapter per identità",
+            "uses": "VAEEncode + IPAdapter per identitÃ ",
             "denoise_suggestion": 0.6,
-            "k_sampler_notes": "Mantiene 30-40% identità originale"
+            "k_sampler_notes": "Mantiene 30-40% identitÃ  originale"
         }
     }
     
@@ -53,13 +53,13 @@ class CharacterForgeHybridLatentSwitch:
             "required": {
                 "mode": (["text_to_sheet", "image_to_sheet"], {
                     "default": "text_to_sheet",
-                    "tooltip": "Modalità del workflow: Text (prompt) o Image (riferimento)"
+                    "tooltip": "ModalitÃ  del workflow: Text (prompt) o Image (riferimento)"
                 }),
                 "text_latent": ("LATENT", {
-                    "tooltip": "Latent da EmptyLatentImage (usato in modalità text_to_sheet)"
+                    "tooltip": "Latent da EmptyLatentImage (usato in modalitÃ  text_to_sheet)"
                 }),
                 "image_latent": ("LATENT", {
-                    "tooltip": "Latent da VAEEncode (usato in modalità image_to_sheet)"
+                    "tooltip": "Latent da VAEEncode (usato in modalitÃ  image_to_sheet)"
                 }),
             },
             "optional": {
@@ -85,10 +85,10 @@ class CharacterForgeHybridLatentSwitch:
     def switch_latent(self, mode, text_latent, image_latent, 
                      image_reference=None, auto_validate=True, debug_mode=False):
         """
-        Seleziona e instrada il latent appropriato in base alla modalità.
+        Seleziona e instrada il latent appropriato in base alla modalitÃ .
         
         Args:
-            mode: Modalità del workflow ("text_to_sheet" o "image_to_sheet")
+            mode: ModalitÃ  del workflow ("text_to_sheet" o "image_to_sheet")
             text_latent: Latent per Text-to-Sheet (da EmptyLatentImage)
             image_latent: Latent per Image-to-Sheet (da VAEEncode)
             image_reference: Immagine riferimento opzionale
@@ -96,11 +96,11 @@ class CharacterForgeHybridLatentSwitch:
             debug_mode: Se attivare logging dettagliato
             
         Returns:
-            tuple: (latent selezionato, info modalità, preview immagine)
+            tuple: (latent selezionato, info modalitÃ , preview immagine)
         """
-        # Validazione modalità
+        # Validazione modalitÃ 
         if mode not in self.MODE_CONFIGS:
-            error_msg = f"Modalità '{mode}' non riconosciuta. Usare: 'text_to_sheet' o 'image_to_sheet'"
+            error_msg = f"ModalitÃ  '{mode}' non riconosciuta. Usare: 'text_to_sheet' o 'image_to_sheet'"
             print(f"[HybridLatentSwitch] ERROR: {error_msg}")
             raise ValueError(error_msg)
         
@@ -114,7 +114,7 @@ class CharacterForgeHybridLatentSwitch:
                 print(f"  text_latent: {'VALID' if text_valid else f'INVALID ({text_error})'}")
                 print(f"  image_latent: {'VALID' if image_valid else f'INVALID ({image_error})'}")
             
-            # Verifica che il latent per la modalità selezionata sia valido
+            # Verifica che il latent per la modalitÃ  selezionata sia valido
             if mode == "text_to_sheet" and not text_valid:
                 error_msg = f"text_latent non valido: {text_error}"
                 print(f"[HybridLatentSwitch] ERROR: {error_msg}")
@@ -125,9 +125,9 @@ class CharacterForgeHybridLatentSwitch:
                 print(f"[HybridLatentSwitch] ERROR: {error_msg}")
                 raise ValueError(error_msg)
         
-        # Log modalità selezionata
+        # Log modalitÃ  selezionata
         if debug_mode:
-            print(f"[HybridLatentSwitch] Modalità selezionata: {mode}")
+            print(f"[HybridLatentSwitch] ModalitÃ  selezionata: {mode}")
             print(f"[HybridLatentSwitch] Descrizione: {self.MODE_CONFIGS[mode]['description']}")
         
         # Routing del latent
@@ -175,10 +175,10 @@ class CharacterForgeHybridLatentSwitch:
         """
         # Verifica che non sia None
         if latent is None:
-            return False, "Latent è None"
+            return False, "Latent Ã¨ None"
         
         # Verifica formato ComfyUI latent
-        # Il formato standard è un dict con 'samples' o un tensor
+        # Il formato standard Ã¨ un dict con 'samples' o un tensor
         if isinstance(latent, dict):
             if "samples" in latent:
                 samples = latent["samples"]
@@ -189,7 +189,7 @@ class CharacterForgeHybridLatentSwitch:
                         return False, f"Dimensioni tensor insufficienti ({samples.dim()}D, min 3D)"
                     return True, None
                 else:
-                    return False, f"samples non è un Tensor (tipo: {type(samples).__name__})"
+                    return False, f"samples non Ã¨ un Tensor (tipo: {type(samples).__name__})"
             else:
                 return False, "Dict senza chiave 'samples'"
         elif isinstance(latent, torch.Tensor):
@@ -209,7 +209,7 @@ class CharacterForgeHybridLatentSwitch:
     
     def _prepare_text_latent(self, text_latent, debug_mode=False):
         """
-        Prepara il latent per modalità Text-to-Sheet.
+        Prepara il latent per modalitÃ  Text-to-Sheet.
         
         Args:
             text_latent: Latent da EmptyLatentImage
@@ -222,7 +222,7 @@ class CharacterForgeHybridLatentSwitch:
             print(f"[HybridLatentSwitch] Preparazione TEXT latent:")
             self._log_latent_info(text_latent, "text_latent")
         
-        # Il latent da EmptyLatentImage è già pronto
+        # Il latent da EmptyLatentImage Ã¨ giÃ  pronto
         # Aggiungi eventuali metadati se in formato dict
         if isinstance(text_latent, dict):
             prepared = text_latent.copy()
@@ -234,7 +234,7 @@ class CharacterForgeHybridLatentSwitch:
     
     def _prepare_image_latent(self, image_latent, debug_mode=False):
         """
-        Prepara il latent per modalità Image-to-Sheet.
+        Prepara il latent per modalitÃ  Image-to-Sheet.
         
         Args:
             image_latent: Latent da VAEEncode
@@ -247,7 +247,7 @@ class CharacterForgeHybridLatentSwitch:
             print(f"[HybridLatentSwitch] Preparazione IMAGE latent:")
             self._log_latent_info(image_latent, "image_latent")
         
-        # Il latent da VAEEncode è già pronto
+        # Il latent da VAEEncode Ã¨ giÃ  pronto
         # Aggiungi eventuali metadati se in formato dict
         if isinstance(image_latent, dict):
             prepared = image_latent.copy()
@@ -260,23 +260,24 @@ class CharacterForgeHybridLatentSwitch:
     def _generate_mode_info(self, mode, selected_latent, 
                            text_latent, image_latent, debug_mode=False):
         """
-        Genera stringa informativa dettagliata sulla modalità attiva.
+        Genera stringa informativa dettagliata sulla modalitÃ  attiva.
         
         Args:
-            mode: Modalità attiva
+            mode: ModalitÃ  attiva
             selected_latent: Latent selezionato
             text_latent: Latent text originale (per confronto)
             image_latent: Latent image originale (per confronto)
             debug_mode: Se includere info extra
             
         Returns:
-            str: Stringa JSON-formattata con info modalità
+            str: Stringa JSON-formattata con info modalitÃ 
         """
         mode_config = self.MODE_CONFIGS.get(mode, {})
         
         info = {
             "controller": "HybridLatentSwitch",
             "active_mode": mode,
+            "active_mode_label": mode.upper(),
             "mode_description": mode_config.get("description", "Unknown"),
             "uses": mode_config.get("uses", "Unknown"),
             "denoise_suggestion": mode_config.get("denoise_suggestion", 1.0),
@@ -323,7 +324,7 @@ class CharacterForgeHybridLatentSwitch:
                    image_reference=None, auto_validate=True, debug_mode=False):
         """
         Determina se il nodo deve essere ricalcolato.
-        Ritorna il mode per ricalcolo solo quando cambia la modalità.
+        Ritorna il mode per ricalcolo solo quando cambia la modalitÃ .
         """
         return mode
 

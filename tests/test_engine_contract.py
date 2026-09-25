@@ -21,7 +21,7 @@ from core.engine_contract import (
 )
 
 
-class TestEngine(EngineContract):
+class EngineContractTestDouble(EngineContract):
 
     engine_id = "test_engine"
     entity_type = "test_entity"
@@ -70,14 +70,14 @@ class InvalidEngine(EngineContract):
 class TestEngineContract(unittest.TestCase):
 
     def test_engine_implements_contract(self):
-        engine = TestEngine()
+        engine = EngineContractTestDouble()
 
         self.assertIsInstance(engine, EngineContract)
         self.assertEqual(engine.engine_id, "test_engine")
         self.assertEqual(engine.entity_type, "test_entity")
 
     def test_contract_is_available(self):
-        engine = TestEngine()
+        engine = EngineContractTestDouble()
 
         self.assertIsInstance(
             engine.contract,
@@ -90,20 +90,20 @@ class TestEngineContract(unittest.TestCase):
         )
 
     def test_validate_config_accepts_valid_config(self):
-        engine = TestEngine()
+        engine = EngineContractTestDouble()
 
         engine.validate_config({
             "name": "Example",
         })
 
     def test_validate_config_rejects_invalid_config(self):
-        engine = TestEngine()
+        engine = EngineContractTestDouble()
 
         with self.assertRaises(EngineContractError):
             engine.validate_config({})
 
     def test_build_payload(self):
-        engine = TestEngine()
+        engine = EngineContractTestDouble()
 
         payload = engine.build_payload({
             "name": "Example",
@@ -119,7 +119,7 @@ class TestEngineContract(unittest.TestCase):
         )
 
     def test_describe(self):
-        engine = TestEngine()
+        engine = EngineContractTestDouble()
 
         description = engine.describe()
 
@@ -191,3 +191,4 @@ class TestEngineContract(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+

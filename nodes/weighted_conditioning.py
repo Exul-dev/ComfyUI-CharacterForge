@@ -1,4 +1,4 @@
-"""
+﻿"""
 CharacterForge Weighted Conditioning
 ====================================
 
@@ -14,7 +14,7 @@ Metodi di combinazione disponibili:
 - blend: Interpolazione lineare pesata
 
 Ogni metodo preserva la struttura del conditioning base
-se l'opzione preserve_structure è attiva.
+se l'opzione preserve_structure Ã¨ attiva.
 """
 
 import torch
@@ -49,7 +49,7 @@ class CharacterForgeWeightedConditioning:
             "base_influence": None
         },
         "concat": {
-            "description": "Concatenazione sequenziale (massima varietà info)",
+            "description": "Concatenazione sequenziale (massima varietÃ  info)",
             "preserves_base": True,
             "base_influence": 0.0
         },
@@ -167,9 +167,8 @@ class CharacterForgeWeightedConditioning:
         
         # Normalizzazione pesi per weighted_sum
         total_weight = sum(weights)
-        if total_weight == 0:
-            print("[WeightedConditioning] Warning: Tutti i pesi sono 0, uso base conditioning")
-            return (base_conditioning, self._generate_info("fallback", [0, 0, 0], preserve_structure, "Tutti i pesi zero"))
+        if total_weight <= 0:
+            raise ValueError("La somma dei pesi deve essere maggiore di 0. Impostare almeno un peso superiore a 0.")
         
         normalized_weights = [w / total_weight for w in weights]
         
@@ -222,7 +221,8 @@ class CharacterForgeWeightedConditioning:
             combination_method, 
             normalized_weights, 
             preserve_structure,
-            structure_strength
+            structure_strength,
+            raw_weights=weights
         )
         
         return (combined, info)
@@ -232,7 +232,7 @@ class CharacterForgeWeightedConditioning:
         """
         Somma pesata con preservazione opzionale struttura base.
         
-        Formula: result = base * base_weight + Σ(cond_i * weight_i)
+        Formula: result = base * base_weight + Î£(cond_i * weight_i)
         dove base_weight = 1.0 - (somma pesi normalizzati * fattore)
         """
         # Estrai tensor dal base
@@ -246,7 +246,7 @@ class CharacterForgeWeightedConditioning:
         base_influence = method_config["base_influence"]
         
         if preserve_structure:
-            # Base ha influenza fissa del 50%, il resto è distribuito
+            # Base ha influenza fissa del 50%, il resto Ã¨ distribuito
             base_weight = base_influence
             cond_weights = [(1.0 - base_influence) * w for w in weights]
         else:
@@ -466,7 +466,7 @@ class CharacterForgeWeightedConditioning:
         Formula: result = base * (1 - t) + weighted_avg(cond) * t
         dove t = 1.0 - structure_strength
         """
-        # Fattore interpolazione (più struttura = meno condizionamento)
+        # Fattore interpolazione (piÃ¹ struttura = meno condizionamento)
         t = 1.0 - structure_strength
         
         result = []
@@ -561,7 +561,7 @@ class CharacterForgeWeightedConditioning:
         
         return preserved
     
-    def _generate_info(self, method, weights, preserve_structure, structure_strength):
+    def _generate_info(self, method, weights, preserve_structure, structure_strength, raw_weights=None):
         """
         Genera stringa informativa dettagliata sulla combinazione.
         """
@@ -571,6 +571,7 @@ class CharacterForgeWeightedConditioning:
             "controller": "WeightedConditioning",
             "combination_method": method,
             "method_description": method_info.get("description", "Unknown"),
+            "raw_weights": [f"{w:.3f}" for w in (raw_weights if raw_weights is not None else weights)],
             "normalized_weights": [f"{w:.3f}" for w in weights],
             "raw_weights_ratio": f"{weights[0]:.2f}:{weights[1]:.2f}:{weights[2]:.2f}",
             "structure_preserved": preserve_structure,
