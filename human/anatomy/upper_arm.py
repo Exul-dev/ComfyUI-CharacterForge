@@ -6,10 +6,9 @@ from .anatomy_component import AnatomyComponent
 class UpperArm(AnatomyComponent):
     """Represents the upper-arm anatomical structure.
 
-    H4.4 foundation, enriched in H4.19-D to thigh parity (8
-    parameters): biceps and triceps prominence mirror the
-    quad/hamstring model of H4.18-B. Legacy constructor checks
-    (eager, exact messages) preserved verbatim.
+    H4.4 foundation, enriched in H4.19-D to thigh parity and in
+    H5-D-3 with vascularity (four-segment limb parity). Legacy
+    constructor checks (eager, exact messages) preserved verbatim.
     """
 
     component_type = "upper_arm"
@@ -33,6 +32,7 @@ class UpperArm(AnatomyComponent):
         bicep_prominence: float = 0.5,
         tricep_prominence: float = 0.5,
         inner_definition: float = 0.4,
+        vascularity: float = 0.3,
     ) -> None:
         super().__init__()
 
@@ -56,6 +56,7 @@ class UpperArm(AnatomyComponent):
         self.bicep_prominence = float(bicep_prominence)
         self.tricep_prominence = float(tricep_prominence)
         self.inner_definition = float(inner_definition)
+        self.vascularity = float(vascularity)
 
         self.validate()
 
@@ -81,6 +82,7 @@ class UpperArm(AnatomyComponent):
             "bicep_prominence",
             "tricep_prominence",
             "inner_definition",
+            "vascularity",
         ):
             value = getattr(self, name)
 
@@ -100,4 +102,5 @@ class UpperArm(AnatomyComponent):
             "bicep_prominence": self.bicep_prominence,
             "tricep_prominence": self.tricep_prominence,
             "inner_definition": self.inner_definition,
+            "vascularity": self.vascularity,
         }

@@ -206,8 +206,10 @@ class TestHumanEngineH419D:
             inspect.signature(Forearm.__init__).parameters
         ) - {"self"}
 
-        assert len(upper_arm_params) == len(thigh_params) == 8
-        assert len(forearm_params) == len(lower_leg_params) == 8
+        # H5-D-3: vascularity on all four limb segments and
+        # flexor_definition completing Forearm — parity 8 -> 9.
+        assert len(upper_arm_params) == len(thigh_params) == 9
+        assert len(forearm_params) == len(lower_leg_params) == 9
 
     # --- export (2) ---
 

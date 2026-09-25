@@ -1,3 +1,7 @@
+from .body_hair import (
+    BodyHair,
+    BodyHairRegion,
+)
 from .facial_hair import (
     FacialHair,
     FacialHairGrooming,
@@ -22,4 +26,6 @@ __all__ = [
     "FacialHairLength",
     "FacialHairGrooming",
     "FacialHairStyle",
+    "BodyHair",
+    "BodyHairRegion",
 ]

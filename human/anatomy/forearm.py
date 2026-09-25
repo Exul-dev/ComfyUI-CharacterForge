@@ -6,10 +6,13 @@ from .anatomy_component import AnatomyComponent
 class Forearm(AnatomyComponent):
     """Represents the forearm anatomical structure.
 
-    H4.4 foundation, enriched in H4.19-D (lower-leg parity):
-    brachioradialis definition and vascularity — the forearm is
-    where superficial veins read the most on a physique. Legacy
-    constructor checks (eager, exact messages) preserved verbatim.
+    H4.4 foundation, enriched in H4.19-D (brachioradialis and
+    ulna definition, vascularity) and in H5-D-3 with
+    flexor_definition — completing the soft-tissue trio that the
+    other three limb segments carry, for four-segment parity (9
+    parameters each). The anterior flexor mass is the visible
+    bulk of the forearm. Legacy constructor checks (eager, exact
+    messages) preserved verbatim.
     """
 
     component_type = "forearm"
@@ -32,6 +35,7 @@ class Forearm(AnatomyComponent):
         shape: str = "average",
         brachioradialis_definition: float = 0.4,
         ulna_definition: float = 0.4,
+        flexor_definition: float = 0.4,
         vascularity: float = 0.3,
     ) -> None:
         super().__init__()
@@ -55,6 +59,7 @@ class Forearm(AnatomyComponent):
         self.shape = shape
         self.brachioradialis_definition = float(brachioradialis_definition)
         self.ulna_definition = float(ulna_definition)
+        self.flexor_definition = float(flexor_definition)
         self.vascularity = float(vascularity)
 
         self.validate()
@@ -80,6 +85,7 @@ class Forearm(AnatomyComponent):
         for name in (
             "brachioradialis_definition",
             "ulna_definition",
+            "flexor_definition",
             "vascularity",
         ):
             value = getattr(self, name)
@@ -99,5 +105,6 @@ class Forearm(AnatomyComponent):
             "shape": self.shape,
             "brachioradialis_definition": self.brachioradialis_definition,
             "ulna_definition": self.ulna_definition,
+            "flexor_definition": self.flexor_definition,
             "vascularity": self.vascularity,
         }

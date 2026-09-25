@@ -9,7 +9,9 @@ class LowerLeg(AnatomyComponent):
     """Represents the lower leg (shank) anatomical structure.
 
     H4.15-A foundation, enriched in H4.18-B (shin and calf
-    definition). Legacy parameters and error messages preserved.
+    definition) and H5-D-3 (vascularity, four-segment limb
+    parity). Legacy parameters and error messages preserved
+    verbatim.
     """
 
     component_type = "lower_leg"
@@ -33,6 +35,7 @@ class LowerLeg(AnatomyComponent):
         calf_prominence: float = 0.5,
         calf_definition: float = 0.5,
         shin_definition: float = 0.5,
+        vascularity: float = 0.3,
     ) -> None:
         super().__init__()
 
@@ -75,6 +78,7 @@ class LowerLeg(AnatomyComponent):
         self.calf_prominence = float(calf_prominence)
         self.calf_definition = float(calf_definition)
         self.shin_definition = float(shin_definition)
+        self.vascularity = float(vascularity)
 
         self.validate()
 
@@ -108,6 +112,7 @@ class LowerLeg(AnatomyComponent):
             "calf_prominence",
             "calf_definition",
             "shin_definition",
+            "vascularity",
         ):
             value = getattr(self, name)
 
@@ -128,4 +133,5 @@ class LowerLeg(AnatomyComponent):
             "calf_prominence": self.calf_prominence,
             "calf_definition": self.calf_definition,
             "shin_definition": self.shin_definition,
+            "vascularity": self.vascularity,
         }

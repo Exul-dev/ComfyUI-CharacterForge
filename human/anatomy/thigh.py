@@ -9,8 +9,9 @@ class Thigh(AnatomyComponent):
     """Represents the thigh anatomical structure.
 
     H4.15-A foundation, enriched in H4.18-B to the detail standard
-    of the project's reference segments (shoulder-level density).
-    Legacy constructor parameters and error messages are preserved.
+    of the project's reference segments and in H5-D-3 with
+    vascularity (four-segment limb parity). Legacy constructor
+    parameters and error messages are preserved.
     """
 
     component_type = "thigh"
@@ -34,6 +35,7 @@ class Thigh(AnatomyComponent):
         quad_prominence: float = 0.5,
         hamstring_prominence: float = 0.5,
         inner_fullness: float = 0.4,
+        vascularity: float = 0.3,
     ) -> None:
         super().__init__()
 
@@ -44,12 +46,6 @@ class Thigh(AnatomyComponent):
             raise ValueError(
                 "Thigh circumference must be greater than zero."
             )
-
-        if width <= 0:
-            raise ValueError("Thigh width must be greater than zero.")
-
-        if depth <= 0:
-            raise ValueError("Thigh depth must be greater than zero.")
 
         if shape not in self.VALID_SHAPES:
             raise ValueError(
@@ -65,6 +61,7 @@ class Thigh(AnatomyComponent):
         self.quad_prominence = float(quad_prominence)
         self.hamstring_prominence = float(hamstring_prominence)
         self.inner_fullness = float(inner_fullness)
+        self.vascularity = float(vascularity)
 
         self.validate()
 
@@ -92,6 +89,7 @@ class Thigh(AnatomyComponent):
             "quad_prominence",
             "hamstring_prominence",
             "inner_fullness",
+            "vascularity",
         ):
             value = getattr(self, name)
 
@@ -111,4 +109,5 @@ class Thigh(AnatomyComponent):
             "quad_prominence": self.quad_prominence,
             "hamstring_prominence": self.hamstring_prominence,
             "inner_fullness": self.inner_fullness,
+            "vascularity": self.vascularity,
         }
