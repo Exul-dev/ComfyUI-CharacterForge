@@ -288,6 +288,9 @@ class TestHumanEngineH6D:
         transit(human, life, 25, 80)
 
         assert human.validate() is None
+        # H6-B: apparent_age now configures body_aging too —
+        # the full registry is 9 components (contract evolution,
+        # same precedent as Hair VALID_LENGTHS 6 -> 7).
         assert set(human.component_names()) == {
             "human_identity",
             "demographics",
@@ -297,6 +300,7 @@ class TestHumanEngineH6D:
             "skin_aging",
             "hair_aging",
             "face_aging",
+            "body_aging",
         }
 
         data = human.to_dict()

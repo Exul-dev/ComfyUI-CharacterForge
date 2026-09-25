@@ -19,6 +19,7 @@ ComfyUI node exposes ONE dial (the age); everything in this
 package makes that one dial truthful.
 """
 
+from .body_aging import BodyAging
 from .curves import AgeCurves, AgeAxis
 from .operator import (
     AgeResult,
@@ -35,6 +36,7 @@ from .trajectory import (
 __all__ = [
     "AgeCurves",
     "AgeAxis",
+    "BodyAging",
     "AgeResult",
     "FieldChange",
     "apparent_age",

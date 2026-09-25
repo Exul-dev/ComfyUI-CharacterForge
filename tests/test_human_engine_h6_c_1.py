@@ -17,8 +17,12 @@ class TestHumanEngineH6C1:
 
         assert enum_count == curve_count  # enum == dict
         assert enum_count >= 15  # sanity: all layers present
-        # 4 skin + 4 hair + 12 face = 20 (counted from source)
-        assert enum_count == 20
+        # 4 skin + 4 hair + 12 face + 6 body = 26
+        # (H6-B extended the matrix 20 -> 26: contract evolution,
+        # same precedent as Hair VALID_LENGTHS 6 -> 7. This test
+        # failing after the extension was the cardinality guard
+        # doing its job.)
+        assert enum_count == 26
 
     def test_every_axis_has_a_curve(self):
         assert set(AgeCurves.axes()) == set(AgeAxis)

@@ -34,6 +34,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from ..anatomy.face_aging import FaceAging
+from .body_aging import BodyAging
 from ..hair.hair_aging import GrayingPattern, HairAging
 from ..skin.skin_aging import SkinAging, WrinkleZone
 from .curves import AgeAxis, AgeCurves
@@ -225,6 +226,33 @@ _FACE_AXIS_MAP = {
 }
 
 
+_BODY_AXIS_MAP = {
+    "muscle_mass_loss": AgeAxis.MUSCLE_MASS_LOSS,
+    "strength_loss": AgeAxis.STRENGTH_LOSS,
+    "fat_redistribution": AgeAxis.FAT_REDISTRIBUTION,
+    "postural_stooping": AgeAxis.POSTURAL_STOOPING,
+    "stature_loss": AgeAxis.STATURE_LOSS,
+    "body_skin_thinning": AgeAxis.BODY_SKIN_THINNING,
+}
+
+
+def _update_body_aging(
+    result: AgeResult,
+    body: BodyAging,
+    age: float,
+) -> None:
+    """Update an EXISTING BodyAging in place from the curves."""
+
+    snap = AgeCurves.snapshot(age)
+
+    for field_name, axis in _BODY_AXIS_MAP.items():
+        _set_and_record(
+            result, "body_aging", body, field_name,
+            snap[axis],
+        )
+
+    body.validate()
+
 def _update_face_aging(
     result: AgeResult,
     face: FaceAging,
@@ -281,9 +309,11 @@ def apparent_age(human: Any, age: float) -> AgeResult:
     skin = _get_or_register(human, "skin_aging", SkinAging)
     hair = _get_or_register(human, "hair_aging", HairAging)
     face = _get_or_register(human, "face_aging", FaceAging)
+    body = _get_or_register(human, "body_aging", BodyAging)
 
     _update_skin_aging(result, skin, age)
     _update_hair_aging(result, hair, age)
     _update_face_aging(result, face, age)
+    _update_body_aging(result, body, age)
 
     return result
