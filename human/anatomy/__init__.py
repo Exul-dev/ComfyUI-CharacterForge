@@ -116,6 +116,7 @@ from .chest import Chest
 from .chin import Chin
 from .elbow import Elbow
 from .enums import BodySide, FingerType, ToeType
+from .face_aging import FaceAging
 from .face import Face
 from .face_dimensions import FaceDimensions
 from .facial_landmarks import FacialLandmarks
@@ -214,6 +215,7 @@ __all__ = [
     "Chin",
     "Elbow",
     "Face",
+    "FaceAging",
     "FaceDimensions",
     "FacialLandmarks",
     "FacialProportions",
