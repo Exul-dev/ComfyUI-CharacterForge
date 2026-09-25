@@ -12,6 +12,8 @@ from .facial_proportions import FacialProportions
 from .facial_symmetry import FacialSymmetry
 from .forehead import Forehead
 from .jaw import Jaw
+from .brow import Brows
+from .eyelid import Eyelids
 from .mouth import Mouth
 from .nose import Nose
 
@@ -58,6 +60,8 @@ class Face(AnatomyComponent):
         landmarks: FacialLandmarks | None = None,
         nose: Nose | None = None,
         mouth: Mouth | None = None,
+        eyelids: Eyelids | None = None,
+        brows: Brows | None = None,
     ) -> None:
         super().__init__()
 
@@ -83,6 +87,8 @@ class Face(AnatomyComponent):
         self.landmarks = landmarks or FacialLandmarks()
         self.nose = nose or Nose()
         self.mouth = mouth or Mouth()
+        self.eyelids = eyelids or Eyelids()
+        self.brows = brows or Brows()
 
         self.validate()
 
@@ -139,6 +145,8 @@ class Face(AnatomyComponent):
             self.landmarks,
             self.nose,
             self.mouth,
+            self.eyelids,
+            self.brows,
         ):
             component.validate()
 
@@ -166,4 +174,6 @@ class Face(AnatomyComponent):
             "landmarks": self.landmarks.to_dict(),
             "nose": self.nose.to_dict(),
             "mouth": self.mouth.to_dict(),
+            "eyelids": self.eyelids.to_dict(),
+            "brows": self.brows.to_dict(),
         }

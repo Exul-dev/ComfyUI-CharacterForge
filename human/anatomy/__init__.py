@@ -75,13 +75,15 @@ from .pelvis import Pelvis
 from .thigh import Thigh
 from .knee import Knee
 from .lower_leg import LowerLeg
+from .eyelid import Eyelid, Eyelids
+from .brow import Brow, Brows
 from .toe import Toe
 from .foot import Foot, Heel
 from .leg import Leg
 from .ear import Ear
 from .ears import Ears
 from .nose import Nose
-from .mouth import Mouth, Philtrum
+from .mouth import Mouth, Philtrum, Teeth, Tongue
 from .legs import Legs
 from .ankle import Ankle
 from .arm import Arm
@@ -218,6 +220,13 @@ __all__ = [
     "Ears",
     "Nose",
     "Mouth",
+    "Philtrum",
+    "Teeth",
+    "Tongue",
+    "Eyelid",
+    "Eyelids",
+    "Brow",
+    "Brows",
     "Philtrum",
     "Nipple",
     "Palm",
