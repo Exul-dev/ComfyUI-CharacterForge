@@ -5,16 +5,24 @@ from .back import Back
 from .body_fat import BodyFat
 from .body_type import BodyType, Height, Proportions
 from .breast import Breast, BreastUnit
+from .cheek_structure import CheekStructure
 from .chest import Chest
+from .chin import Chin
 from .elbow import Elbow
 from .enums import BodySide, FingerType
 from .face import Face
+from .face_dimensions import FaceDimensions
+from .facial_landmarks import FacialLandmarks
+from .facial_proportions import FacialProportions
+from .facial_symmetry import FacialSymmetry
 from .finger import Finger
 from .forearm import Forearm
+from .forehead import Forehead
 from .hand import Hand
 from .hands import Hands
 from .head import Head
 from .human_anatomy import HumanAnatomy
+from .jaw import Jaw
 from .mammary_region import MammaryRegion
 from .musculature import Musculature
 from .nail import Nail
@@ -38,17 +46,25 @@ __all__ = [
     "BodyType",
     "Breast",
     "BreastUnit",
+    "CheekStructure",
     "Chest",
+    "Chin",
     "Elbow",
     "Face",
+    "FaceDimensions",
+    "FacialLandmarks",
+    "FacialProportions",
+    "FacialSymmetry",
     "Finger",
     "FingerType",
     "Forearm",
+    "Forehead",
     "Hand",
     "Hands",
     "Height",
     "Head",
     "HumanAnatomy",
+    "Jaw",
     "MammaryRegion",
     "Musculature",
     "Nail",
