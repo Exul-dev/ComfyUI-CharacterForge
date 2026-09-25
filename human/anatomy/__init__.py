@@ -25,9 +25,14 @@ from .facial_morphometry import (
     facial_scale_factor,
 )
 from .head_morphometry import (
+    CranialMeasurements,
+    cranial_measurements,
+    cranial_scale_factor,
+    head_dimensions_from_cranial_measurements,
     head_dimensions_from_face_dimensions,
     head_proportions_from_dimensions,
 )
+from .cranial_landmarks import CranialLandmarks
 from .areola import Areola
 from .arms import Arms
 from .back import Back
@@ -96,6 +101,11 @@ __all__ = [
     "facial_scale_factor",
     "head_dimensions_from_face_dimensions",
     "head_proportions_from_dimensions",
+    "CranialLandmarks",
+    "CranialMeasurements",
+    "cranial_measurements",
+    "cranial_scale_factor",
+    "head_dimensions_from_cranial_measurements",
     "Areola",
     "Arms",
     "Back",
