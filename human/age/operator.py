@@ -35,6 +35,7 @@ from typing import Any
 
 from ..anatomy.face_aging import FaceAging
 from .body_aging import BodyAging
+from .profiles import AgeProfile, ProfileSex, profile_snapshot
 from ..hair.hair_aging import GrayingPattern, HairAging
 from ..skin.skin_aging import SkinAging, WrinkleZone
 from .curves import AgeAxis, AgeCurves
@@ -147,10 +148,12 @@ def _update_skin_aging(
     result: AgeResult,
     skin: SkinAging,
     age: float,
+    snap: dict | None = None,
 ) -> None:
     """Update an EXISTING SkinAging in place from the curves."""
 
-    snap = AgeCurves.snapshot(age)
+    if snap is None:
+        snap = AgeCurves.snapshot(age)
 
     _set_and_record(result, "skin_aging", skin, "wrinkle_depth",
                      snap[AgeAxis.WRINKLE_DEPTH])
@@ -189,10 +192,12 @@ def _update_hair_aging(
     result: AgeResult,
     hair: HairAging,
     age: float,
+    snap: dict | None = None,
 ) -> None:
     """Update an EXISTING HairAging in place from the curves."""
 
-    snap = AgeCurves.snapshot(age)
+    if snap is None:
+        snap = AgeCurves.snapshot(age)
 
     _set_and_record(result, "hair_aging", hair, "scalp_gray_extent",
                      snap[AgeAxis.SCALP_GRAY])
@@ -210,6 +215,35 @@ def _update_hair_aging(
     hair.validate()
 
 
+_BODY_AXIS_MAP = {
+    "muscle_mass_loss": AgeAxis.MUSCLE_MASS_LOSS,
+    "strength_loss": AgeAxis.STRENGTH_LOSS,
+    "fat_redistribution": AgeAxis.FAT_REDISTRIBUTION,
+    "postural_stooping": AgeAxis.POSTURAL_STOOPING,
+    "stature_loss": AgeAxis.STATURE_LOSS,
+    "body_skin_thinning": AgeAxis.BODY_SKIN_THINNING,
+}
+
+def _update_body_aging(
+    result: AgeResult,
+    body: BodyAging,
+    age: float,
+    snap: dict | None = None,
+) -> None:
+    """Update an EXISTING BodyAging in place from the curves."""
+
+    if snap is None:
+        snap = AgeCurves.snapshot(age)
+
+    for field_name, axis in _BODY_AXIS_MAP.items():
+        _set_and_record(
+            result, "body_aging", body, field_name,
+            snap[axis],
+        )
+
+    body.validate()
+
+
 _FACE_AXIS_MAP = {
     "midface_descent": AgeAxis.MIDFACE_DESCENT,
     "jowl_formation": AgeAxis.JOWL_FORMATION,
@@ -225,42 +259,16 @@ _FACE_AXIS_MAP = {
     "mandibular_definition_loss": AgeAxis.MANDIBULAR_LOSS,
 }
 
-
-_BODY_AXIS_MAP = {
-    "muscle_mass_loss": AgeAxis.MUSCLE_MASS_LOSS,
-    "strength_loss": AgeAxis.STRENGTH_LOSS,
-    "fat_redistribution": AgeAxis.FAT_REDISTRIBUTION,
-    "postural_stooping": AgeAxis.POSTURAL_STOOPING,
-    "stature_loss": AgeAxis.STATURE_LOSS,
-    "body_skin_thinning": AgeAxis.BODY_SKIN_THINNING,
-}
-
-
-def _update_body_aging(
-    result: AgeResult,
-    body: BodyAging,
-    age: float,
-) -> None:
-    """Update an EXISTING BodyAging in place from the curves."""
-
-    snap = AgeCurves.snapshot(age)
-
-    for field_name, axis in _BODY_AXIS_MAP.items():
-        _set_and_record(
-            result, "body_aging", body, field_name,
-            snap[axis],
-        )
-
-    body.validate()
-
 def _update_face_aging(
     result: AgeResult,
     face: FaceAging,
     age: float,
+    snap: dict | None = None,
 ) -> None:
     """Update an EXISTING FaceAging in place from the curves."""
 
-    snap = AgeCurves.snapshot(age)
+    if snap is None:
+        snap = AgeCurves.snapshot(age)
 
     for field_name, axis in _FACE_AXIS_MAP.items():
         _set_and_record(
@@ -269,7 +277,6 @@ def _update_face_aging(
         )
 
     face.validate()
-
 
 def _get_or_register(human: Any, name: str, factory: Any) -> Any:
     """Get the existing component or register a fresh one.
@@ -286,22 +293,40 @@ def _get_or_register(human: Any, name: str, factory: Any) -> Any:
     return fresh
 
 
-def apparent_age(human: Any, age: float) -> AgeResult:
+def apparent_age(
+    human: Any,
+    age: float,
+    profile: AgeProfile | None = None,
+    sex: ProfileSex = ProfileSex.NEUTRAL,
+) -> AgeResult:
     """Set a Human's apparent age with one call.
 
-    Updates SkinAging, HairAging and FaceAging IN PLACE on the
-    given Human entity, proportionally to the AgeCurves matrix.
-    Returns an AgeResult with the field-by-field changed/
-    preserved report — truthful against the CURRENT state.
+    Updates SkinAging, HairAging, FaceAging and BodyAging IN
+    PLACE on the given Human entity. Without a profile the
+    values follow the raw AgeCurves matrix; with a profile
+    (and optionally a sex variant) the curves are scaled by
+    the profile multipliers (clamped to [0, 1]).
 
-    Idempotent: same age twice -> second report is all
-    preserved. Rejuvenating: younger age -> changes reflect
-    the actual regression.
+    Idempotent: same age and profile twice -> the second
+    report is all preserved.
     """
 
     if age < 0:
         raise ValueError(
             "apparent_age age cannot be negative."
+        )
+
+    if profile is not None and not isinstance(
+        profile,
+        AgeProfile,
+    ):
+        raise ValueError(
+            "apparent_age profile must be an AgeProfile or None."
+        )
+
+    if not isinstance(sex, ProfileSex):
+        raise ValueError(
+            "apparent_age sex must be a ProfileSex value."
         )
 
     result = AgeResult(target_age=age)
@@ -311,9 +336,14 @@ def apparent_age(human: Any, age: float) -> AgeResult:
     face = _get_or_register(human, "face_aging", FaceAging)
     body = _get_or_register(human, "body_aging", BodyAging)
 
-    _update_skin_aging(result, skin, age)
-    _update_hair_aging(result, hair, age)
-    _update_face_aging(result, face, age)
-    _update_body_aging(result, body, age)
+    if profile is None:
+        snap = AgeCurves.snapshot(age)
+    else:
+        snap = profile_snapshot(age, profile, sex)
+
+    _update_skin_aging(result, skin, age, snap=snap)
+    _update_hair_aging(result, hair, age, snap=snap)
+    _update_face_aging(result, face, age, snap=snap)
+    _update_body_aging(result, body, age, snap=snap)
 
     return result

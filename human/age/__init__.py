@@ -26,6 +26,12 @@ from .operator import (
     FieldChange,
     apparent_age,
 )
+from .profiles import (
+    AgeProfile,
+    ProfileSex,
+    profile_multiplier,
+    profile_snapshot,
+)
 from .trajectory import (
     AgeTrajectory,
     TransitReport,
@@ -44,4 +50,8 @@ __all__ = [
     "TransitReport",
     "transit",
     "transit_steps",
+    "AgeProfile",
+    "ProfileSex",
+    "profile_multiplier",
+    "profile_snapshot",
 ]
