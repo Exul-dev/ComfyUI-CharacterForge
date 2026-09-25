@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import Any
 
 from .anatomy_component import AnatomyComponent
+from .gluteal_region import GlutealRegion
+from .hips import Hips
 
 
 class Pelvis(AnatomyComponent):
@@ -26,6 +28,8 @@ class Pelvis(AnatomyComponent):
         tilt: float = 0.0,
         shape: str = "average",
         iliac_flare: float = 0.5,
+        hips: Hips | None = None,
+        gluteal_region: GlutealRegion | None = None,
     ) -> None:
         super().__init__()
 
@@ -35,6 +39,9 @@ class Pelvis(AnatomyComponent):
         self.tilt = float(tilt)
         self.shape = shape
         self.iliac_flare = float(iliac_flare)
+
+        self.hips = hips or Hips()
+        self.gluteal_region = gluteal_region or GlutealRegion()
 
         self.validate()
 
@@ -69,6 +76,15 @@ class Pelvis(AnatomyComponent):
                 "Pelvis iliac flare must be between 0 and 1."
             )
 
+        if not isinstance(self.hips, Hips):
+            raise ValueError("Pelvis hips must be a Hips instance.")
+
+        if not isinstance(self.gluteal_region, GlutealRegion):
+            raise ValueError("Pelvis gluteal_region must be a GlutealRegion instance.")
+
+        self.hips.validate()
+        self.gluteal_region.validate()
+
     def to_dict(self) -> dict[str, Any]:
         return {
             **super().to_dict(),
@@ -78,4 +94,6 @@ class Pelvis(AnatomyComponent):
             "tilt": self.tilt,
             "shape": self.shape,
             "iliac_flare": self.iliac_flare,
+            "hips": self.hips.to_dict(),
+            "gluteal_region": self.gluteal_region.to_dict(),
         }

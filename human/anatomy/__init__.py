@@ -65,6 +65,10 @@ from .landmark_modify import (
 )
 from .waist import Waist
 from .abdomen import Abdomen
+from .glute import Glute
+from .gluteal_region import GlutealRegion
+from .hip import Hip
+from .hips import Hips
 from .pelvis import Pelvis
 from .thigh import Thigh
 from .knee import Knee
@@ -223,6 +227,10 @@ __all__ = [
     "UpperArm",
     "Wrist",
     "Pelvis",
+    "Glute",
+    "GlutealRegion",
+    "Hip",
+    "Hips",
     "Waist",
     "Abdomen",
     "Thigh",
