@@ -24,6 +24,7 @@ class Hand(AnatomyComponent):
         palm: Palm | None = None,
         fingers: dict[FingerType, Finger] | None = None,
         condition: str = "healthy",
+        knuckle_prominence: float = 0.4,
     ) -> None:
         super().__init__()
 
@@ -34,6 +35,7 @@ class Hand(AnatomyComponent):
         self.shape = shape
         self.palm = palm or Palm()
         self.condition = condition
+        self.knuckle_prominence = float(knuckle_prominence)
 
         default_fingers = {
             FingerType.THUMB: Finger(type=FingerType.THUMB, length=6.0),
@@ -67,6 +69,11 @@ class Hand(AnatomyComponent):
 
         if not self.condition:
             raise ValueError("Hand condition must not be empty.")
+
+        if not 0.0 <= self.knuckle_prominence <= 1.0:
+            raise ValueError(
+                "Hand knuckle_prominence must be between 0 and 1."
+            )
 
         self.palm.validate()
 
@@ -106,4 +113,5 @@ class Hand(AnatomyComponent):
                 for finger_type, finger in self.fingers.items()
             },
             "condition": self.condition,
+            "knuckle_prominence": self.knuckle_prominence,
         }

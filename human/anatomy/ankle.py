@@ -7,7 +7,12 @@ from .enums import BodySide
 
 
 class Ankle(AnatomyComponent):
-    """Represents an anatomical ankle joint."""
+    """Represents an anatomical ankle joint.
+
+    H4.15-A foundation, enriched in H4.19-D with the malleoli
+    (medial and lateral — the side-matched Leg chain determines
+    which is which). Legacy error messages preserved verbatim.
+    """
 
     component_type = "ankle"
 
@@ -22,6 +27,8 @@ class Ankle(AnatomyComponent):
         extension: float = 0.0,
         deviation: float = 0.0,
         prominence: float = 0.5,
+        malleolus_prominence: float = 0.5,
+        malleolus_width: float = 1.5,
     ) -> None:
         super().__init__()
 
@@ -33,6 +40,8 @@ class Ankle(AnatomyComponent):
         self.extension = float(extension)
         self.deviation = float(deviation)
         self.prominence = float(prominence)
+        self.malleolus_prominence = float(malleolus_prominence)
+        self.malleolus_width = float(malleolus_width)
 
         self.validate()
 
@@ -71,6 +80,16 @@ class Ankle(AnatomyComponent):
         if not 0.0 <= self.prominence <= 1.0:
             raise ValueError("Ankle prominence must be between 0 and 1.")
 
+        if not 0.0 <= self.malleolus_prominence <= 1.0:
+            raise ValueError(
+                "Ankle malleolus_prominence must be between 0 and 1."
+            )
+
+        if self.malleolus_width <= 0:
+            raise ValueError(
+                "Ankle malleolus_width must be greater than zero."
+            )
+
     def to_dict(self) -> dict[str, Any]:
         return {
             **super().to_dict(),
@@ -82,4 +101,6 @@ class Ankle(AnatomyComponent):
             "extension": self.extension,
             "deviation": self.deviation,
             "prominence": self.prominence,
+            "malleolus_prominence": self.malleolus_prominence,
+            "malleolus_width": self.malleolus_width,
         }

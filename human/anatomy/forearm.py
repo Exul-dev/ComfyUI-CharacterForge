@@ -1,10 +1,16 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from .anatomy_component import AnatomyComponent
 
 
 class Forearm(AnatomyComponent):
-    """Represents the forearm anatomical structure."""
+    """Represents the forearm anatomical structure.
+
+    H4.4 foundation, enriched in H4.19-D (lower-leg parity):
+    brachioradialis definition and vascularity — the forearm is
+    where superficial veins read the most on a physique. Legacy
+    constructor checks (eager, exact messages) preserved verbatim.
+    """
 
     component_type = "forearm"
 
@@ -21,7 +27,12 @@ class Forearm(AnatomyComponent):
         *,
         length: float = 26.0,
         circumference: float = 24.0,
+        width: float = 7.5,
+        depth: float = 7.0,
         shape: str = "average",
+        brachioradialis_definition: float = 0.4,
+        ulna_definition: float = 0.4,
+        vascularity: float = 0.3,
     ) -> None:
         super().__init__()
 
@@ -39,7 +50,12 @@ class Forearm(AnatomyComponent):
 
         self.length = float(length)
         self.circumference = float(circumference)
+        self.width = float(width)
+        self.depth = float(depth)
         self.shape = shape
+        self.brachioradialis_definition = float(brachioradialis_definition)
+        self.ulna_definition = float(ulna_definition)
+        self.vascularity = float(vascularity)
 
         self.validate()
 
@@ -52,13 +68,36 @@ class Forearm(AnatomyComponent):
         if self.circumference <= 0:
             raise ValueError("Forearm circumference must be greater than zero.")
 
+        if self.width <= 0:
+            raise ValueError("Forearm width must be greater than zero.")
+
+        if self.depth <= 0:
+            raise ValueError("Forearm depth must be greater than zero.")
+
         if self.shape not in self.VALID_SHAPES:
             raise ValueError(f"Invalid forearm shape: {self.shape!r}.")
+
+        for name in (
+            "brachioradialis_definition",
+            "ulna_definition",
+            "vascularity",
+        ):
+            value = getattr(self, name)
+
+            if not 0.0 <= value <= 1.0:
+                raise ValueError(
+                    f"Forearm {name} must be between 0 and 1."
+                )
 
     def to_dict(self) -> dict:
         return {
             **super().to_dict(),
             "length": self.length,
             "circumference": self.circumference,
+            "width": self.width,
+            "depth": self.depth,
             "shape": self.shape,
+            "brachioradialis_definition": self.brachioradialis_definition,
+            "ulna_definition": self.ulna_definition,
+            "vascularity": self.vascularity,
         }
