@@ -17,6 +17,13 @@ from .landmark_geometry import (
     signed_distance_to_plane,
     vertical_offset,
 )
+from .facial_morphometry import (
+    FacialMeasurements,
+    face_dimensions_from_measurements,
+    facial_measurements,
+    facial_proportions_from_dimensions,
+    facial_scale_factor,
+)
 from .areola import Areola
 from .arms import Arms
 from .back import Back
@@ -78,6 +85,11 @@ __all__ = [
     "is_on_plane",
     "plane_normal",
     "signed_distance_to_plane",
+    "FacialMeasurements",
+    "face_dimensions_from_measurements",
+    "facial_measurements",
+    "facial_proportions_from_dimensions",
+    "facial_scale_factor",
     "Areola",
     "Arms",
     "Back",
