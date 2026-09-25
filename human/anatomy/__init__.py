@@ -4,6 +4,7 @@ from .coordinate_space import CoordinateSpace
 from .coordinate_system import CoordinateSystem
 from .landmark import Landmark, LandmarkSource, LandmarkStatus
 from .landmark_relation import LandmarkRelation, LandmarkRelationType
+from .landmark_graph import LandmarkGraph
 from .areola import Areola
 from .arms import Arms
 from .back import Back
@@ -53,6 +54,7 @@ __all__ = [
     "LandmarkStatus",
     "LandmarkRelation",
     "LandmarkRelationType",
+    "LandmarkGraph",
     "Areola",
     "Arms",
     "Back",
