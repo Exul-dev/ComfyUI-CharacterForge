@@ -33,6 +33,11 @@ from .head_morphometry import (
     head_proportions_from_dimensions,
 )
 from .cranial_landmarks import CranialLandmarks
+from .modify import (
+    ModifyResult,
+    PropertyChange,
+    diff_properties,
+)
 from .areola import Areola
 from .arms import Arms
 from .back import Back
@@ -106,6 +111,9 @@ __all__ = [
     "cranial_measurements",
     "cranial_scale_factor",
     "head_dimensions_from_cranial_measurements",
+    "ModifyResult",
+    "PropertyChange",
+    "diff_properties",
     "Areola",
     "Arms",
     "Back",
