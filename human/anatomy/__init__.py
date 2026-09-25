@@ -24,6 +24,10 @@ from .facial_morphometry import (
     facial_proportions_from_dimensions,
     facial_scale_factor,
 )
+from .head_morphometry import (
+    head_dimensions_from_face_dimensions,
+    head_proportions_from_dimensions,
+)
 from .areola import Areola
 from .arms import Arms
 from .back import Back
@@ -90,6 +94,8 @@ __all__ = [
     "facial_measurements",
     "facial_proportions_from_dimensions",
     "facial_scale_factor",
+    "head_dimensions_from_face_dimensions",
+    "head_proportions_from_dimensions",
     "Areola",
     "Arms",
     "Back",
