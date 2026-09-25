@@ -12,6 +12,8 @@ from .waist import Waist
 from .body_fat import BodyFat
 from .body_type import BodyType, Height, Proportions
 from .chest import Chest
+from .clavicle import Clavicles
+from .axilla import Axillae
 from .musculature import Musculature
 from .neck import Neck
 from .head import Head
@@ -36,6 +38,8 @@ class HumanAnatomy(AnatomyComponent):
         shoulders=None,
         torso=None,
         chest=None,
+        clavicles=None,
+        axillae=None,
         ribcage=None,
         back=None,
         waist=None,
@@ -57,6 +61,8 @@ class HumanAnatomy(AnatomyComponent):
         self.shoulders = shoulders or Shoulders()
         self.torso = torso or Torso()
         self.chest = chest or Chest()
+        self.clavicles = clavicles or Clavicles()
+        self.axillae = axillae or Axillae()
         self.ribcage = ribcage or RibCage()
         self.back = back or Back()
         self.waist = waist or Waist()
@@ -82,6 +88,8 @@ class HumanAnatomy(AnatomyComponent):
             self.shoulders,
             self.torso,
             self.chest,
+            self.clavicles,
+            self.axillae,
             self.ribcage,
             self.back,
             self.waist,
@@ -106,6 +114,8 @@ class HumanAnatomy(AnatomyComponent):
             "shoulders": self.shoulders.to_dict(),
             "torso": self.torso.to_dict(),
             "chest": self.chest.to_dict(),
+            "clavicles": self.clavicles.to_dict(),
+            "axillae": self.axillae.to_dict(),
             "ribcage": self.ribcage.to_dict(),
             "back": self.back.to_dict(),
             "waist": self.waist.to_dict(),

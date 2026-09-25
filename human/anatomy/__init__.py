@@ -64,14 +64,17 @@ from .landmark_modify import (
     widen_zygions,
 )
 from .waist import Waist
-from .abdomen import Abdomen
+from .abdomen import Abdomen, Navel
 from .flank import Flank
 from .flanks import Flanks
+from .clavicle import Clavicle, Clavicles
+from .sternum import Sternum
+from .axilla import Axilla, Axillae
 from .glute import Glute
 from .gluteal_region import GlutealRegion
 from .hip import Hip
 from .hips import Hips
-from .pelvis import Pelvis
+from .pelvis import Pelvis, PubicRegion
 from .thigh import Thigh
 from .knee import Knee
 from .lower_leg import LowerLeg
@@ -239,6 +242,13 @@ __all__ = [
     "Wrist",
     "Pelvis",
     "Glute",
+    "Clavicle",
+    "Clavicles",
+    "Sternum",
+    "Axilla",
+    "Axillae",
+    "Navel",
+    "PubicRegion",
     "Flank",
     "Flanks",
     "GlutealRegion",
