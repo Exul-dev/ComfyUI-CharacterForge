@@ -1,6 +1,6 @@
-# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H4.19)
+# CharacterForge — Visione, architettura di generazione, origine e stato tecnico (H4.20)
 
-> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H4.19 — Anatomy Completion** (chiusa, A→D). Con H4.19 il censimento anatomico "voglio tutto" è a zero: H4 e H5 complete.
+> Documento di riferimento del progetto: visione globale, architettura di generazione, origine e stato tecnico. Aggiornato a **H4.20 — Composable Reproductive System** (chiusa). Con H4.20 il censimento anatomico è totale anche nella regione genitale: H4 e H5 complete.
 
 ---
 
@@ -222,7 +222,7 @@ CharacterForge non sostituisce ComfyUI: **lo rende più consapevole di ciò che 
 
 ## La visione finale, oltre la milestone attuale
 
-Oggi: **H4.19 — censimento anatomico a zero** ✅ (H4.18 + H4.19 completati dopo H5). Poi, progressivamente:
+Oggi: **H4.20 — sistema riproduttivo componibile** ✅ (il censimento "voglio tutto" esteso anche alla regione genitale). Poi, progressivamente:
 
 ```text
 Morphology → Geometry → Transformations → Identity → State
@@ -850,9 +850,9 @@ Il **Custom Node è l'interfaccia di CharacterForge dentro ComfyUI**. Ma **Chara
 ---
 ---
 
-# PARTE V — Stato tecnico attuale (H4.19)
+# PARTE V — Stato tecnico attuale (H4.20)
 
-Siamo arrivati alla **H4.19** del ramo Human Engine. Il repository è **sincronizzato con origin/main**: i capitoli da H4.12 a H5, più i completamenti anatomici post-H5 (H4.18/H4.19), sono stati pushati.
+Siamo arrivati alla **H4.20** del ramo Human Engine. Il repository è **sincronizzato con origin/main**: i capitoli da H4.12 a H5, più i completamenti anatomici post-H5 (H4.18/H4.19/H4.20), sono stati pushati.
 
 ```text
 main
@@ -860,9 +860,9 @@ main
     └── working tree CLEAN
 ```
 
-L'ultima milestone chiusa è: **H4.19 — Anatomy Completion** ✅
+L'ultima milestone chiusa è: **H4.20 — Composable Reproductive System** ✅
 
-I capitoli da H4.12 a H5, chiusi in sottosezioni, più i completamenti anatomici post-H5:
+I capitoli da H4.12 a H5, chiusi in sottosezioni, più i completamenti anatomici post-H5 (H4.18/H4.19/H4.20):
 
 ```text
 H4.12-A  CoordinateSpace / Coordinate / CoordinateSystem / Landmark   b3cf564
@@ -894,6 +894,7 @@ H4.19-A  Bocca interna + palpebre + sopracciglia             92a8ebc
 H4.19-B  Tronco anteriore completo                           4da60fd
 H4.19-C  Schiena dettagliata + pomo d'Adamo                 149915c
 H4.19-D  Parità arti + malleoli + nocche + vascularity       bc78c84
+H4.20   Sistema riproduttivo componibile (bias corretto)     b043086
 ```
 
 ## 1. Architettura generale raggiunta
@@ -1463,7 +1464,54 @@ CENSIMENTO FINALE: 31/31 strutture presenti, zero mancanti.
 
 Tre lezioni di processo codificate in H4.19: (1) i messaggi d'errore SONO contratto — il rosso di "fat distribution" (spazio, H4.16-B) contro il mio loop con underscore; (2) export senza import è invisibile finché il nome non viene importato — il probe deve importare ogni nuovo nome (Navel/PubicRegion); (3) le guardie di idempotenza testano il pattern specifico (l'import), mai la mera presenza del nome.
 
-## 37. Sistema di validazione
+## 37. H4.20 — Composable Reproductive System
+
+```text
+Nato dalla domanda: "organi riproduttivi? sia maschili che
+femminili? e loro sezioni da personalizzare?" — che smascherò
+l'ultimo bias del censimento "voglio tutto" (H4.19), che aveva
+escluso implicitamente la regione genitale mentre il progetto
+trattava la MammaryRegion (H4.8) al massimo dettaglio da sempre.
+
+DECISIONE ARCHITETTURALE — COMPOSIZIONE, mai hardcoding:
+il sistema NON deduce l'anatomia dai Demographics (il progetto
+separa Sex da Gender by design). MaleGenitalia e FemaleGenitalia
+sono opzionali, indipendenti e possono COESISTERE.
+
+male_genitalia.py (pattern mouth.py: 4 classi, 1 file)
+├── Testicle(side): size, hang — ASIMMETRIA testicolare
+│   (la norma anatomica, rappresentabile per lato)
+├── Scrotum: width, tightness, rugae, texture + testicoli L/R
+├── Penis: length_flaccid/erect, girth_erect, glans_shape
+│   (tapered/round/mushroom), circumcision, curvature
+│   (direction + degree), veination — dimensioni STRUTTURALI,
+│   lo stato dinamico appartiene ai layer pose/state futuri
+└── MaleGenitalia: composito
+
+female_genitalia.py (5 classi, 1 file)
+├── LabiumMajus(side): length/width/thickness, prominence,
+│   pigmentation, shape (flat/full/drooping)
+├── LabiumMinus(side): length, width,
+│   protrusion_beyond_majora 0..1 (tratto reale e variabile)
+├── ClitoralStructure: glans_size, hood_coverage, prominence
+├── Vulva: composito (majora L/R + minora L/R + clitoral) —
+│   asimmetria labiale = norma anatomica
+└── FemaleGenitalia = Vulva (il mons resta in PubicRegion,
+    non duplicato)
+
+reproductive_system.py
+└── ReproductiveSystem: male|None, female|None — default VUOTO:
+    nessuna anatomia hardcodata, la configurazione è sempre
+    esplicita e componibile
+
+Integrazione: HumanAnatomy.reproductive_system (opzionale).
+```
+
+Commit: b043086 (feat) + 1fc3f16 (fix: la classe `Testicle` inizia per "Test" = prefisso di raccolta pytest → `__test__ = False`, meccanismo documentato — il nome anatomico corretto vince sul tooling).
+
+Nota di processo: l'anchor fallito del primo tentativo (`from .pelvis import Pelvis, PubicRegion` — esiste in `__init__.py` ma NON in `human_anatomy.py`) insegnò la regola: *verificare l'anchor nel FILE TARGET, mai nella memoria della sessione*.
+
+## 38. Sistema di validazione
 
 ```text
 AnatomyComponent → SemanticComponent → CharacterForgeObject
@@ -1473,14 +1521,14 @@ Contratto: `validate()` **solleva ValueError**, `is_valid()` la cattura e restit
 
 Nota di sviluppo: durante H4.12-B il primo abbozzo restituiva una lista di errori invece di sollevare `ValueError`, rompendo il contratto della gerarchia; corretto prima del commit. Lezione: il contratto di validazione del progetto è a eccezioni.
 
-## 38. Test e procedura canonica
+## 39. Test e procedura canonica
 
 Python di riferimento per sviluppo e test: **il venv di ComfyUI** — `D:\AVVIO PULITO di ComfyUI\ComfyUI\venv\Scripts\python.exe` (Python 3.12.10, pytest 9.1.1). Il Python 3.14 globale non ha pytest e non deve essere usato.
 
 ```text
 regressione unittest : python -m unittest discover -s tests -p "test_*.py"  → Ran 196 tests OK
-suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B/C + H4.14-A/B/C/D + H4.15-A/B + H4.16-A/B + H4.17 + H5-A/B/C + H4.18-A/B/C/D + H4.19-A/B/C/D → 716 passed
-TOTALE TEST UNICI   : 912 verdi
+suite pytest         : 5 suite storiche + H4.12-B/C/D/E + H4.13-A/B/C + H4.14-A/B/C/D + H4.15-A/B + H4.16-A/B + H4.17 + H5-A/B/C + H4.18-A/B/C/D + H4.19-A/B/C/D + H4.20 → 746 passed
+TOTALE TEST UNICI   : 942 verdi
 ```
 
 - H4.10: 14 test → OK
@@ -1513,14 +1561,15 @@ TOTALE TEST UNICI   : 912 verdi
 - H4.19-B: 28 test → OK (pytest)
 - H4.19-C: 19 test → OK (pytest)
 - H4.19-D: 16 test → OK (pytest)
+- H4.20: 30 test → OK (pytest)
 
-Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **54 test**. Totale capitolo H4.14: **97 test**. Totale capitolo H4.15: **62 test**. Totale capitolo H4.16: **60 test**. Totale capitolo H4.17: **24 test**. Totale capitolo H5: **56 test**. Totale capitolo H4.18: **78 test**. Totale capitolo H4.19: **94 test**.
+Totale capitolo H4.12: **92 test**. Totale capitolo H4.13: **54 test**. Totale capitolo H4.14: **97 test**. Totale capitolo H4.15: **62 test**. Totale capitolo H4.16: **60 test**. Totale capitolo H4.17: **24 test**. Totale capitolo H5: **56 test**. Totale capitolo H4.18: **78 test**. Totale capitolo H4.19: **94 test**. Totale capitolo H4.20: **30 test**.
 
 Nota storica: i 5 errori di import `No module named 'pytest'` documentati fino a H4.11 nascevano dall'uso del Python 3.14 globale; con il venv di ComfyUI l'intera suite gira senza errori. Da H4.12 in poi la procedura canonica usa il venv.
 
-## 39. Git
+## 40. Git
 
-Ultimo checkpoint: **H4.19-D** — commit `feat(human): add H4.19-D limb parity malleoli knuckles vascularity` (`bc78c84`).
+Ultimo checkpoint: **H4.20** — commit `fix(human): opt Testicle class out of pytest collection` (`1fc3f16`, suite a zero warning).
 
 ```text
 main
@@ -1528,9 +1577,11 @@ main
 working tree clean
 ```
 
-Commit dei capitoli H4.12 … H4.19:
+Commit dei capitoli H4.12 … H4.20:
 
 ```text
+1fc3f16 fix(human): opt Testicle class out of pytest collection
+b043086 feat(human): add H4.20 composable reproductive system
 bc78c84 feat(human): add H4.19-D limb parity malleoli knuckles vascularity
 149915c feat(human): add H4.19-C back detail scapulae and neck laryngeal prominence
 4da60fd feat(human): add H4.19-B anterior trunk structures clavicles sternum navel axillae pubic
@@ -1562,11 +1613,11 @@ c5b560e feat(human): add H4.12-B landmark relation component
 b3cf564 feat(human): add H4.12-A coordinate and landmark foundation
 ```
 
-I capitoli da H4.12 a H5, i completamenti H4.18/H4.19 e il documento della visione sono stati pushati su `origin/main`.
+I capitoli da H4.12 a H5, i completamenti H4.18/H4.19/H4.20 e il documento della visione sono stati pushati su `origin/main`.
 
-## 40. Dove NON siamo ancora arrivati
+## 41. Dove NON siamo ancora arrivati
 
-Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica, l'anatomia a dettaglio estremo (censimento 31/31: ogni struttura visibile ha componente semantica) e l'appearance base esistono ora. CharacterForge **non è ancora un generatore 3D anatomico**. **H4 (fino a H4.19) e H5 sono complete.** Mancano:
+Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica, l'anatomia a dettaglio estremo e TOTALE (censimento 31/31 + sistema riproduttivo componibile: ogni struttura del corpo umano ha componente semantica) e l'appearance base esistono ora. CharacterForge **non è ancora un generatore 3D anatomico**. **H4 (fino a H4.19) e H5 sono complete.** Mancano:
 
 ```text
 3D representation
@@ -1577,7 +1628,7 @@ Le fondamenta geometriche, la derivazione morfometrica, la modifica parametrica,
 → Model Adapters
 ```
 
-## 41. Il salto concettuale successivo
+## 42. Il salto concettuale successivo
 
 Fino a H4.11: **"CHE COS'È una parte anatomica?"** Con H4.12: **"DOVE SI TROVA e COME SI RELAZIONA alle altre parti?"** Con H4.13: **"COME SI DERIVA una misura da un'altra?"** — e la risposta è nel codice.
 
@@ -1594,9 +1645,9 @@ move zygion ±δ (H4.14-D, bottom-up) ≡ widen_bizygomatic (H4.14-B, top-down)
 → stesso modello: equivalenza provata, report changed/preserved certificato
 ```
 
-La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Con H4.14: **"COME SI PROPAGA una modifica?"** — e la risposta è codice con report a tre livelli. Con H4.18/H4.19 (post-H5, dalla direttiva "voglio tutto") il censimento anatomico è a zero. Prossimo: **H6 — Clothing**, il primo layer relazionale (copre ciò che abbiamo costruito).
+La catena completa `FacialLandmarks → FacialMeasurements → FaceDimensions → HeadDimensions → HeadProportions` (più `FacialProportions` dal FaceDimensions) chiude il cerchio semantica ↔ geometria e realizza la nota della sezione 13. Con H4.14: **"COME SI PROPAGA una modifica?"** — e la risposta è codice con report a tre livelli. Con H4.18/H4.19/H4.20 il censimento anatomico è TOTALE — la domanda "organi riproduttivi?" ha chiuso l'ultimo bias. Prossimo: **H6 — Clothing**, il primo layer relazionale (copre ciò che abbiamo costruito).
 
-## 42. In sintesi — percorso fatto
+## 43. In sintesi — percorso fatto
 
 ```text
 FASE 1  Core semantico
@@ -1620,11 +1671,12 @@ H4.17   Bilateral Upper Limbs (dual-mode Arms)             ← CHIUSA
 H5      Appearance (A→C: skin, hair, eyes)               ← CHIUSA
 H4.18   Lower Body Extreme Detail + Integrità (A→D)       ← CHIUSA
 H4.19   Anatomy Completion: voglio tutto (A→D)            ← CHIUSA
+H4.20   Composable Reproductive System                   ← CHIUSA
 ```
 
 H4.12 ha costruito il ponte tra **modello anatomico semantico** e **modello geometrico parametrico**: ora esiste. H4.13 lo ha reso percorribile in entrambe le direzioni: le proporzioni non si dichiarano più, si derivano — cranio compreso. H4.14 lo ha reso reversibile e verificabile: ogni modifica torna con il certificato di cosa è cambiato e cosa è sopravvissuto.
 
-## 43. Roadmap estesa oltre H6
+## 44. Roadmap estesa oltre H6
 
 ```text
 H4  HUMAN ANATOMY
@@ -1636,7 +1688,8 @@ H4  HUMAN ANATOMY
 ├── H4.17 Bilateralità completa degli arti superiori (Arms)  ✅
 ├── H4.18 Lower body extreme detail + integrità (testa!)    ✅
 ├── H4.19 Censimento "voglio tutto" a zero (31/31)         ✅
-└── H4 CHIUSA definitivamente
+├── H4.20 Sistema riproduttivo componibile                   ✅
+└── H4 CHIUSA definitivamente (censimento TOTALE)
         ↓
 H5  APPEARANCE
 │
@@ -1664,7 +1717,7 @@ H12 VISION / IMAGE-TO-ENTITY
 H13 SCENE / RELATIONSHIPS
 ```
 
-## 44. Il punto fondamentale del progetto, in una frase
+## 45. Il punto fondamentale del progetto, in una frase
 
 All'inizio si stava costruendo un **Character Generator**. Ora la visione è diventata:
 
@@ -1682,4 +1735,4 @@ Con le due direzioni ormai chiarite (vedi Parte II e Parte III):
       IMAGE ←──── ADAPTER ←── ENTITY
 ```
 
-E con H4.19 chiusa, il "voglio tutto" è soddisfatto: ogni struttura visibile del corpo umano — superficie e interno — ha componente semantica certificata. Struttura, superficie, geometria, derivazione, modifica. Il modello è pronto per H6.
+E con H4.20 chiusa, il censimento anatomico è TOTALE: ogni struttura del corpo umano ha componente semantica certificata — visibile o interna, bilateralmente asimmetrica dove l'anatomia lo è, componibile dove la configurazione deve restare esplicita. Il modello è pronto per H6.
