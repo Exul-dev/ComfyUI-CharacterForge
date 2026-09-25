@@ -78,6 +78,7 @@ from .nose import Nose
 from .mouth import Mouth, Philtrum
 from .legs import Legs
 from .ankle import Ankle
+from .arm import Arm
 from .areola import Areola
 from .arms import Arms
 from .back import Back
@@ -174,6 +175,7 @@ __all__ = [
     "advance_pronasale",
     "widen_euryons",
     "Areola",
+    "Arm",
     "Arms",
     "Back",
     "BodyFat",
