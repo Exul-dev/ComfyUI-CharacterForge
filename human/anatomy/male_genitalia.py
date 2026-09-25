@@ -25,6 +25,12 @@ class Testicle(AnatomyComponent):
 
     component_type = "testicle"
 
+    # Anatomical naming starts with "Test" — pytest's collection
+    # prefix. This class is anatomy, not a test class: explicitly
+    # opted out (documented pytest mechanism, keeps the correct
+    # anatomical name).
+    __test__ = False
+
     def __init__(
         self,
         *,
