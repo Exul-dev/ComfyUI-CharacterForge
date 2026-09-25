@@ -70,6 +70,10 @@ from .lower_leg import LowerLeg
 from .toe import Toe
 from .foot import Foot
 from .leg import Leg
+from .ear import Ear
+from .ears import Ears
+from .nose import Nose
+from .mouth import Mouth, Philtrum
 from .legs import Legs
 from .ankle import Ankle
 from .areola import Areola
@@ -200,6 +204,11 @@ __all__ = [
     "Musculature",
     "Nail",
     "Neck",
+    "Ear",
+    "Ears",
+    "Nose",
+    "Mouth",
+    "Philtrum",
     "Nipple",
     "Palm",
     "Proportions",

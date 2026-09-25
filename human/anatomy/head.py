@@ -3,6 +3,7 @@
 from typing import Any
 
 from .anatomy_component import AnatomyComponent
+from .ears import Ears
 from .face import Face
 from .head_dimensions import HeadDimensions
 from .head_proportions import HeadProportions
@@ -34,6 +35,7 @@ class Head(AnatomyComponent):
         dimensions: HeadDimensions | None = None,
         proportions: HeadProportions | None = None,
         face: Face | None = None,
+        ears: Ears | None = None,
     ) -> None:
         super().__init__()
 
@@ -45,6 +47,7 @@ class Head(AnatomyComponent):
         self.dimensions = dimensions or HeadDimensions()
         self.proportions = proportions or HeadProportions()
         self.face = face or Face()
+        self.ears = ears or Ears()
 
         self.validate()
 
@@ -72,6 +75,7 @@ class Head(AnatomyComponent):
         self.dimensions.validate()
         self.proportions.validate()
         self.face.validate()
+        self.ears.validate()
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -83,4 +87,5 @@ class Head(AnatomyComponent):
             "dimensions": self.dimensions.to_dict(),
             "proportions": self.proportions.to_dict(),
             "face": self.face.to_dict(),
+            "ears": self.ears.to_dict(),
         }

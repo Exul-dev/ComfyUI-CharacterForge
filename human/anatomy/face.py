@@ -12,6 +12,8 @@ from .facial_proportions import FacialProportions
 from .facial_symmetry import FacialSymmetry
 from .forehead import Forehead
 from .jaw import Jaw
+from .mouth import Mouth
+from .nose import Nose
 
 
 class Face(AnatomyComponent):
@@ -54,6 +56,8 @@ class Face(AnatomyComponent):
         chin: Chin | None = None,
         facial_symmetry: FacialSymmetry | None = None,
         landmarks: FacialLandmarks | None = None,
+        nose: Nose | None = None,
+        mouth: Mouth | None = None,
     ) -> None:
         super().__init__()
 
@@ -77,6 +81,8 @@ class Face(AnatomyComponent):
         self.chin = chin or Chin()
         self.facial_symmetry = facial_symmetry or FacialSymmetry()
         self.landmarks = landmarks or FacialLandmarks()
+        self.nose = nose or Nose()
+        self.mouth = mouth or Mouth()
 
         self.validate()
 
@@ -131,6 +137,8 @@ class Face(AnatomyComponent):
             self.chin,
             self.facial_symmetry,
             self.landmarks,
+            self.nose,
+            self.mouth,
         ):
             component.validate()
 
@@ -156,4 +164,6 @@ class Face(AnatomyComponent):
             "chin": self.chin.to_dict(),
             "facial_symmetry": self.facial_symmetry.to_dict(),
             "landmarks": self.landmarks.to_dict(),
+            "nose": self.nose.to_dict(),
+            "mouth": self.mouth.to_dict(),
         }
